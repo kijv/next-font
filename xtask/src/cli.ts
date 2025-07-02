@@ -7,7 +7,7 @@ import {
   runBump,
   VERSION_TYPE,
   type VersionType,
-} from "@/workspace";
+} from "./workspace";
 
 const cli = cac("xtask");
 
