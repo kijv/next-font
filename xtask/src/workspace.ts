@@ -3,6 +3,7 @@ import * as path from "node:path";
 import * as inquirer from "@inquirer/prompts";
 import { detect } from "package-manager-detector/detect";
 import * as semver from "semver";
+import { getNightlyVersion } from "./utils";
 
 const pm = await detect({
   cwd: path.join(import.meta.dirname, "../../"),
@@ -73,7 +74,6 @@ export async function runBump(
       throw new Error("List workspaces failed");
     }
     try {
-      console.log(workspacesListText);
       workspaces = JSON.parse(workspacesListText.trim());
     } catch {
       throw new Error("Unable to parse workspaces list");
@@ -230,6 +230,77 @@ export async function runBump(
       execSync(tagCmd, { stdio: "inherit" });
     } else {
       console.log(`[dry-run] ${tagCmd}`);
+    }
+  }
+}
+
+export async function publishWorkspace(isNightly: boolean, dryRun: boolean) {
+  const commitMessage = execSync("git log -1 --pretty=%B", {
+    encoding: "utf8",
+  });
+
+  const tags = commitMessage
+    .trim()
+    .split("\n")
+    // Skip commit title
+    .slice(1)
+    .map((s) => s.trim().replace(/^-\s*/, "").trim())
+    .map((m) => {
+      const scope = /^@.+\//.exec(m)?.[0];
+      const withoutScope = scope ? m.replace(new RegExp(`^${scope}`), "") : m;
+      const fullTag = withoutScope.split("@");
+      const pkgNameWithoutScope = fullTag[0];
+      const version = isNightly
+        ? getNightlyVersion(`${scope || ""}${pkgNameWithoutScope}`)
+        : fullTag[1];
+      return { pkgNameWithoutScope, scope, version };
+    });
+
+  for (const { pkgNameWithoutScope, scope, version } of tags) {
+    const pkgName = `${scope || ""}${pkgNameWithoutScope}`;
+    const semverVersion = semver.parse(version);
+    if (!semverVersion)
+      throw new Error(`Parse semver version failed ${version}`);
+
+    const isAlpha = semverVersion.prerelease.some((p) =>
+      p.toString().includes("alpha")
+    );
+    const isBeta = semverVersion.prerelease.some((p) =>
+      p.toString().includes("beta")
+    );
+    const isCanary = semverVersion.prerelease.some((p) =>
+      p.toString().includes("canary")
+    );
+
+    const tag = isNightly
+      ? "nightly"
+      : isAlpha
+      ? "alpha"
+      : isBeta
+      ? "beta"
+      : isCanary
+      ? "canary"
+      : "latest";
+
+    const args = [
+      "publish",
+      "--provenance",
+      "--tag",
+      tag,
+      "--no-git-checks",
+      "--filter",
+      pkgName,
+    ];
+
+    if (dryRun) {
+      args.push("--dry-run");
+    }
+
+    const cmd = `${pm!.name} ${args.join(" ")}`;
+    if (!dryRun) {
+      execSync(cmd, { stdio: "inherit" });
+    } else {
+      console.log(`[dry-run] ${cmd}`);
     }
   }
 }
