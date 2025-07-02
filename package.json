@@ -1,0 +1,37 @@
+{
+  "name": "@repo/vite-plugin-next-font",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*",
+    "xtask"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "@next/font": "canary",
+    "@types/bun": "latest",
+    "bunchee": "^6.5.4",
+    "fast-glob": "^3.3.3",
+    "turbo": "^2.5.4",
+    "vc": "^0.1.4",
+    "vite": "^7.0.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4",
+    "xtask": "workspace:*"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "esbuild",
+    "sharp"
+  ],
+  "patchedDependencies": {
+    "bunchee@6.5.4": "patches/bunchee@6.5.4.patch"
+  },
+  "packageManager": "bun@1.2.16"
+}

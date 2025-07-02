@@ -1,0 +1,16 @@
+{
+  "name": "xtask",
+  "private": true,
+  "bin": "./src/index.ts",
+  "devDependencies": {
+    "@inquirer/prompts": "^7.6.0",
+    "@types/bun": "latest",
+    "@types/semver": "^7.7.0",
+    "cac": "^6.7.14",
+    "package-manager-detector": "^1.3.0",
+    "semver": "^7.7.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

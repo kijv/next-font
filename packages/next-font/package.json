@@ -1,0 +1,35 @@
+{
+  "name": "next-font",
+  "type": "module",
+  "files": [
+    "dist",
+    "google",
+    "local"
+  ],
+  "exports": {
+    "./google": {
+      "import": "./google/index.js",
+      "types": "./google/index.d.ts"
+    },
+    "./local": {
+      "import": "./local/index.js",
+      "types": "./local/index.d.ts"
+    },
+    "./google/target.css": "./google/target.css",
+    "./local/target.css": "./local/target.css",
+    "./dist/*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "./build.ts"
+  },
+  "devDependencies": {
+    "@types/fontkit": "^2.0.8",
+    "@next/font": "canary",
+    "@vercel/next.js": "github:vercel/next.js",
+    "fontkit": "^2.0.4"
+  },
+  "version": "0.0.1-canary.0"
+}

@@ -1,0 +1,13 @@
+diff --git a/dist/index.js b/dist/index.js
+index a7a6d72d86dea795958c48148b101382b33c06c0..23f935f866c7c675e7e11af2a2f87d98b40263a1 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1947,7 +1947,7 @@ async function bundle(cliEntryPath, { cwd: _cwd, onSuccess, ...options } = {}) {
+     assignDefault(options, 'format', 'esm');
+     assignDefault(options, 'minify', false);
+     assignDefault(options, 'target', 'es2015');
+-    const pkg = await getPackageMeta(cwd);
++    const pkg = Object.assign(await getPackageMeta(cwd), options.pkg ?? {});
+     const parsedExportsInfo = parseExports(pkg);
+     const isMultiEntries = hasMultiEntryExport(parsedExportsInfo);
+     const hasBin = Boolean(pkg.bin);
