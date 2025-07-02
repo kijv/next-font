@@ -30,6 +30,5 @@
     "@next/font": "canary",
     "@vercel/next.js": "github:vercel/next.js",
     "fontkit": "^2.0.4"
-  },
-  "version": "0.0.1-canary.0"
+  }
 }
