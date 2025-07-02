@@ -29,14 +29,14 @@ cli
       }
     ) => {
       if (opts.bump) {
-        if (opts.semver != null && isVersionType(opts.semver)) {
+        if (opts.semver != null && !isVersionType(opts.semver)) {
           console.error(`--semver must be one of ${VERSION_TYPE.join(", ")}`);
           return;
         }
         try {
           await runBump(
             new Set(names),
-            opts.semver as VersionType,
+            opts.semver,
             opts.dryRun
           );
         } catch (error) {

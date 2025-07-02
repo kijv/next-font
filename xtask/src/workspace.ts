@@ -234,7 +234,7 @@ export async function runBump(
   }
 }
 
-export async function publishWorkspace(isNightly: boolean, dryRun: boolean) {
+export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
   const commitMessage = execSync("git log -1 --pretty=%B", {
     encoding: "utf8",
   });
