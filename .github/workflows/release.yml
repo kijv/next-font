@@ -126,11 +126,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ needs.stage.outputs.stage_branch }}
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+      - name: Create pull request
+        uses: thomaseizinger/create-pull-request@master
+        if: ${{ !inputs.dry_run }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "release npm packages"
-          branch: ${{ needs.stage.outputs.stage_branch }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          head: ${{ needs.stage.outputs.stage_branch }}
           base: main
-          author: vvv <93486795+kijv@users.noreply.github.com>
+          title: "release npm packages"
