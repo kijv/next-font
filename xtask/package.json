@@ -1,7 +1,7 @@
 {
   "name": "xtask",
   "private": true,
-  "bin": "./src/index.ts",
+  "bin": "./cli.ts",
   "devDependencies": {
     "@inquirer/prompts": "^7.6.0",
     "@types/bun": "latest",

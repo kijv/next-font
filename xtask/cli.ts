@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { cac } from "cac";
-import { isVersionType, runBump, VERSION_TYPE } from "./bump";
+import { isVersionType, runBump, VERSION_TYPE } from "./src/bump";
 
 const cli = cac("xtask");
 

@@ -171,7 +171,11 @@ export async function runBump(
               beta: 1,
               canary: 2,
             };
-            if (order[vt] > order[prereleaseType as string]) {
+            if (
+              order[vt] != null &&
+              order[prereleaseType as string] != null &&
+              order[vt]! > order[prereleaseType as string]!
+            ) {
               semverVersion.prerelease = [vt, 0];
             } else {
               throw new Error(
