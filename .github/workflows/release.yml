@@ -127,6 +127,8 @@ jobs:
             ARGS="$ARGS --dry-run"
           fi
           bun xtask workspace $ARGS
+        env:
+          NPM_TOKEN: ${{ secrets.VVV_NPM_TOKEN }}
 
   pull-request:
     name: Pull Request
