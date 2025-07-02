@@ -214,15 +214,15 @@ export async function runBump(
     `chore: release npm package${tagsToApply.length > 1 ? "s" : ""}`,
     tagsMessage,
   ];
-  if (!dryRun) {
-    execSync(`git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`, {
-      stdio: "inherit",
-    });
-  } else {
-    console.log(
-      `[dry-run] git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`
-    );
-  }
+  // if (!dryRun) {
+  execSync(`git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`, {
+    stdio: "inherit",
+  });
+  // } else {
+  //   console.log(
+  //     `[dry-run] git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`
+  //   );
+  // }
 
   for (const tag of tagsToApply) {
     const tagCmd = `git tag ${tag} -m "${tag}"`;
