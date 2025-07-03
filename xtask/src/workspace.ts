@@ -244,6 +244,7 @@ export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
     .split("\n")
     // Skip commit title
     .slice(1)
+    .filter(Boolean)
     .map((s) => s.trim().replace(/^-\s*/, "").trim())
     .map((m) => {
       const scope = /^@.+\//.exec(m)?.[0];
@@ -296,11 +297,7 @@ export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
       args.push("--dry-run");
     }
 
-    const cmd = `${pm!.name} ${args.join(" ")}`;
-    if (!dryRun) {
-      execSync(cmd, { stdio: "inherit" });
-    } else {
-      console.log(`[dry-run] ${cmd}`);
-    }
+    const cmd = `pnpm ${args.join(" ")}`;
+    execSync(cmd, { stdio: "inherit" });
   }
 }

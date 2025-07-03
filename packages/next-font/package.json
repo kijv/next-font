@@ -1,6 +1,7 @@
 {
   "name": "next-font",
   "type": "module",
+  "version": "0.0.1-canary.0",
   "files": [
     "dist",
     "google",
@@ -30,5 +31,8 @@
     "@next/font": "canary",
     "@vercel/next.js": "github:vercel/next.js",
     "fontkit": "^2.0.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
