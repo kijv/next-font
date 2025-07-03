@@ -22,7 +22,7 @@ let start = performance.now();
 await bundle(
   path.resolve(nextFontDir, 'fontkit.js'),
   Object.assign({}, config, {
-    cwd: process.cwd(),
+    cwd: import.meta.dirname,
     file: path.join('dist', 'fontkit.js'),
     pkg: {
       exports: {},
@@ -35,12 +35,10 @@ await bundle(
   }),
 );
 
-
 const files = await glob('src/**/*.ts', {
   cwd: nextFontDir,
   ignore: ['src/**/*.test.ts'],
 });
-
 
 const exports = Object.fromEntries(
   files.map((file) => {
@@ -73,7 +71,8 @@ await bundle(
       exports,
     },
     _callbacks: {
-      async onBuildEnd() {
+      async onBuildEnd(a) {
+        console.log(a);
         console.log(`Built @next/font [${performance.now() - start}ms]`);
       },
     },
