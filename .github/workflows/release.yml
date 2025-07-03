@@ -106,10 +106,10 @@ jobs:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
+      - name: Setup corepack
+        run: |
+          bun i -g pnpm
+          pnpm --version
 
       - name: Publish
         run: |
