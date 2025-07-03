@@ -1,22 +1,23 @@
-import { execSync } from "node:child_process";
-import * as path from "node:path";
-import * as inquirer from "@inquirer/prompts";
-import { detect } from "package-manager-detector/detect";
-import * as semver from "semver";
-import { getNightlyVersion } from "./utils";
+import * as path from 'node:path';
+import * as inquirer from '@inquirer/prompts';
+import { detect } from 'package-manager-detector/detect';
+import * as semver from 'semver';
+import { createCommand } from './command';
+import { getNightlyVersion } from './utils';
 
+const workspaceRoot = path.join(import.meta.dirname, '../../');
 const pm = await detect({
-  cwd: path.join(import.meta.dirname, "../../"),
+  cwd: workspaceRoot,
 });
-if (!pm) throw new Error("Unable to detect package manager");
+if (!pm) throw new Error('Unable to detect package manager');
 
 export const VERSION_TYPE = [
-  "major",
-  "minor",
-  "patch",
-  "alpha",
-  "beta",
-  "canary",
+  'major',
+  'minor',
+  'patch',
+  'alpha',
+  'beta',
+  'canary',
 ] as const;
 
 export type VersionType = (typeof VERSION_TYPE)[number];
@@ -35,7 +36,7 @@ interface PackageJson {
 }
 
 export const isVersionType = (
-  versionType: string
+  versionType: string,
 ): versionType is VersionType => {
   return VERSION_TYPE.includes(versionType as VersionType);
 };
@@ -43,59 +44,25 @@ export const isVersionType = (
 export async function runBump(
   names: Set<string>,
   versionType?: VersionType,
-  dryRun?: boolean
-): Promise<void> {
+  dryRun?: boolean,
+) {
   // 1. List workspaces
-  let workspacesListText: string;
-  let workspaces: Workspace[];
-  if (pm?.name === "bun") {
-    try {
-      const ls = execSync("bun pm ls").toString();
-      const root = ls.split(" ")[0]!;
-      const lockfile = (await import(
-        path.join(root, "bun.lock")
-      )) as Bun.BunLockFile;
-
-      workspaces = Object.entries(lockfile.workspaces).map(
-        ([workspace, pkg]) => {
-          return {
-            name: pkg.name!,
-            path: path.join(root, workspace),
-          };
-        }
-      );
-    } catch {
-      throw new Error("Unable to parse workspaces list");
-    }
-  } else if (pm?.name === "pnpm") {
-    try {
-      workspacesListText = execSync(`pnpm ls -r --depth -1 --json`).toString();
-    } catch {
-      throw new Error("List workspaces failed");
-    }
-    try {
-      workspaces = JSON.parse(workspacesListText.trim());
-    } catch {
-      throw new Error("Unable to parse workspaces list");
-    }
-  } else {
-    throw new Error("Unsupported package manager");
-  }
+  const workspaces = await getWorkspaces();
 
   // 2. Read package.json for each workspace
   const workspacePkgs: PackageJson[] = [];
   for (const workspace of workspaces) {
     try {
-      const pkgJsonPath = path.join(workspace.path, "package.json");
+      const pkgJsonPath = path.join(workspace.path, 'package.json');
       const pkgJson = (await import(pkgJsonPath).then(
-        (mod) => mod.default || mod
+        (mod) => mod.default || mod,
       )) as PackageJson;
       if (!workspace.name || pkgJson.private) continue;
       pkgJson.path = workspace.path;
       workspacePkgs.push(pkgJson);
     } catch (e) {
       console.log(e);
-      throw new Error("Read workspace package.json failed");
+      throw new Error('Read workspace package.json failed');
     }
   }
 
@@ -104,15 +71,15 @@ export async function runBump(
   if (workspacesToBump.length === 0) {
     // Prompt user to select packages
     const choices = workspacePkgs.map((pkg) => ({
-      name: `${pkg.name}, current version is ${pkg.version || "unknown"}`,
+      name: `${pkg.name}, current version is ${pkg.version || 'unknown'}`,
       value: pkg.name,
     }));
     const selected = await inquirer.checkbox({
-      message: "Select a package to bump",
+      message: 'Select a package to bump',
       choices,
     });
     workspacesToBump = workspacePkgs.filter((pkg) =>
-      selected.includes(pkg.name)
+      selected.includes(pkg.name),
     );
   }
 
@@ -130,34 +97,34 @@ export async function runBump(
       });
       vt = type;
     }
-    const semverVersion = semver.parse(pkg.version || "0.0.0");
+    const semverVersion = semver.parse(pkg.version || '0.0.0');
     if (!semverVersion) {
       throw new Error(
-        `Failed to parse ${pkg.version} in ${pkg.name} as semver`
+        `Failed to parse ${pkg.version} in ${pkg.name} as semver`,
       );
     }
 
     switch (vt) {
-      case "major":
-        semverVersion.inc("major");
+      case 'major':
+        semverVersion.inc('major');
         semverVersion.minor = 0;
         semverVersion.patch = 0;
         semverVersion.prerelease = [];
         break;
-      case "minor":
-        semverVersion.inc("minor");
+      case 'minor':
+        semverVersion.inc('minor');
         semverVersion.patch = 0;
         semverVersion.prerelease = [];
         break;
-      case "patch":
-        semverVersion.inc("patch");
+      case 'patch':
+        semverVersion.inc('patch');
         semverVersion.prerelease = [];
         break;
-      case "alpha":
-      case "beta":
-      case "canary":
+      case 'alpha':
+      case 'beta':
+      case 'canary':
         if (semverVersion.prerelease.length === 0) {
-          semverVersion.inc("patch");
+          semverVersion.inc('patch');
           semverVersion.prerelease = [vt, 0];
         } else {
           let [prereleaseType, prereleaseVersion] = semverVersion.prerelease;
@@ -179,125 +146,161 @@ export async function runBump(
               semverVersion.prerelease = [vt, 0];
             } else {
               throw new Error(
-                `Previous version is ${prereleaseType}, so you can't bump to ${vt}`
+                `Previous version is ${prereleaseType}, so you can't bump to ${vt}`,
               );
             }
           }
         }
         break;
       default:
-        throw new Error("Unknown version type");
+        throw new Error('Unknown version type');
     }
 
     const semverVersionString = semverVersion.format();
     const versionCommandArgs = [semverVersionString];
-    const cmd = `vc ${versionCommandArgs.join(" ")}`;
-    if (!dryRun) {
-      execSync(cmd, { cwd: pkg.path });
-    } else {
-      console.log(`[dry-run] ${cmd} (cwd: ${pkg.path})`);
-    }
+    await createCommand(`vc ${versionCommandArgs.join(' ')}`)
+      .currentDir(pkg.path)
+      .dryRun(dryRun)
+      .execute();
     tagsToApply.push(`${pkg.alias || pkg.name}@${semverVersionString}`);
   }
 
   // 5. Update lockfile, git add, commit, tag
-  if (!dryRun) {
-    execSync(`${pm!.name} install`, { stdio: "inherit" });
-    execSync("git add .", { stdio: "inherit" });
-  } else {
-    console.log("[dry-run] pnpm install");
-    console.log("[dry-run] git add .");
-  }
+  await createCommand(`pnpm install`).dryRun(dryRun).execute();
+  await createCommand(`git add .`).dryRun(dryRun).execute();
 
-  const tagsMessage = tagsToApply.map((s) => `- ${s}`).join("\n");
+  const tagsMessage = tagsToApply.map((s) => `- ${s}`).join('\n');
   const commitMsg = [
-    `chore: release npm package${tagsToApply.length > 1 ? "s" : ""}`,
+    `chore: release npm package${tagsToApply.length > 1 ? 's' : ''}`,
     tagsMessage,
   ];
-  if (!dryRun) {
-    execSync(`git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`, {
-      stdio: "inherit",
-    });
-  } else {
-    console.log(
-      `[dry-run] git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`
-    );
-  }
+  await createCommand(`git commit -m "${commitMsg[0]}" -m "${commitMsg[1]}"`)
+    .dryRun(dryRun)
+    .execute();
 
-  for (const tag of tagsToApply) {
-    const tagCmd = `git tag ${tag} -m "${tag}"`;
-    if (!dryRun) {
-      execSync(tagCmd, { stdio: "inherit" });
-    } else {
-      console.log(`[dry-run] ${tagCmd}`);
-    }
+  for await (const tag of tagsToApply) {
+    await createCommand(`git tag ${tag} -m "${tag}"`).dryRun(dryRun).execute();
   }
 }
 
 export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
-  const commitMessage = execSync("git log -1 --pretty=%B", {
-    encoding: "utf8",
-  });
+  const commitMessage = await createCommand('git log -1 --pretty=%B')
+    .dryRun(dryRun)
+    .errorMessage('Get commit hash failed')
+    .outputString();
 
   const tags = commitMessage
     .trim()
-    .split("\n")
+    .split('\n')
     // Skip commit title
     .slice(1)
     .filter(Boolean)
-    .map((s) => s.trim().replace(/^-\s*/, "").trim())
+    .map((s) => s.trim().replace(/^-\s*/, '').trim())
     .map((m) => {
       const scope = /^@.+\//.exec(m)?.[0];
-      const withoutScope = scope ? m.replace(new RegExp(`^${scope}`), "") : m;
-      const fullTag = withoutScope.split("@");
+      const withoutScope = scope ? m.replace(new RegExp(`^${scope}`), '') : m;
+      const fullTag = withoutScope.split('@');
       const pkgNameWithoutScope = fullTag[0];
       const version = isNightly
-        ? getNightlyVersion(`${scope || ""}${pkgNameWithoutScope}`)
+        ? getNightlyVersion(`${scope || ''}${pkgNameWithoutScope}`)
         : fullTag[1];
       return { pkgNameWithoutScope, scope, version };
     });
 
+  const workspaces = tags.length > 0 ? await getWorkspaces() : [];
+
   for (const { pkgNameWithoutScope, scope, version } of tags) {
-    const pkgName = `${scope || ""}${pkgNameWithoutScope}`;
+    const pkgName = `${scope || ''}${pkgNameWithoutScope}`;
     const semverVersion = semver.parse(version);
     if (!semverVersion)
       throw new Error(`Parse semver version failed ${version}`);
 
+    const workspace = workspaces.find((w) => w.name === pkgName);
+    if (!workspace) throw new Error(`Workspace not found for ${pkgName}`);
+
     const isAlpha = semverVersion.prerelease.some((p) =>
-      p.toString().includes("alpha")
+      p.toString().includes('alpha'),
     );
     const isBeta = semverVersion.prerelease.some((p) =>
-      p.toString().includes("beta")
+      p.toString().includes('beta'),
     );
     const isCanary = semverVersion.prerelease.some((p) =>
-      p.toString().includes("canary")
+      p.toString().includes('canary'),
     );
 
     const tag = isNightly
-      ? "nightly"
+      ? 'nightly'
       : isAlpha
-      ? "alpha"
-      : isBeta
-      ? "beta"
-      : isCanary
-      ? "canary"
-      : "latest";
+        ? 'alpha'
+        : isBeta
+          ? 'beta'
+          : isCanary
+            ? 'canary'
+            : 'latest';
+
+    const packArgs = [
+      '--destination',
+      path.relative(workspace.path, workspaceRoot),
+    ].filter(Boolean);
+
+    const bunPack = await createCommand(`bun pm pack ${packArgs.join(' ')}`)
+      .currentDir(path.relative(workspaceRoot, workspace.path))
+      .quiet(false)
+      .outputString();
+
+    const packPath = bunPack.split('\n').find((line) => path.isAbsolute(line));
 
     const args = [
-      "publish",
-      "--provenance",
-      "--tag",
+      'publish',
+      packPath,
+      '--provenance',
+      '--tag',
       tag,
-      "--no-git-checks",
-      "--filter",
-      pkgName,
+      dryRun ? '--dry-run' : '',
     ];
 
-    if (dryRun) {
-      args.push("--dry-run");
-    }
-
-    const cmd = `pnpm ${args.join(" ")}`;
-    execSync(cmd, { stdio: "inherit" });
+    createCommand(`npm ${args.join(' ')}`).execute();
   }
 }
+
+const getWorkspaces = async () => {
+  let workspacesListText: string;
+  let workspaces: Workspace[];
+  if (pm?.name === 'bun') {
+    try {
+      const ls = await createCommand('bun pm ls').outputString();
+      const root = ls.split(' ')[0]!;
+      const lockfile = (await import(
+        path.join(root, 'bun.lock')
+      )) as Bun.BunLockFile;
+
+      workspaces = Object.entries(lockfile.workspaces).map(
+        ([workspace, pkg]) => {
+          return {
+            name: pkg.name!,
+            path: path.join(root, workspace),
+          };
+        },
+      );
+    } catch {
+      throw new Error('Unable to parse workspaces list');
+    }
+  } else if (pm?.name === 'pnpm') {
+    try {
+      workspacesListText = await createCommand(
+        `pnpm ls -r --depth -1 --json`,
+      ).outputString();
+    } catch {
+      throw new Error('List workspaces failed');
+    }
+    try {
+      workspaces = JSON.parse(workspacesListText.trim());
+    } catch {
+      throw new Error('Unable to parse workspaces list');
+    }
+  } else {
+    throw new Error('Unsupported package manager');
+  }
+
+  return workspaces;
+};

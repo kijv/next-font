@@ -10,7 +10,7 @@ npm install next-font
 
 ### Usage
 
-Exact same usage as `next/font`
+Exact same usage as `next/font`/`@next/font`.
 
 A example using google fonts:
 
@@ -33,4 +33,3 @@ const myFont = localFont({
 ```
 
 See the Next.js [API Page](https://nextjs.org/docs/app/api-reference/components/font) for more options.
-

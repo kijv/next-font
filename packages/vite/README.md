@@ -1,6 +1,6 @@
 ## Next Font for Vite
 
-`next/font` (`next-font`) for Vite projects
+`next/font` ([`next-font`](https://npmjs.org/package/next-font)) for Vite projects
 
 ### Install
 
