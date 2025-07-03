@@ -184,10 +184,15 @@ export async function runBump(
 }
 
 export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
-  const commitMessage = await createCommand('git log -1 --pretty=%B')
-    .dryRun(dryRun)
-    .errorMessage('Get commit hash failed')
-    .outputString();
+  {
+    const commitMessage = await createCommand('git log -1 --pretty=%B')
+      .dryRun(dryRun)
+      .errorMessage('Get commit hash failed')
+      .outputString();
+  }
+  const commitMessage = `chore: release npm package
+
+  - next-font@1.0.1`;
 
   const tags = commitMessage
     .trim()
@@ -238,28 +243,20 @@ export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
             ? 'canary'
             : 'latest';
 
-    const packArgs = [
-      '--destination',
-      path.relative(workspace.path, workspaceRoot),
-    ].filter(Boolean);
+    createCommand(
+      `cp ${path.join(workspaceRoot, 'LICENSE')} ${path.join(
+        workspace.path,
+        'LICENSE',
+      )}`,
+    )
+      .dryRun(dryRun)
+      .execute();
 
-    const bunPack = await createCommand(`bun pm pack ${packArgs.join(' ')}`)
+    const args = ['publish', '--tag', tag, dryRun ? '--dry-run' : ''];
+
+    createCommand(`bun ${args.join(' ')}`)
       .currentDir(path.relative(workspaceRoot, workspace.path))
-      .quiet(false)
-      .outputString();
-
-    const packPath = bunPack.split('\n').find((line) => path.isAbsolute(line));
-
-    const args = [
-      'publish',
-      packPath,
-      '--provenance',
-      '--tag',
-      tag,
-      dryRun ? '--dry-run' : '',
-    ];
-
-    createCommand(`npm ${args.join(' ')}`).execute();
+      .execute();
   }
 }
 

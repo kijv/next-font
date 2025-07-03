@@ -18,6 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "next-font": "workspace:*",
     "postcss": "^8.5.6"
   },
   "devDependencies": {
@@ -35,9 +36,6 @@
     "rollup": "^4.44.1",
     "stable-hash": "^0.0.6",
     "vite": "^7.0.0"
-  },
-  "peerDependencies": {
-    "next-font": "workspace:*"
   },
   "publishConfig": {
     "access": "public"
