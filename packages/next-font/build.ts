@@ -11,17 +11,16 @@ const config: BundleConfig = {
 };
 
 const cwd = import.meta.dirname;
-const nextFontDir = path.dirname(
+const nextFontDir = Bun.fileURLToPath(path.dirname(
   import.meta.resolve('@vercel/next.js/packages/font/package.json'),
-);
-const nextFontDirPath = Bun.fileURLToPath(nextFontDir);
+));
 const distDir = path.join(cwd, 'dist');
 
 await fs.rm(path.join(cwd, 'dist'), { recursive: true, force: true });
 
 let start = performance.now();
 await bundle(
-  path.resolve(nextFontDirPath, 'fontkit.js'),
+  path.resolve(nextFontDir, 'fontkit.js'),
   Object.assign({}, config, {
     cwd: process.cwd(),
     file: path.join('dist', 'fontkit.js'),
@@ -38,12 +37,9 @@ await bundle(
 
 
 const files = await glob('src/**/*.ts', {
-  cwd: nextFontDirPath,
+  cwd: nextFontDir,
   ignore: ['src/**/*.test.ts'],
 });
-
-console.log('nextFontDir', nextFontDir)
-console.log('files', files)
 
 
 const exports = Object.fromEntries(
@@ -52,7 +48,7 @@ const exports = Object.fromEntries(
     const ext = (ext: string) =>
       path.join(
         path.relative(
-          nextFontDirPath,
+          nextFontDir,
           path.join(distDir, noSrc.replace(/\.ts$/, ext)),
         ),
       );
@@ -67,14 +63,11 @@ const exports = Object.fromEntries(
   }),
 );
 
-console.log(exports);
-throw new Error('stop');
-
 start = performance.now();
 await bundle(
   '',
   Object.assign({}, config, {
-    cwd: nextFontDirPath,
+    cwd: nextFontDir,
     pkg: {
       types: undefined,
       exports,
