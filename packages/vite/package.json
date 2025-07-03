@@ -2,6 +2,7 @@
   "name": "@next-font/vite",
   "type": "module",
   "version": "0.0.1-canary.0",
+  "license": "BSD-2-Clause",
   "files": [
     "dist"
   ],
