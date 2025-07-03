@@ -1,3 +1,5 @@
+import { parse } from 'shell-quote';
+
 interface CommandOptions {
   currentDir?: string;
   dryRun?: boolean;
@@ -80,7 +82,7 @@ const prepareCommand = (
   command: string,
   { currentDir, dryRun, quiet }: CommandOptions = {},
 ) => {
-  const cmd = Bun.$`${command.split(' ')}`;
+  const cmd = Bun.$`${parse(command)}`;
 
   if (currentDir) {
     cmd.cwd(currentDir);
