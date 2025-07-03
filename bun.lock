@@ -22,7 +22,7 @@
     },
     "packages/next-font": {
       "name": "next-font",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "devDependencies": {
         "@next/font": "canary",
         "@types/fontkit": "^2.0.8",
