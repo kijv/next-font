@@ -1,21 +1,21 @@
 #!/usr/bin/env bun
 
-import { cac } from "cac";
+import { cac } from 'cac';
 import {
   isVersionType,
   publishWorkspace,
   runBump,
   VERSION_TYPE,
-} from "./workspace";
+} from './workspace';
 
-const cli = cac("xtask");
+const cli = cac('xtask');
 
 cli
-  .command("workspace [...NAMES]", "Manage packages in workspace")
-  .option("--publish", "publish npm packages in workspace")
-  .option("--bump", "bump new version for npm package in workspace")
-  .option("--semver <VERSION_TYPE>", "semver increment")
-  .option("--dry-run", "dry run all operations")
+  .command('workspace [...NAMES]', 'Manage packages in workspace')
+  .option('--publish', 'publish npm packages in workspace')
+  .option('--bump', 'bump new version for npm package in workspace')
+  .option('--semver <VERSION_TYPE>', 'semver increment')
+  .option('--dry-run', 'dry run all operations')
   // .option('[NAMES]', "the package to bump",)
   .action(
     async (
@@ -25,19 +25,15 @@ cli
         semver?: string;
         dryRun?: boolean;
         publish?: boolean;
-      }
+      },
     ) => {
       if (opts.bump) {
         if (opts.semver != null && !isVersionType(opts.semver)) {
-          console.error(`--semver must be one of ${VERSION_TYPE.join(", ")}`);
+          console.error(`--semver must be one of ${VERSION_TYPE.join(', ')}`);
           return;
         }
         try {
-          await runBump(
-            new Set(names),
-            opts.semver,
-            opts.dryRun
-          );
+          await runBump(new Set(names), opts.semver, opts.dryRun);
         } catch (error) {
           console.error(error instanceof Error ? error.message : String(error));
         }
@@ -48,7 +44,7 @@ cli
           console.error(error instanceof Error ? error.message : String(error));
         }
       }
-    }
+    },
   );
 
 cli.help();
