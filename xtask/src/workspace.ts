@@ -166,7 +166,7 @@ export async function runBump(
   }
 
   // 5. Update lockfile, git add, commit, tag
-  await createCommand(`pnpm install`).dryRun(dryRun).execute();
+  await createCommand(`${pm!.name} install`).dryRun(dryRun).execute();
   await createCommand(`git add .`).dryRun(dryRun).execute();
 
   const tagsMessage = tagsToApply.map((s) => `- ${s}`).join('\n');
