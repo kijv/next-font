@@ -1,8 +1,19 @@
+diff --git a/node_modules/bunchee/.bun-tag-14c479965d44b40 b/.bun-tag-14c479965d44b40
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/dist/index.js b/dist/index.js
-index a7a6d72d86dea795958c48148b101382b33c06c0..23f935f866c7c675e7e11af2a2f87d98b40263a1 100644
+index a7a6d72d86dea795958c48148b101382b33c06c0..c2b22517b035d241f8188f5ce3980ccf1ad42aeb 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -1947,7 +1947,7 @@ async function bundle(cliEntryPath, { cwd: _cwd, onSuccess, ...options } = {}) {
+@@ -985,6 +985,7 @@ function createOutputState({ entries }) {
+                     const dir = options.dir || path__default.default.dirname(options.file);
+                     Object.entries(bundle).forEach(([fileName, chunk])=>{
+                         const filePath = path__default.default.join(dir, fileName);
++                        console.log(filePath)
+                         if (chunk.type !== 'chunk') {
+                             return;
+                         }
+@@ -1947,7 +1948,7 @@ async function bundle(cliEntryPath, { cwd: _cwd, onSuccess, ...options } = {}) {
      assignDefault(options, 'format', 'esm');
      assignDefault(options, 'minify', false);
      assignDefault(options, 'target', 'es2015');
