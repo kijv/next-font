@@ -1,6 +1,6 @@
 ## Next Font for Vite
 
-`next/font` (`next-font`) for Vite projects
+`next/font` (or [`next-font`](https://npmjs.org/package/next-font)) for Vite projects
 
 ### Install
 
@@ -20,3 +20,5 @@ export default defineConfig({
   plugins: [nextFont()],
 })
 ```
+
+> You can use `next/font`, `@next/font`, or `next-font` when loading fonts, and it will work with this plugin
