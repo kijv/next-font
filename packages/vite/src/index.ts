@@ -1,7 +1,11 @@
-// @ts-ignore
-
 import path from 'node:path';
 import { dataToEsm, normalizePath } from '@rollup/pluginutils';
+import {
+  renderAssetUrlInJS,
+  //   assetUrlRE,
+  //   publicAssetUrlRE,
+  //   publicAssetUrlCache,
+} from '@vitejs/vite/packages/vite/src/node/plugins/asset';
 import escodegen from 'escodegen-wallaby';
 import MagicString from 'magic-string';
 import {
@@ -14,6 +18,10 @@ import { visit } from './ast/transform';
 import type { FontLoader } from './declarations';
 import { compileTargetCss } from './target-css';
 import { importResolve, removeQuerySuffix, tryCatch } from './utils';
+
+// import { encodeURIPath } from "@vitejs/vite/packages/vite/src/node/utils";
+// import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
+// import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
 
 const plugin = (): PluginOption[] => {
   const rewriteNextFontImport = {
@@ -193,7 +201,7 @@ const plugin = (): PluginOption[] => {
       apply: 'build',
       enforce: 'post',
       async renderChunk(code, chunk, opts) {
-        let chunkCSS = Array.from(styles.values()).join();
+        const chunkCSS = Array.from(styles.values()).join();
 
         function ensureFileExt(name: string, ext: string) {
           return normalizePath(
@@ -235,7 +243,6 @@ const plugin = (): PluginOption[] => {
               // But because entry chunk can be imported by dynamic import,
               // we shouldn't remove the inlined CSS. (#10285)
 
-              chunkCSS = await finalizeCss(chunkCSS, true, config);
               let cssString = JSON.stringify(chunkCSS);
               cssString =
                 renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() ||
@@ -267,11 +274,81 @@ const plugin = (): PluginOption[] => {
               s.appendRight(injectionPoint, injectCode);
             }
           } else {
+            /*
+            // @ts-expect-error
+            const publicAssetUrlMap = publicAssetUrlCache.get(config!)!;
+
+            // resolve asset URL placeholders to their built file URLs
+            const resolveAssetUrlsInCss = (
+              chunkCSS: string,
+              cssAssetName: string
+            ) => {
+              const encodedPublicUrls = config?.command === "build";
+
+              const relative = config?.base === "./" || config?.base === "";
+              const cssAssetDirname =
+                encodedPublicUrls || relative
+                  ? slash(getCssAssetDirname(cssAssetName))
+                  : undefined;
+
+              const toRelative = (filename: string) => {
+                // relative base + extracted CSS
+                const relativePath = normalizePath(
+                  path.relative(cssAssetDirname!, filename)
+                );
+                return relativePath[0] === "."
+                  ? relativePath
+                  : "./" + relativePath;
+              };
+
+              // replace asset url references with resolved url.
+              chunkCSS = chunkCSS.replace(
+                assetUrlRE,
+                (_, fileHash, postfix = "") => {
+                  const filename = this.getFileName(fileHash) + postfix;
+                  chunk.viteMetadata!.importedAssets.add(cleanUrl(filename));
+                  return encodeURIPath(
+                    toOutputFilePathInCss(
+                      filename,
+                      "asset",
+                      cssAssetName,
+                      "css",
+                      // @ts-expect-error
+                      config,
+                      toRelative
+                    )
+                  );
+                }
+              );
+              // resolve public URL from CSS paths
+              if (encodedPublicUrls) {
+                const relativePathToPublicFromCSS = normalizePath(
+                  path.relative(cssAssetDirname!, "")
+                );
+                chunkCSS = chunkCSS.replace(publicAssetUrlRE, (_, hash) => {
+                  const publicUrl = publicAssetUrlMap.get(hash)!.slice(1);
+                  return encodeURIPath(
+                    toOutputFilePathInCss(
+                      publicUrl,
+                      "public",
+                      cssAssetName,
+                      "css",
+                      // @ts-ignore
+                      config!,
+                      () => `${relativePathToPublicFromCSS}/${publicUrl}`
+                    )
+                  );
+                });
+              }
+              return chunkCSS;
+            };
+
             // resolve public URL from CSS paths, we need to use absolute paths
             chunkCSS = resolveAssetUrlsInCss(chunkCSS, getCssBundleName());
             // finalizeCss is called for the aggregated chunk in generateBundle
 
             chunkCSSMap.set(chunk.fileName, chunkCSS);
+            */
           }
         }
 
