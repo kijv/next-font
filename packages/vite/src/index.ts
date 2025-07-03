@@ -42,7 +42,7 @@ const plugin = (): PluginOption[] => {
     'next/font/google': 'next-font/google',
     'next/font/local': 'next-font/local',
   };
-  const importedLoaders = ["next-font/google", "next-font/local"];
+  const importedLoaders = ['next-font/google', 'next-font/local'];
   const fontLoaders: [string, Promise<FontLoader>][] = [
     [
       "next-font/google/target.css",
