@@ -72,7 +72,7 @@ await bundle(
     },
     _callbacks: {
       async onBuildEnd(a) {
-        console.log(a);
+        console.log(JSON.stringify(a, null, 2));
         console.log(`Built @next/font [${performance.now() - start}ms]`);
       },
     },
