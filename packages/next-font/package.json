@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
     "@next/font": "canary",
-    "@vercel/next.js": "github:vercel/next.js",
+    "@vercel/next.js": "github:vercel/next.js#c66739e",
     "fontkit": "^2.0.4"
   },
   "publishConfig": {

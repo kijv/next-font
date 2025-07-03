@@ -54,7 +54,7 @@ jobs:
       - name: Configure Git
         run: |
           git config --global user.name vvv
-          git config --global user.email 93486795+kijv@users.noreply.github.com
+          git config --global user.email vvv@vvv.org
 
       - name: Prepare branch
         id: prepare-branch
@@ -102,6 +102,13 @@ jobs:
 
       - name: Build
         run: bun run build
+        # env:
+          # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+      - name: Install pnpm
+        run: |
+          bun i -g pnpm
 
       - name: Publish
         run: |

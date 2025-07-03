@@ -1,6 +1,6 @@
 ## Next Font
 
-Derived from `@next/font` for wider usage in React projects.
+Derived from `@next/font`.
 
 ### Install
 
