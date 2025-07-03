@@ -115,6 +115,7 @@ jobs:
           bun xtask workspace $ARGS
         env:
           NPM_TOKEN: ${{ secrets.VVV_NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
 
   pull-request:
     name: Pull Request
@@ -131,6 +132,11 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ needs.stage.outputs.stage_branch }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name vvv
+          git config --global user.email vvv@vvv.org
 
       - name: Create pull request
         uses: thomaseizinger/create-pull-request@master
