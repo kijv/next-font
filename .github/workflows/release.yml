@@ -102,9 +102,9 @@ jobs:
 
       - name: Build
         run: bun run build
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+        # env:
+          # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
       - name: Install pnpm
         run: |
