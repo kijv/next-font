@@ -36,10 +36,15 @@ await bundle(
   }),
 );
 
+
 const files = await glob('src/**/*.ts', {
   cwd: nextFontDir,
   ignore: ['src/**/*.test.ts'],
 });
+
+console.log('nextFontDir', nextFontDir)
+console.log('files', files)
+
 
 const exports = Object.fromEntries(
   files.map((file) => {
