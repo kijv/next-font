@@ -62,6 +62,9 @@ const exports = Object.fromEntries(
   }),
 );
 
+console.log(exports);
+throw new Error('stop');
+
 start = performance.now();
 await bundle(
   '',
