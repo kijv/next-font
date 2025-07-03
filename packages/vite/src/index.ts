@@ -17,7 +17,20 @@ import {
   //   assetUrlRE,
   //   publicAssetUrlRE,
   //   publicAssetUrlCache,
-} from "@vitejs/vite/packages/vite/src/node/plugins/asset";
+} from '@vitejs/vite/packages/vite/src/node/plugins/asset';
+import escodegen from 'escodegen-wallaby';
+import MagicString from 'magic-string';
+import {
+  isCSSRequest,
+  type PluginOption,
+  type ResolvedConfig,
+  type ViteDevServer,
+} from 'vite';
+import { visit } from './ast/transform';
+import type { FontLoader } from './declarations';
+import { compileTargetCss } from './target-css';
+import { importResolve, removeQuerySuffix, tryCatch } from './utils';
+
 // import { encodeURIPath } from "@vitejs/vite/packages/vite/src/node/utils";
 // import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
 // import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
