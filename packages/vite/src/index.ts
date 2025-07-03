@@ -1,17 +1,5 @@
 import path from 'node:path';
 import { dataToEsm, normalizePath } from '@rollup/pluginutils';
-import escodegen from 'escodegen-wallaby';
-import MagicString from 'magic-string';
-import {
-  isCSSRequest,
-  type PluginOption,
-  type ResolvedConfig,
-  type ViteDevServer,
-} from 'vite';
-import { visit } from './ast/transform';
-import type { FontLoader } from './declarations';
-import { compileTargetCss } from './target-css';
-import { importResolve, removeQuerySuffix, tryCatch } from './utils';
 import {
   renderAssetUrlInJS,
   //   assetUrlRE,
@@ -213,7 +201,7 @@ const plugin = (): PluginOption[] => {
       apply: 'build',
       enforce: 'post',
       async renderChunk(code, chunk, opts) {
-        let chunkCSS = Array.from(styles.values()).join();
+        const chunkCSS = Array.from(styles.values()).join();
 
         function ensureFileExt(name: string, ext: string) {
           return normalizePath(
