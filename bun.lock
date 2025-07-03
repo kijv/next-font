@@ -22,7 +22,7 @@
     },
     "packages/next-font": {
       "name": "next-font",
-      "version": "0.0.1-canary.0",
+      "version": "1.0.0",
       "devDependencies": {
         "@next/font": "canary",
         "@types/fontkit": "^2.0.8",
@@ -32,7 +32,7 @@
     },
     "packages/vite": {
       "name": "@next-font/vite",
-      "version": "0.0.1-canary.0",
+      "version": "1.0.0",
       "dependencies": {
         "postcss": "^8.5.6",
       },
@@ -344,7 +344,7 @@
 
     "@types/webpack-sources": ["@types/webpack-sources@3.2.3", "", { "dependencies": { "@types/node": "*", "@types/source-list-map": "*", "source-map": "^0.7.3" } }, "sha512-4nZOdMwSPHZ4pTEZzSp0AsTM4K7Qmu40UKW4tJDiOVs20UzYF9l+qUe4s0ftfN0pin06n+5cWWDJXH+sbhAiDw=="],
 
-    "@vercel/next.js": ["nextjs-project@github:vercel/next.js#ac393c2", {}, "vercel-next.js-ac393c2"],
+    "@vercel/next.js": ["nextjs-project@github:vercel/next.js#2db64b4", {}, "vercel-next.js-2db64b4"],
 
     "@vitest/expect": ["@vitest/expect@3.2.4", "", { "dependencies": { "@types/chai": "^5.2.2", "@vitest/spy": "3.2.4", "@vitest/utils": "3.2.4", "chai": "^5.2.0", "tinyrainbow": "^2.0.0" } }, "sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig=="],
 
