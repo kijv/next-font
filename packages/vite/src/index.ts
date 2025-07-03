@@ -37,10 +37,10 @@ import { importResolve, removeQuerySuffix, tryCatch } from './utils';
 
 const plugin = (): PluginOption[] => {
   const rewriteNextFontImport = {
-    "@next/font/google": "next-font/google",
-    "@next/font/local": "next-font/local",
-    "next/font/google": "next-font/google",
-    "next/font/local": "next-font/local",
+    '@next/font/google': 'next-font/google',
+    '@next/font/local': 'next-font/local',
+    'next/font/google': 'next-font/google',
+    'next/font/local': 'next-font/local',
   };
   const importedLoaders = ["next-font/google", "next-font/local"];
   const fontLoaders: [string, Promise<FontLoader>][] = [
