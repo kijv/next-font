@@ -38,7 +38,7 @@ await bundle(
 
 
 const files = await glob('src/**/*.ts', {
-  cwd: nextFontDir,
+  cwd: nextFontDirPath,
   ignore: ['src/**/*.test.ts'],
 });
 
