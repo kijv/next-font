@@ -1,17 +1,17 @@
-import path from "node:path";
-import { dataToEsm, normalizePath } from "@rollup/pluginutils";
-import escodegen from "escodegen-wallaby";
-import MagicString from "magic-string";
+import path from 'node:path';
+import { dataToEsm, normalizePath } from '@rollup/pluginutils';
+import escodegen from 'escodegen-wallaby';
+import MagicString from 'magic-string';
 import {
   isCSSRequest,
   type PluginOption,
   type ResolvedConfig,
   type ViteDevServer,
-} from "vite";
-import { visit } from "./ast/transform";
-import type { FontLoader } from "./declarations";
-import { compileTargetCss } from "./target-css";
-import { importResolve, removeQuerySuffix, tryCatch } from "./utils";
+} from 'vite';
+import { visit } from './ast/transform';
+import type { FontLoader } from './declarations';
+import { compileTargetCss } from './target-css';
+import { importResolve, removeQuerySuffix, tryCatch } from './utils';
 import {
   renderAssetUrlInJS,
   //   assetUrlRE,
@@ -45,12 +45,12 @@ const plugin = (): PluginOption[] => {
   const importedLoaders = ['next-font/google', 'next-font/local'];
   const fontLoaders: [string, Promise<FontLoader>][] = [
     [
-      "next-font/google/target.css",
-      import("./google").then((mod) => mod.default),
+      'next-font/google/target.css',
+      import('./google').then((mod) => mod.default),
     ],
     [
-      "next-font/local/target.css",
-      import("./local").then((mod) => mod.default),
+      'next-font/local/target.css',
+      import('./local').then((mod) => mod.default),
     ],
   ] as const;
   const loaderCache = {
@@ -76,8 +76,8 @@ const plugin = (): PluginOption[] => {
 
   return [
     {
-      name: "next-font:scan",
-      enforce: "pre",
+      name: 'next-font:scan',
+      enforce: 'pre',
       configureServer(server) {
         servers.push(server);
       },
@@ -88,7 +88,7 @@ const plugin = (): PluginOption[] => {
       },
     },
     {
-      name: "next-font:transform",
+      name: 'next-font:transform',
       async transform(code, id) {
         if (!/\.(?:j|t)sx?$|\.mjs$/.test(id)) return null;
 
@@ -111,11 +111,11 @@ const plugin = (): PluginOption[] => {
 
         if (!changed) return;
 
-        const s = new MagicString("");
+        const s = new MagicString('');
 
         for (const node of ast.body) {
           s.append(escodegen.generate(node));
-          s.append("\n");
+          s.append('\n');
         }
         return {
           code: s.toString(),
@@ -123,8 +123,8 @@ const plugin = (): PluginOption[] => {
       },
     },
     {
-      name: "next-font:generate:pre",
-      enforce: "pre",
+      name: 'next-font:generate:pre',
+      enforce: 'pre',
       configureServer(server) {
         return () => {
           server.middlewares.use((req, res, next) => {
@@ -138,11 +138,11 @@ const plugin = (): PluginOption[] => {
       async load(this, id, opts) {
         if (!/\.css(?:$|\?)/.test(id)) return null;
         const { data: resolvedId, error } = await tryCatch(
-          importResolve(removeQuerySuffix(id))
+          importResolve(removeQuerySuffix(id)),
         );
         if (error) return null;
         const pair = fontLoaders.find(
-          (id) => import.meta.resolve(id[0]) === resolvedId
+          (id) => import.meta.resolve(id[0]) === resolvedId,
         );
         if (!pair) return null;
 
@@ -152,7 +152,7 @@ const plugin = (): PluginOption[] => {
           loaderCache,
           fileCache,
           ctx: this,
-          isDev: config?.command === "serve",
+          isDev: config?.command === 'serve',
           isServer: opts?.ssr ?? false,
           config: config!,
         });
@@ -161,8 +161,8 @@ const plugin = (): PluginOption[] => {
       },
     },
     {
-      name: "next-font:generate:post",
-      enforce: "post",
+      name: 'next-font:generate:post',
+      enforce: 'post',
       async transform(this, _code, id, opts) {
         const targetCss = targetCssCache.get(id);
 
@@ -178,10 +178,10 @@ const plugin = (): PluginOption[] => {
             ? new MagicString(css).generateMap({ hires: true })
             : undefined;
 
-          if (config?.command === "serve" && !opts?.ssr) {
+          if (config?.command === 'serve' && !opts?.ssr) {
             const code = [
               `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(
-                path.posix.join(config.base, "/@vite/client")
+                path.posix.join(config.base, '/@vite/client'),
               )}`,
               `const __vite__id = ${JSON.stringify(id)}`,
               `const __vite__css = ${JSON.stringify(css)}`,
@@ -189,9 +189,9 @@ const plugin = (): PluginOption[] => {
               // css modules exports change on edit so it can't self accept
               `${
                 modulesCode ||
-                "import.meta.hot.accept()\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))"
+                'import.meta.hot.accept()\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))'
               }`,
-            ].join("\n");
+            ].join('\n');
             return {
               code,
               map,
@@ -209,15 +209,15 @@ const plugin = (): PluginOption[] => {
       },
     },
     {
-      name: "next-font:generate:build",
-      apply: "build",
-      enforce: "post",
+      name: 'next-font:generate:build',
+      apply: 'build',
+      enforce: 'post',
       async renderChunk(code, chunk, opts) {
         let chunkCSS = Array.from(styles.values()).join();
 
         function ensureFileExt(name: string, ext: string) {
           return normalizePath(
-            path.format({ ...path.parse(name), base: undefined, ext })
+            path.format({ ...path.parse(name), base: undefined, ext }),
           );
         }
 
@@ -225,8 +225,8 @@ const plugin = (): PluginOption[] => {
 
         if (chunkCSS) {
           if (this.environment.config.build.cssCodeSplit) {
-            if (opts.format === "es" || opts.format === "cjs") {
-              const cssFullAssetName = ensureFileExt(chunk.name, ".css");
+            if (opts.format === 'es' || opts.format === 'cjs') {
+              const cssFullAssetName = ensureFileExt(chunk.name, '.css');
               // if facadeModuleId doesn't exist or doesn't have a CSS extension,
               // that means a JS entry file imports a CSS file.
               // in this case, only use the filename for the CSS chunk name like JS chunks.
@@ -238,15 +238,15 @@ const plugin = (): PluginOption[] => {
 
               // emit corresponding css file
               const referenceId = this.emitFile({
-                type: "asset",
+                type: 'asset',
                 name: cssAssetName,
                 // originalFileName,
                 source: chunkCSS,
               });
               chunk.viteMetadata!.importedCss.add(
-                this.getFileName(referenceId)
+                this.getFileName(referenceId),
               );
-            } else if (this.environment.config.consumer === "client") {
+            } else if (this.environment.config.consumer === 'client') {
               // legacy build and inline css
 
               // Entry chunk CSS will be collected into `chunk.viteMetadata.importedCss`
@@ -265,12 +265,12 @@ const plugin = (): PluginOption[] => {
                 `${style}.textContent = ${cssString};` +
                 `document.head.appendChild(${style});`;
               let injectionPoint: number;
-              const wrapIdx = code.indexOf("System.register");
+              const wrapIdx = code.indexOf('System.register');
               const singleQuoteUseStrict = `'use strict';`;
               const doubleQuoteUseStrict = `"use strict";`;
               if (wrapIdx >= 0) {
-                const executeFnStart = code.indexOf("execute:", wrapIdx);
-                injectionPoint = code.indexOf("{", executeFnStart) + 1;
+                const executeFnStart = code.indexOf('execute:', wrapIdx);
+                injectionPoint = code.indexOf('{', executeFnStart) + 1;
               } else if (code.includes(singleQuoteUseStrict)) {
                 injectionPoint =
                   code.indexOf(singleQuoteUseStrict) +
@@ -280,7 +280,7 @@ const plugin = (): PluginOption[] => {
                   code.indexOf(doubleQuoteUseStrict) +
                   doubleQuoteUseStrict.length;
               } else {
-                throw new Error("Injection point for inlined CSS not found");
+                throw new Error('Injection point for inlined CSS not found');
               }
               s ||= new MagicString(code);
               s.appendRight(injectionPoint, injectCode);
@@ -368,7 +368,7 @@ const plugin = (): PluginOption[] => {
           if (config?.build.sourcemap) {
             return {
               code: s.toString(),
-              map: s.generateMap({ hires: "boundary" }),
+              map: s.generateMap({ hires: 'boundary' }),
             };
           } else {
             return { code: s.toString() };
