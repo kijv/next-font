@@ -184,15 +184,10 @@ export async function runBump(
 }
 
 export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
-  {
-    const commitMessage = await createCommand('git log -1 --pretty=%B')
-      .dryRun(dryRun)
-      .errorMessage('Get commit hash failed')
-      .outputString();
-  }
-  const commitMessage = `chore: release npm package
-
-  - next-font@1.0.1`;
+  const commitMessage = await createCommand('git log -1 --pretty=%B')
+    .dryRun(dryRun)
+    .errorMessage('Get commit hash failed')
+    .outputString();
 
   const tags = commitMessage
     .trim()

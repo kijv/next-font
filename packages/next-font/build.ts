@@ -11,9 +11,11 @@ const config: BundleConfig = {
 };
 
 const cwd = import.meta.dirname;
-const nextFontDir = Bun.fileURLToPath(path.dirname(
-  import.meta.resolve('@vercel/next.js/packages/font/package.json'),
-));
+const nextFontDir = Bun.fileURLToPath(
+  path.dirname(
+    import.meta.resolve('@vercel/next.js/packages/font/package.json'),
+  ),
+);
 const distDir = path.join(cwd, 'dist');
 
 await fs.rm(path.join(cwd, 'dist'), { recursive: true, force: true });
