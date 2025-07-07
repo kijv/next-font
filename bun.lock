@@ -24,7 +24,7 @@
     },
     "packages/next-font": {
       "name": "next-font",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "devDependencies": {
         "@next/font": "canary",
         "@types/fontkit": "^2.0.8",
@@ -34,7 +34,7 @@
     },
     "packages/vite": {
       "name": "@next-font/vite",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "dependencies": {
         "next-font": "workspace:*",
         "postcss": "^8.5.6",

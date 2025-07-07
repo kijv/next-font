@@ -1,11 +1,5 @@
 import path from 'node:path';
 import { dataToEsm, normalizePath } from '@rollup/pluginutils';
-import {
-  renderAssetUrlInJS,
-  //   assetUrlRE,
-  //   publicAssetUrlRE,
-  //   publicAssetUrlCache,
-} from '@vitejs/vite/packages/vite/src/node/plugins/asset';
 import escodegen from 'escodegen-wallaby';
 import MagicString from 'magic-string';
 import {
@@ -244,9 +238,9 @@ const plugin = (): PluginOption[] => {
               // we shouldn't remove the inlined CSS. (#10285)
 
               let cssString = JSON.stringify(chunkCSS);
-              cssString =
-                renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() ||
-                cssString;
+              // cssString =
+              //   renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() ||
+              //   cssString;
               const style = `__vite_style__`;
               const injectCode =
                 `var ${style} = document.createElement('style');` +
