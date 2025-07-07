@@ -1,7 +1,7 @@
 {
   "name": "next-font",
   "type": "module",
-  "version": "1.0.2-canary.0",
+  "version": "1.0.3",
   "license": "BSD-2-Clause",
   "files": [
     "dist",
