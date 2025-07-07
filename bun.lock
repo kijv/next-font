@@ -34,7 +34,7 @@
     },
     "packages/vite": {
       "name": "@next-font/vite",
-      "version": "1.0.1-canary.0",
+      "version": "1.0.1",
       "dependencies": {
         "next-font": "workspace:*",
         "postcss": "^8.5.6",
