@@ -104,7 +104,7 @@ jobs:
 
       - name: .npmrc
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.VVV_NPM_TOKEN }}" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.VVV_NPM_TOKEN }}" > .npmrc && echo "provenance=true" >> .npmrc
 
       - name: Publish
         run: |
