@@ -3,6 +3,7 @@ import { dataToEsm, normalizePath } from '@rollup/pluginutils';
 import escodegen from 'escodegen-wallaby';
 import MagicString from 'magic-string';
 import {
+  type HtmlTagDescriptor,
   isCSSRequest,
   type PluginOption,
   type ResolvedConfig,
@@ -11,7 +12,12 @@ import {
 import { visit } from './ast/transform';
 import type { FontLoader } from './declarations';
 import { compileTargetCss } from './target-css';
-import { importResolve, removeQuerySuffix, tryCatch } from './utils';
+import {
+  encodeURIPath,
+  importResolve,
+  removeQuerySuffix,
+  tryCatch,
+} from './utils';
 
 // import { encodeURIPath } from "@vitejs/vite/packages/vite/src/node/utils";
 // import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
@@ -54,7 +60,7 @@ const plugin = (): PluginOption[] => {
 
   const styles = new Map<string, string>();
   // let isSSR = false;
-  let minify = false;
+  // let minify = false;
 
   return [
     {
@@ -65,7 +71,7 @@ const plugin = (): PluginOption[] => {
       },
       async configResolved(resolvedConfig) {
         config = resolvedConfig;
-        minify = config.build.cssMinify !== false;
+        // minify = config.build.cssMinify !== false;
         // isSSR = config.build.ssr !== false && config.build.ssr !== undefined;
       },
     },
@@ -194,6 +200,25 @@ const plugin = (): PluginOption[] => {
       name: 'next-font:generate:build',
       apply: 'build',
       enforce: 'post',
+      transformIndexHtml() {
+        return Array.from(fileCache.keys()).map((fontFilename) => {
+          const ext = /\.(woff|woff2|eot|ttf|otf)$/.exec(fontFilename)![1];
+          const type = `font/${ext}`;
+          const href = `${config!.build.assetsDir}/_next/${encodeURIPath(fontFilename)}`;
+
+          return {
+            tag: 'link',
+            injectTo: 'head-prepend',
+            attrs: {
+              as: 'font',
+              rel: 'preload',
+              crossorigin: 'anonymous',
+              href,
+              type,
+            },
+          } as HtmlTagDescriptor;
+        });
+      },
       async renderChunk(code, chunk, opts) {
         const chunkCSS = Array.from(styles.values()).join();
 
@@ -237,7 +262,7 @@ const plugin = (): PluginOption[] => {
               // But because entry chunk can be imported by dynamic import,
               // we shouldn't remove the inlined CSS. (#10285)
 
-              let cssString = JSON.stringify(chunkCSS);
+              const cssString = JSON.stringify(chunkCSS);
               // cssString =
               //   renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() ||
               //   cssString;
