@@ -1,5 +1,6 @@
 {
   "name": "next-font",
+  "description": "@next/font (next/font) replacement",
   "type": "module",
   "version": "1.0.4",
   "license": "BSD-2-Clause",
@@ -35,5 +36,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "repository": "https://github.com/kijv/next-font"
 }

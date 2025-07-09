@@ -1,5 +1,6 @@
 {
   "name": "@next-font/vite",
+  "description": "Vite plugin for next/font (@next/font)",
   "type": "module",
   "version": "1.0.4",
   "license": "BSD-2-Clause",
@@ -27,7 +28,6 @@
     "@types/escodegen": "^0.0.10",
     "@types/estree": "^1.0.8",
     "@types/loader-utils": "^2.0.6",
-    "@vitejs/vite": "github:vitejs/vite#v7.0.1",
     "escodegen-wallaby": "^1.6.45",
     "estree-walker": "^3.0.3",
     "loader-utils": "^3.3.1",
@@ -43,5 +43,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "repository": "https://github.com/kijv/next-font"
 }
