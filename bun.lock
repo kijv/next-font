@@ -45,7 +45,6 @@
         "@types/escodegen": "^0.0.10",
         "@types/estree": "^1.0.8",
         "@types/loader-utils": "^2.0.6",
-        "@vitejs/vite": "github:vitejs/vite#v7.0.1",
         "escodegen-wallaby": "^1.6.45",
         "estree-walker": "^3.0.3",
         "loader-utils": "^3.3.1",
@@ -356,8 +355,6 @@
     "@types/webpack-sources": ["@types/webpack-sources@3.2.3", "", { "dependencies": { "@types/node": "*", "@types/source-list-map": "*", "source-map": "^0.7.3" } }, "sha512-4nZOdMwSPHZ4pTEZzSp0AsTM4K7Qmu40UKW4tJDiOVs20UzYF9l+qUe4s0ftfN0pin06n+5cWWDJXH+sbhAiDw=="],
 
     "@vercel/next.js": ["nextjs-project@github:vercel/next.js#c66739e", {}, "vercel-next.js-c66739e"],
-
-    "@vitejs/vite": ["@vitejs/vite-monorepo@github:vitejs/vite#0021ee2", {}, "vitejs-vite-0021ee2"],
 
     "@vitest/expect": ["@vitest/expect@3.2.4", "", { "dependencies": { "@types/chai": "^5.2.2", "@vitest/spy": "3.2.4", "@vitest/utils": "3.2.4", "chai": "^5.2.0", "tinyrainbow": "^2.0.0" } }, "sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig=="],
 
