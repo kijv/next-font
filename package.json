@@ -8,7 +8,9 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "lint": "biome check",
+    "biome:fix": "biome check --write"
   },
   "devDependencies": {
     "@next/font": "canary",
