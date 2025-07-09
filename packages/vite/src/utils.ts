@@ -86,13 +86,13 @@ export const parseDataQuery = <T>(url: string) => {
  * Encodes the URI path portion (ignores part after ? or #)
  */
 export function encodeURIPath(uri: string): string {
-  if (uri.startsWith('data:')) return uri
-  const filePath = cleanUrl(uri)
-  const postfix = filePath !== uri ? uri.slice(filePath.length) : ''
-  return encodeURI(filePath) + postfix
+  if (uri.startsWith('data:')) return uri;
+  const filePath = cleanUrl(uri);
+  const postfix = filePath !== uri ? uri.slice(filePath.length) : '';
+  return encodeURI(filePath) + postfix;
 }
 
-const postfixRE = /[?#].*$/
+const postfixRE = /[?#].*$/;
 export function cleanUrl(url: string): string {
-  return url.replace(postfixRE, '')
+  return url.replace(postfixRE, '');
 }

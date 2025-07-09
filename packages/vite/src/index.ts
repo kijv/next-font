@@ -3,8 +3,8 @@ import { dataToEsm, normalizePath } from '@rollup/pluginutils';
 import escodegen from 'escodegen-wallaby';
 import MagicString from 'magic-string';
 import {
-  isCSSRequest,
   type HtmlTagDescriptor,
+  isCSSRequest,
   type PluginOption,
   type ResolvedConfig,
   type ViteDevServer,
@@ -215,7 +215,7 @@ const plugin = (): PluginOption[] => {
               crossorigin: 'anonymous',
               href,
               type,
-            }
+            },
           } as HtmlTagDescriptor;
         });
       },
@@ -262,7 +262,7 @@ const plugin = (): PluginOption[] => {
               // But because entry chunk can be imported by dynamic import,
               // we shouldn't remove the inlined CSS. (#10285)
 
-              let cssString = JSON.stringify(chunkCSS);
+              const cssString = JSON.stringify(chunkCSS);
               // cssString =
               //   renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() ||
               //   cssString;
