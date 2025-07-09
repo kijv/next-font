@@ -81,3 +81,18 @@ export const parseDataQuery = <T>(url: string) => {
   const query = queryString.parse(getQuerySuffix(url));
   return JSON.parse(query.data as string) as T;
 };
+
+/**
+ * Encodes the URI path portion (ignores part after ? or #)
+ */
+export function encodeURIPath(uri: string): string {
+  if (uri.startsWith('data:')) return uri
+  const filePath = cleanUrl(uri)
+  const postfix = filePath !== uri ? uri.slice(filePath.length) : ''
+  return encodeURI(filePath) + postfix
+}
+
+const postfixRE = /[?#].*$/
+export function cleanUrl(url: string): string {
+  return url.replace(postfixRE, '')
+}
