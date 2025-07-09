@@ -2,7 +2,7 @@
   "name": "next-font",
   "description": "@next/font (next/font) replacement",
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "BSD-2-Clause",
   "files": [
     "dist",
