@@ -1,4 +1,5 @@
 import queryString from 'query-string';
+import type { ResolvedConfig } from 'vite';
 
 export const getQuerySuffix = (id: string) => {
   const queryStart = id.indexOf('?');
@@ -79,7 +80,11 @@ export const addDataQuery = <T>(url: string, data: T) => {
 
 export const parseDataQuery = <T>(url: string) => {
   const query = queryString.parse(getQuerySuffix(url));
-  return JSON.parse(query.data as string) as T;
+  try {
+    return JSON.parse(query.data as string) as T;
+  } catch {
+    return null;
+  }
 };
 
 /**
@@ -96,3 +101,10 @@ const postfixRE = /[?#].*$/;
 export function cleanUrl(url: string): string {
   return url.replace(postfixRE, '');
 }
+
+export const fontNameToUrl = (
+  fontName: string,
+  viteConfig?: ResolvedConfig | null,
+) => {
+  return [''].concat([viteConfig?.build?.assetsDir, '_next', fontName].filter(Boolean) as string[]).join('/');
+};

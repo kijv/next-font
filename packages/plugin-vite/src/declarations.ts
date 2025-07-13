@@ -1,5 +1,9 @@
 import type { PluginContext } from 'rollup';
 
+export type Mutable<T> = {
+  -readonly [K in keyof T]: T[K];
+};
+
 export type FontLoaderOptions = Omit<
   {
     functionName: string;

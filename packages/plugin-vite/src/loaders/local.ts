@@ -2,8 +2,8 @@ import fs from 'node:fs/promises';
 import { getFallbackMetricsFromFontFile } from 'next-font/dist/local/get-fallback-metrics-from-font-file';
 import { pickFontFileForFallbackGeneration } from 'next-font/dist/local/pick-font-file-for-fallback-generation';
 import { validateLocalFontFunctionCall } from 'next-font/dist/local/validate-local-font-function-call';
-import type { AdjustFontFallback, FontLoader } from './declarations';
-import { createCachedImport } from './utils';
+import type { AdjustFontFallback, FontLoader } from '../declarations';
+import { createCachedImport } from '../utils';
 
 const importFontkit = createCachedImport(() =>
   import('next-font/dist/fontkit').then((mod) => mod.default || mod),

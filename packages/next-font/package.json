@@ -18,20 +18,31 @@
       "import": "./local/index.js",
       "types": "./local/index.d.ts"
     },
+    "./google/loader": {
+      "import": "./google/loader.js",
+      "types": "./google/loader.d.ts"
+    },
+    "./local/loader": {
+      "import": "./local/loader.js",
+      "types": "./local/loader.d.ts"
+    },
     "./google/target.css": "./google/target.css",
     "./local/target.css": "./local/target.css",
+    "./manifest": {
+      "import": "./manifest/index.js",
+      "types": "./manifest/index.d.ts"
+    },
     "./dist/*": {
       "import": "./dist/*.js",
       "types": "./dist/*.d.ts"
     }
   },
   "scripts": {
-    "build": "./build.ts"
+    "build": "bun run ./build.ts"
   },
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
     "@next/font": "canary",
-    "@vercel/next.js": "github:vercel/next.js#c66739e",
     "fontkit": "^2.0.4"
   },
   "publishConfig": {

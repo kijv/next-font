@@ -6,8 +6,8 @@ import { getFontAxes } from 'next-font/dist/google/get-font-axes';
 import { getGoogleFontsUrl } from 'next-font/dist/google/get-google-fonts-url';
 import { validateGoogleFontFunctionCall } from 'next-font/dist/google/validate-google-font-function-call';
 import { nextFontError } from 'next-font/dist/next-font-error';
-import type { AdjustFontFallback, FontLoader } from './declarations';
-import { escapeStringRegexp } from './utils';
+import type { AdjustFontFallback, FontLoader } from '../declarations';
+import { escapeStringRegexp } from '../utils';
 
 const loader: FontLoader = async ({
   functionName,

@@ -5,7 +5,7 @@
 ### Install
 
 ```
-npm install @next-font/vite
+npm install @next-font/plugin-vite
 ```
 
 ### Usage

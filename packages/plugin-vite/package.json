@@ -1,5 +1,5 @@
 {
-  "name": "@next-font/vite",
+  "name": "@next-font/plugin-vite",
   "description": "Vite plugin for next/font (@next/font)",
   "type": "module",
   "version": "1.0.6",
@@ -19,7 +19,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "next-font": "workspace:*",
+    "next-font": "workspace:~",
     "postcss": "^8.5.6"
   },
   "devDependencies": {
@@ -39,7 +39,7 @@
     "vite": "7.0.1"
   },
   "peerDependencies": {
-    "next-font": "workspace:*"
+    "next-font": "workspace:~"
   },
   "publishConfig": {
     "access": "public"

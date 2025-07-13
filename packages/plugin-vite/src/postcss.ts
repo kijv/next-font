@@ -1,98 +1,39 @@
-import path from 'node:path';
-import loaderUtils from 'loader-utils';
 import postcssNextFontPlugin from 'next/dist/build/webpack/loaders/next-font-loader/postcss-next-font.js';
+import loaderUtils from 'loader-utils';
 import type PostCSS from 'postcss';
-import type { ResolvedConfig } from 'vite';
+import queryString from 'query-string';
 import type { FontImportDataQuery } from './ast/transform';
-import type { FontLoader, FontLoaderOptions } from './declarations';
-import { createCachedImport, parseDataQuery } from './utils';
+import type { FontLoader } from './declarations';
+import {
+  createCachedImport,
+  parseDataQuery,
+  removeQuerySuffix,
+} from './utils';
 
-// const importPostcssImport = createCachedImport(() => import('postcss-import'))
 const importPostcssModules = createCachedImport(
   () => import('postcss-modules'),
 );
 const importPostcss = createCachedImport(() => import('postcss'));
 
-export const compileTargetCss = async ({
-  id,
-  fontLoader,
-  ctx,
-  fileCache,
-  loaderCache,
-  isServer,
-  isDev,
-  config,
-}: {
-  id: string;
-  fontLoader: Promise<FontLoader>;
-  fileCache: Map<string, Buffer>;
-  loaderCache: {
-    google?: {
-      css?: Map<string, string | null>;
-      font?: Map<string, string | null>;
-    };
-    local?: {
-      css?: Map<string, string | null>;
-      font?: Map<string, string | null>;
-    };
-  };
-  config: ResolvedConfig;
-} & Pick<FontLoaderOptions, 'isServer' | 'isDev' | 'ctx'>) => {
-  const {
-    path: relativePathFromRoot,
-    import: functionName,
-    arguments: data,
-    variableName,
-  } = parseDataQuery<FontImportDataQuery>(id);
+export const normalizeTargetCssId = (id: string) => {
+  const data = parseDataQuery<FontImportDataQuery>(id);
+  return queryString.stringifyUrl({
+    url: removeQuerySuffix(id),
+    query: { data: data != null ? JSON.stringify(data) : undefined },
+  });
+};
 
-  const emitFontFile: FontLoaderOptions['emitFontFile'] = (
-    content: Buffer,
-    ext: string,
-    preload: boolean,
-    isUsingSizeAdjust?: boolean,
-  ) => {
-    const name = loaderUtils.interpolateName(
-      // @ts-ignore
-      {},
-      `[hash]${isUsingSizeAdjust ? '-s' : ''}${preload ? '.p' : ''}.${ext}`,
-      {
-        content,
-      },
-    );
-
-    const outputPath = `/${config.build.assetsDir}/_next/static/media/${name}`;
-
-    if (!isDev) {
-      ctx.emitFile({
-        type: 'asset',
-        fileName: outputPath.slice(1),
-        source: content,
-      });
-    }
-
-    fileCache.set(outputPath, content);
-    return outputPath;
-  };
-
-  const { css, fallbackFonts, adjustFontFallback, weight, style, variable } =
-    await (await fontLoader)({
-      functionName,
-      variableName,
-      data,
-      emitFontFile,
-      ctx,
-      cache: loaderCache.google,
-      isDev,
-      isServer,
-      id: relativePathFromRoot,
-      resolve: (src) => {
-        return path.join(
-          path.dirname(path.join(config.root, relativePathFromRoot)),
-          src.startsWith('.') ? src : `./${src}`,
-        );
-      },
-    });
-
+export const nextFontPostcss = async (
+  relativePathFromRoot: string,
+  {
+    css,
+    fallbackFonts,
+    weight,
+    style,
+    adjustFontFallback,
+    variable,
+  }: Awaited<ReturnType<FontLoader>>,
+) => {
   // Exports will be exported as is from css-loader instead of a CSS module export
   // const exports: { name: any; value: any }[] = [];
 

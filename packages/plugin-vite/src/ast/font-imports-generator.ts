@@ -1,8 +1,9 @@
+import path from 'node:path';
 import type * as acorn from 'acorn';
 import { walk } from 'estree-walker';
+import queryString from 'query-string';
 import stableHash from 'stable-hash';
 import { DUMMY_SP } from '../constants';
-import { addDataQuery } from '../utils';
 import type { FontImportDataQuery, ProgramNode, State } from './transform';
 import { exprToJson } from './utils';
 
@@ -143,12 +144,15 @@ export class FontImportsGenerator {
           type: 'ImportDeclaration',
           source: {
             type: 'Literal',
-            value: addDataQuery(
-              `${
-                this.remapImports[fontFunction.loader] || fontFunction.loader
-              }/target.css`,
-              queryJson,
-            ),
+            value: queryString.stringifyUrl({
+              url: path.join(
+                this.remapImports[fontFunction.loader] || fontFunction.loader,
+                'target.css',
+              ),
+              query: Object.assign({}, queryJson, {
+                arguments: JSON.stringify(queryJson.arguments),
+              }),
+            }),
             ...DUMMY_SP,
           },
           specifiers: [],

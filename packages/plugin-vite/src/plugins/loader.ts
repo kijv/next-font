@@ -1,46 +1,45 @@
 import path from 'node:path';
-import { dataToEsm, normalizePath } from '@rollup/pluginutils';
-import escodegen from 'escodegen-wallaby';
+import { fileURLToPath } from 'node:url';
+import { dataToEsm } from '@rollup/pluginutils';
+import loaderUtils from 'loader-utils';
 import MagicString from 'magic-string';
+import queryString from 'query-string';
+import type { PluginOption, ResolvedConfig } from 'vite';
+import type { FontImportDataQuery } from '@/ast/transform';
+import type { FontLoader, FontLoaderOptions } from '@/declarations';
+import { nextFontPostcss, normalizeTargetCssId } from '@/postcss';
 import {
-  type HtmlTagDescriptor,
-  isCSSRequest,
-  type PluginOption,
-  type ResolvedConfig,
-  type ViteDevServer,
-} from 'vite';
-import { visit } from './ast/transform';
-import type { FontLoader } from './declarations';
-import { compileTargetCss } from './target-css';
-import {
+  createCachedImport,
   encodeURIPath,
+  fontNameToUrl,
+  getQuerySuffix,
   importResolve,
   removeQuerySuffix,
   tryCatch,
-} from './utils';
+} from '@/utils';
 
-// import { encodeURIPath } from "@vitejs/vite/packages/vite/src/node/utils";
-// import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
-// import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
+const googleLoader = createCachedImport<FontLoader>(() =>
+  import('@/loaders/google').then((mod) => mod.default),
+);
+const localLoader = createCachedImport<FontLoader>(() =>
+  import('@/loaders/local').then((mod) => mod.default),
+);
 
-const plugin = (): PluginOption[] => {
-  const rewriteNextFontImport = {
-    '@next/font/google': 'next-font/google',
-    '@next/font/local': 'next-font/local',
-    'next/font/google': 'next-font/google',
-    'next/font/local': 'next-font/local',
-  };
-  const importedLoaders = ['next-font/google', 'next-font/local'];
-  const fontLoaders: [string, Promise<FontLoader>][] = [
-    [
-      'next-font/google/target.css',
-      import('./google').then((mod) => mod.default),
-    ],
-    [
-      'next-font/local/target.css',
-      import('./local').then((mod) => mod.default),
-    ],
-  ] as const;
+export type OnFinished = (
+  fileToFontNames: Map<string, string[]>,
+) => Promise<void>;
+
+export const nextFontLoaderPlugin = ({
+  fontImports,
+  onFinished,
+}: {
+  fontImports: Record<string, string[]>;
+  onFinished: OnFinished;
+}): PluginOption[] => {
+  let config: ResolvedConfig | null = null;
+
+  const fileToFontNames = new Map<string, string[]>();
+
   const loaderCache = {
     google: {
       css: new Map<string, string | null>(),
@@ -51,111 +50,202 @@ const plugin = (): PluginOption[] => {
       font: new Map<string, string | null>(),
     },
   };
+  const fontLoaders: [
+    string,
+    Promise<FontLoader> | FontLoader,
+    (typeof loaderCache)[keyof typeof loaderCache],
+  ][] = [
+    ['next-font/google/target.css', googleLoader(), loaderCache.google],
+    ['next-font/local/target.css', localLoader(), loaderCache.local],
+  ] as const;
 
-  const targetCssCache = new Map<string, ReturnType<typeof compileTargetCss>>();
-  const fileCache = new Map<string, Buffer>();
+  const targetCssMap = new Map<
+    string,
+    Awaited<ReturnType<typeof nextFontPostcss>>
+  >();
 
-  const servers: ViteDevServer[] = [];
-  let config: ResolvedConfig | null = null;
+  const fontFileMap = new Map<string, Buffer>();
 
-  const styles = new Map<string, string>();
-  // let isSSR = false;
-  // let minify = false;
+  let calledFinished = false;
 
   return [
     {
-      name: 'next-font:scan',
+      name: 'next-fon:scan',
       enforce: 'pre',
-      configureServer(server) {
-        servers.push(server);
-      },
       async configResolved(resolvedConfig) {
         config = resolvedConfig;
-        // minify = config.build.cssMinify !== false;
-        // isSSR = config.build.ssr !== false && config.build.ssr !== undefined;
       },
-    },
-    {
-      name: 'next-font:transform',
-      async transform(code, id) {
-        if (!/\.(?:j|t)sx?$|\.mjs$/.test(id)) return null;
-
-        const parse = async () =>
-          this.parse(code, {
-            jsx: true,
-          });
-
-        const { data: ast, error } = await tryCatch(parse());
-        if (error) {
-          this.error(error);
-        }
-
-        const { changed } = visit({
-          ast,
-          fontLoaders: importedLoaders,
-          id: path.relative(config!.root, id),
-          remapImports: rewriteNextFontImport,
-        });
-
-        if (!changed) return;
-
-        const s = new MagicString('');
-
-        for (const node of ast.body) {
-          s.append(escodegen.generate(node));
-          s.append('\n');
-        }
-        return {
-          code: s.toString(),
-        };
-      },
-    },
-    {
-      name: 'next-font:generate:pre',
-      enforce: 'pre',
       configureServer(server) {
+        console.log('configureServer')
         return () => {
           server.middlewares.use((req, res, next) => {
-            const content = fileCache.get(req.originalUrl!);
+            if (!req.originalUrl) return next();
+
+            const content = fontFileMap.get(req.originalUrl);
             if (content) {
               res.end(content);
             } else next();
           });
         };
-      },
-      async load(this, id, opts) {
-        if (!/\.css(?:$|\?)/.test(id)) return null;
-        const { data: resolvedId, error } = await tryCatch(
-          importResolve(removeQuerySuffix(id)),
-        );
-        if (error) return null;
-        const pair = fontLoaders.find(
-          (id) => import.meta.resolve(id[0]) === resolvedId,
-        );
-        if (!pair) return null;
-
-        const targetCss = compileTargetCss({
-          id,
-          fontLoader: pair[1],
-          loaderCache,
-          fileCache,
-          ctx: this,
-          isDev: config?.command === 'serve',
-          isServer: opts?.ssr ?? false,
-          config: config!,
-        });
-
-        targetCssCache.set(id, targetCss);
-      },
+      }
     },
     {
-      name: 'next-font:generate:post',
-      enforce: 'post',
-      async transform(this, _code, id, opts) {
-        const targetCss = targetCssCache.get(id);
+      name: 'next-font:loader',
+      load: {
+        order: 'pre',
+        async handler(id, opts) {
+          if (!/\.css(?:$|\?)/.test(id)) return;
 
-        if (targetCss) {
-          const { modules, code: css } = await targetCss;
+          const { data: resolvedId, error } = await tryCatch(
+            importResolve(removeQuerySuffix(id)),
+          );
+          if (error) return null;
+          const pair = fontLoaders.find(
+            (id) => import.meta.resolve(id[0]) === resolvedId,
+          );
+          if (!pair) return null;
+
+          const normalizedId = normalizeTargetCssId(id);
+
+          if (targetCssMap.has(normalizedId)) return;
+
+          const isDev = config?.command === 'serve';
+          const fontLoader = await pair[1];
+
+          const tempFileCache = new Map<string, Buffer>();
+
+          const {
+            path: relativePathFromRoot,
+            import: functionName,
+            arguments: stringifiedArguments,
+            variableName,
+          } = queryString.parse(
+            getQuerySuffix(id),
+          ) as unknown as FontImportDataQuery & {
+            arguments: string;
+          };
+
+          const data = JSON.parse(stringifiedArguments);
+
+          const fontNames: string[] = [];
+
+          const emitFontFile: FontLoaderOptions['emitFontFile'] = (
+            content: Buffer,
+            ext: string,
+            preload: boolean,
+            isUsingSizeAdjust?: boolean,
+          ) => {
+            const name = loaderUtils.interpolateName(
+              // @ts-expect-error
+              {},
+              `static/media/[hash]${isUsingSizeAdjust ? '-s' : ''}${preload ? '.p' : ''}.${ext}`,
+              {
+                content,
+              },
+            );
+
+            fontNames.push(name);
+
+            const outputPath = fontNameToUrl(name, config);
+
+            if (!isDev) {
+              this.emitFile({
+                type: 'asset',
+                fileName: outputPath.slice(1),
+                source: content,
+              });
+            } else {
+              fontFileMap.set(outputPath, content);
+            }
+
+            tempFileCache.set(outputPath, content);
+
+            return outputPath;
+          };
+
+          const absPath = path.join(config!.root, relativePathFromRoot);
+
+          const fontData = await fontLoader({
+            functionName,
+            variableName,
+            data,
+            emitFontFile,
+            ctx: this,
+            cache: pair[2],
+            isDev,
+            isServer: opts?.ssr ?? false,
+            id: relativePathFromRoot,
+            resolve: (src) => {
+              return path.join(
+                path.dirname(absPath),
+                src.startsWith('.') ? src : `./${src}`,
+              );
+            },
+          });
+
+          fileToFontNames.set(
+            absPath,
+            (fileToFontNames.get(absPath) || []).concat(fontNames),
+          );
+
+          if (fontImports[absPath]) {
+            fontImports[absPath] = fontImports[absPath].filter(
+              (item) =>
+                encodeURIPath(
+                  fileURLToPath(
+                    import.meta.resolve(removeQuerySuffix(item)),
+                  ).concat(getQuerySuffix(item)),
+                ) !== encodeURIPath(id),
+            );
+
+            if (!calledFinished && !Object.values(fontImports).flat().length) {
+              await onFinished(fileToFontNames).finally(() => {
+                calledFinished = true;
+              });
+            }
+          }
+
+          const targetCss = await nextFontPostcss(
+            relativePathFromRoot,
+            fontData,
+          );
+
+          /*
+          let preloadedChanged = false;
+
+          for (const [key, value] of tempFileCache.entries()) {
+            const { preloaded } = fontFileCache.set(key, value);
+            preloadedChanged = preloadedChanged || preloaded;
+          }
+
+          if (preloadedChanged) {
+            invalidatePreloadedFonts();
+          }
+          */
+
+          /*
+          targetCssToFontFile.set(
+            normalizedId,
+            Array.from(tempFileCache.keys()),
+          );
+          targetCssCache.set(normalizedId, targetCss);
+          */
+
+          targetCssMap.set(normalizedId, targetCss);
+
+          return targetCss.code;
+        },
+      },
+      transform: {
+        order: 'post',
+        async handler(_code, id, opts) {
+          if (!/\.css(?:$|\?)/.test(id)) return;
+
+          const normalizedId = normalizeTargetCssId(id);
+
+          const targetCss = targetCssMap.get(normalizedId);
+          if (!targetCss) return;
+          const { modules, code: css } = targetCss;
 
           const modulesCode = dataToEsm(modules, {
             namedExports: true,
@@ -165,7 +255,6 @@ const plugin = (): PluginOption[] => {
           const map = config?.css.devSourcemap
             ? new MagicString(css).generateMap({ hires: true })
             : undefined;
-
           if (config?.command === 'serve' && !opts?.ssr) {
             const code = [
               `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(
@@ -175,10 +264,10 @@ const plugin = (): PluginOption[] => {
               `const __vite__css = ${JSON.stringify(css)}`,
               `__vite__updateStyle(__vite__id, __vite__css)`,
               // css modules exports change on edit so it can't self accept
-              `${
-                modulesCode ||
-                'import.meta.hot.accept()\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))'
-              }`,
+              `${modulesCode || 'import.meta.hot.accept()'}
+                        if (import.meta.hot) {
+                          import.meta.hot.prune(() => __vite__removeStyle(__vite__id))
+                        }`,
             ].join('\n');
             return {
               code,
@@ -186,40 +275,22 @@ const plugin = (): PluginOption[] => {
             };
           }
 
-          styles.set(id, css);
+          // styles.set(id, css);
 
           return {
             code: modulesCode,
             map,
             moduleSideEffects: false,
           };
-        }
+        },
       },
     },
     {
-      name: 'next-font:generate:build',
+      name: 'next-font:build',
       apply: 'build',
       enforce: 'post',
-      transformIndexHtml() {
-        return Array.from(fileCache.keys()).map((fontFilename) => {
-          const ext = /\.(woff|woff2|eot|ttf|otf)$/.exec(fontFilename)![1];
-          const type = `font/${ext}`;
-          const href = `${config!.build.assetsDir}/_next/${encodeURIPath(fontFilename)}`;
-
-          return {
-            tag: 'link',
-            injectTo: 'head-prepend',
-            attrs: {
-              as: 'font',
-              rel: 'preload',
-              crossorigin: 'anonymous',
-              href,
-              type,
-            },
-          } as HtmlTagDescriptor;
-        });
-      },
       async renderChunk(code, chunk, opts) {
+        /*
         const chunkCSS = Array.from(styles.values()).join();
 
         function ensureFileExt(name: string, ext: string) {
@@ -293,7 +364,6 @@ const plugin = (): PluginOption[] => {
               s.appendRight(injectionPoint, injectCode);
             }
           } else {
-            /*
             // @ts-expect-error
             const publicAssetUrlMap = publicAssetUrlCache.get(config!)!;
 
@@ -367,7 +437,6 @@ const plugin = (): PluginOption[] => {
             // finalizeCss is called for the aggregated chunk in generateBundle
 
             chunkCSSMap.set(chunk.fileName, chunkCSS);
-            */
           }
         }
 
@@ -381,11 +450,10 @@ const plugin = (): PluginOption[] => {
             return { code: s.toString() };
           }
         }
+        */
 
         return null;
       },
     },
-  ] as PluginOption[];
+  ];
 };
-
-export default plugin;
