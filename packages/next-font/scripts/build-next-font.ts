@@ -2,7 +2,7 @@ import path from 'node:path';
 import { type BundleConfig, bundle } from 'bunchee';
 import glob from 'fast-glob';
 
-const cwd = path.join(import.meta.dirname, '..')
+const cwd = path.join(import.meta.dirname, '..');
 const config: BundleConfig = {
   minify: true,
   tsconfig: path.join(cwd, 'tsconfig.json'),

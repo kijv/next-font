@@ -121,7 +121,8 @@ export const nextFontLoaderPlugin = ({
             isDev &&
             targetCssMap.has(normalizedId) &&
             lastEnv === this.environment.name
-          ) return;
+          )
+            return;
           lastEnv = this.environment.name;
 
           const {

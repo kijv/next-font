@@ -20,9 +20,7 @@ export const nextFontManifestPlugin = ({
         config = resolvedConfig;
       },
       async load(id) {
-        const { data: resolvedId, error } = await tryCatch(
-          importResolve(id)
-        )
+        const { data: resolvedId, error } = await tryCatch(importResolve(id));
         if (error != null || resolvedId == null) return;
 
         if (resolvedId === manifestId) {
@@ -39,15 +37,16 @@ export const nextFontManifestPlugin = ({
               {
                 __NEXT_FONT_MANIFEST__: nextFontManifest,
                 getPreloadableFonts: undefined,
-                getFontMetadata: undefined
+                getFontMetadata: undefined,
               },
               {
                 preferConst: true,
                 namedExports: true,
               },
-            ).replace(
-              'export const getPreloadableFonts = undefined;',
-              `export const getPreloadableFonts = (filePath) => {
+            )
+              .replace(
+                'export const getPreloadableFonts = undefined;',
+                `export const getPreloadableFonts = (filePath) => {
 	if (!manifest || !filePath) return null;
   filePath = fileURLToPath(filePath);
 	const fontFiles = new Set();
@@ -69,7 +68,10 @@ export const nextFontManifestPlugin = ({
 	 return null;
 	}
 }`,
-            ).replace('export const getFontMetadata = undefined;', `export const getFontMetadata = (filePath) => {
+              )
+              .replace(
+                'export const getFontMetadata = undefined;',
+                `export const getFontMetadata = (filePath) => {
   const metadata = {
     preload: [],
     preconnect: []
@@ -113,8 +115,9 @@ export const nextFontManifestPlugin = ({
     }
 
     return metadata;
-}`),
-            `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`
+}`,
+              ),
+            `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`,
           ].join('\n');
         }
       },

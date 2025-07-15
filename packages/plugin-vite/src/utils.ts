@@ -87,21 +87,17 @@ function cleanUrl(url: string): string {
   return url.replace(postfixRE, '');
 }
 
-export const fontNameToUrl = (
-  fontName: string,
-) => {
+export const fontNameToUrl = (fontName: string) => {
   return [''].concat(['_next', fontName].filter(Boolean) as string[]).join('/');
 };
 
 export const normalizeTargetCssId = (id: string) => {
   return queryString.stringifyUrl({
     url: removeQuerySuffix(id),
-    query: queryString.parse(
-      getQuerySuffix(id),
-    )
+    query: queryString.parse(getQuerySuffix(id)),
   });
 };
 
 export const isTargetCssId = (id: string) => {
-  return /\.css(?:$|\?)/.test(id)
+  return /\.css(?:$|\?)/.test(id);
 };

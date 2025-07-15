@@ -29,8 +29,4 @@ declare const getFontMetadata: (filePath?: string) => {
   }[];
 };
 
-export {
-  manifest,
-  getPreloadableFonts,
-  getFontMetadata,
-}
+export { manifest, getPreloadableFonts, getFontMetadata };

@@ -2,7 +2,7 @@ import path from 'node:path';
 import { type BundleConfig, bundle } from 'bunchee';
 import glob from 'fast-glob';
 
-const cwd = path.join(import.meta.dirname, '..')
+const cwd = path.join(import.meta.dirname, '..');
 const config: BundleConfig = {
   minify: true,
   tsconfig: path.join(cwd, 'tsconfig.json'),
@@ -20,17 +20,17 @@ const config: BundleConfig = {
     './get-fallback-metrics-from-font-file.js',
     './pick-font-file-for-fallback-generation.js',
     './validate-local-font-function-call.js',
-  ]
+  ],
 };
 
 const distDir = path.join(cwd, 'dist');
 
-const files = (await glob([
-  'src/{google,local}/loader.ts',
-  'src/{fontkit,index}.ts',
-], {
-  cwd
-}))
+const files = await glob(
+  ['src/{google,local}/loader.ts', 'src/{fontkit,index}.ts'],
+  {
+    cwd,
+  },
+);
 
 const exports = Object.fromEntries(
   files.map((file) => {
@@ -59,7 +59,9 @@ await bundle(
     },
     _callbacks: {
       async onBuildEnd() {
-        console.log(`Built fonkit and @next/font loaders [${performance.now() - start}ms]`);
+        console.log(
+          `Built fonkit and @next/font loaders [${performance.now() - start}ms]`,
+        );
       },
     },
   }),

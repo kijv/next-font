@@ -20,7 +20,7 @@ export type FontLoaderOptions = Omit<
   ctx: {
     fs?: {
       readFile: (...args: any[]) => Promise<Buffer | Uint8Array | string>;
-    },
+    };
     error: (message: string) => any;
   };
   cache?: {

@@ -1,10 +1,13 @@
-import type { NextFontManifest } from "next-font/manifest";
-import type {
-  PluginOption,
-} from 'vite';
+import type { NextFontManifest } from 'next-font/manifest';
+import type { PluginOption } from 'vite';
 import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest';
-import { nextFontLoaderPlugin, nextFontManifestPlugin, nextFontTransformerPlugin, type OnFinished } from './plugins';
-import type { Mutable, TargetCss } from "./declarations";
+import {
+  nextFontLoaderPlugin,
+  nextFontManifestPlugin,
+  nextFontTransformerPlugin,
+  type OnFinished,
+} from './plugins';
+import type { Mutable, TargetCss } from './declarations';
 
 // import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
 // import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
@@ -129,9 +132,7 @@ const nextFontPlugin = (): PluginOption[] => {
   };
   */
 
-  const fontImports = new Proxy<
-    Record<string, TargetCss[]>
-  >(
+  const fontImports = new Proxy<Record<string, TargetCss[]>>(
     {},
     {
       get(t, p, r) {
@@ -152,7 +153,7 @@ const nextFontPlugin = (): PluginOption[] => {
       // Look if size-adjust fallback font is being used
       if (!nextFontManifest.isUsingSizeAdjust) {
         nextFontManifest.isUsingSizeAdjust =
-          getPageIsUsingSizeAdjust(fontFiles)
+          getPageIsUsingSizeAdjust(fontFiles);
       }
 
       const preloadedFontFiles = getPreloadedFontFiles(fontFiles);
@@ -170,7 +171,7 @@ const nextFontPlugin = (): PluginOption[] => {
   return [
     nextFontTransformerPlugin({
       fontImports,
-      onFontImportsChanged: () => { }
+      onFontImportsChanged: () => {},
     }),
     nextFontLoaderPlugin({
       fontImports,

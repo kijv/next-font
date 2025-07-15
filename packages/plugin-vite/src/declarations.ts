@@ -5,4 +5,4 @@ export type Mutable<T> = {
 export type TargetCss = {
   id: string;
   css?: string;
-}
+};
