@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "biome check",
+    "test": "vitest",
+    "lint": "bunx oxlint@latest",
     "biome:fix": "biome check --write"
   },
   "devDependencies": {
