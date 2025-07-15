@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import nextFontLocalFontLoader from '../../local/loader'
 
 describe('next/font/local loader', () => {
@@ -128,7 +128,7 @@ describe('next/font/local loader', () => {
         variableName: 'myFont',
         loaderContext: {
           fs: {
-            readFile: async (path: string) => path
+            readFile: async (path: string) => path,
           },
         } as any,
       })

@@ -9,7 +9,7 @@ export default defineConfig({
         name: 'next-font',
         test: {
           include: ['packages/next-font/tests/**/*.{ts,js}'],
-        }
+        },
       },
       {
         extends: true,
