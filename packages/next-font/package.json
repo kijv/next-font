@@ -53,5 +53,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": "kijv/next-font"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kijv/next-font.git",
+    "directory": "packages/next-font"
+  }
 }

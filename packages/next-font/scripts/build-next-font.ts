@@ -52,3 +52,10 @@ await bundle(
     },
   })
 )
+
+
+{
+  const file = import.meta.resolve('dist/local/get-fallback-metrics-from-font-file.js')
+  const content = await Bun.file(file).text()
+  await Bun.write(file, content.replaceAll('next/font', 'next-font'))
+}

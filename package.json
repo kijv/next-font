@@ -1,5 +1,5 @@
 {
-  "name": "@repo/vite-plugin-next-font",
+  "name": "@repo/next-font",
   "private": true,
   "workspaces": [
     "packages/*",

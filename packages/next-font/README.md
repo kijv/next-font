@@ -1,8 +1,8 @@
 ## Next Font
 
-Derived from `@next/font`. Aimed to be used in conjunction with [@next-font/plugin- vite](https://npmjs.com/packages/@next-font/vite)
+Derived from `@next/font`. Aimed to be used in conjunction with [@next-font/plugin- vite](https://npmjs.com/package/@next-font/plugin-vite)
 
-> This package is best used with the [@next-font/plugin-vite](https://npmjs.com/packages/@next-font/vite) package or any plugins under the [@next-font](https://npmjs.com/org/next-font) organization.
+> This package is best used with the [@next-font/plugin-vite](https://npmjs.com/package/@next-font/plugin-vite) package or any plugins under the [@next-font](https://npmjs.com/org/next-font) organization.
 
 ### Install
 
