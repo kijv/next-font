@@ -23,6 +23,12 @@ const config: BundleConfig = {
   ],
 }
 
+{
+  const file = path.join(cwd, 'dist/local/get-fallback-metrics-from-font-file.d.ts')
+  const content = await Bun.file(file).text()
+  await Bun.write(file, content.replaceAll('next/font', 'next-font'))
+}
+
 const distDir = path.join(cwd, 'dist')
 
 const files = await glob(['src/{google,local}/loader.ts', 'src/{fontkit,index}.ts'], {

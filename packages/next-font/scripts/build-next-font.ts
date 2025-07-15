@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { type BundleConfig, bundle } from 'bunchee'
 import glob from 'fast-glob'
+import { setTimeout } from 'node:timers/promises'
 
 const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
@@ -52,9 +53,3 @@ await bundle(
     },
   })
 )
-
-{
-  const file = import.meta.resolve('dist/local/get-fallback-metrics-from-font-file.js')
-  const content = await Bun.file(file).text()
-  await Bun.write(file, content.replaceAll('next/font', 'next-font'))
-}
