@@ -11,7 +11,11 @@ const importEscodegen = createCachedImport(
     import('escodegen-wallaby') as unknown as Promise<typeof import('escodegen')>
 )
 
-export type OnFontImportsChanged = (id: string, newValue: string[]) => void
+type OnFontImportsChanged = (
+  id: string,
+  newValue: string[],
+  previousValue: string[]
+) => void | Promise<void>
 
 export const nextFontTransformerPlugin = ({
   fontImports,
@@ -69,80 +73,17 @@ export const nextFontTransformerPlugin = ({
             (i) => !previousFontImports.some((p) => p.id === i)
           )
           if (importsChanged) {
-            onFontImportsChanged(id, nextFontImports)
+            onFontImportsChanged(
+              id,
+              nextFontImports,
+              previousFontImports.map((i) => i.id)
+            )
           }
         }
 
         fontImports[id] = nextFontImports.map((i) => ({
           id: i,
         }))
-
-        /*
-          const promises: Promise<void>[] = [];
-          let fullReload = false;
-          let preloadedChanged = false;
-
-          for (const removedFontImport of previousFontImports.filter(
-            (i) => !nextFontImports.includes(i),
-          )) {
-            const querySuffix = getQuerySuffix(removedFontImport);
-            const resolvedId = import.meta.resolve(
-              removeQuerySuffix(removedFontImport),
-            );
-            const targetCss = fileURLToPath(resolvedId) + querySuffix;
-
-            const removedFontFiles: string[] = [];
-
-            for (const fontFile of targetCssToFontFile.get(targetCss) ?? []) {
-              const { preloaded } = fontFileCache.delete(fontFile);
-              preloadedChanged = preloadedChanged || preloaded;
-              removedFontFiles.push(fontFile);
-            }
-            targetCssToFontFile.delete(targetCss);
-            targetCssCache.delete(targetCss);
-
-            if (removedFontFiles.length > 0) {
-              promises.push(
-                (async () => {
-                  for (const server of servers) {
-                    const targetCssModule =
-                      await server.moduleGraph.getModuleById(targetCss);
-                    if (targetCssModule) {
-                      server.moduleGraph.invalidateModule(targetCssModule);
-                    }
-                    server.ws.send({
-                      type: 'prune',
-                      paths: removedFontFiles.concat(targetCss),
-                    });
-                  }
-                })(),
-              );
-              fullReload = true;
-            }
-          }
-
-          if (preloadedChanged) promises.push(invalidatePreloadedFonts());
-          if (fullReload)
-            promises.push(
-              (async () => {
-                for (const server of servers) {
-                  server.ws.send({
-                    type: 'full-reload',
-                  });
-                }
-                console.log('full-reload');
-              })(),
-            );
-
-          await Promise.allSettled(promises);
-        }
-        fileFontImports.set(
-          id,
-          state.fontImports.map(
-            (i) =>
-              (i as import('estree').ImportDeclaration).source.value as string,
-          ),
-        );*/
 
         const escodegen = await importEscodegen()
 

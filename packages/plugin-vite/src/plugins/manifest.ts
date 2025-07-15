@@ -25,7 +25,6 @@ export const nextFontManifestPlugin = ({
 
         if (resolvedId === manifestId) {
           return [
-            `import { fileURLToPath } from 'node:url';`,
             `function encodeURIPath(file) {
               return file
                 .split('/')
@@ -48,7 +47,6 @@ export const nextFontManifestPlugin = ({
                 'export const getPreloadableFonts = undefined;',
                 `export const getPreloadableFonts = (filePath) => {
 	if (!manifest || !filePath) return null;
-  filePath = fileURLToPath(filePath);
 	const fontFiles = new Set();
 	let foundFontUsage = false;
 	const preloadedFontFiles = manifest[filePath];
@@ -118,6 +116,9 @@ export const nextFontManifestPlugin = ({
 }`
               ),
             `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`,
+            `if (import.meta.hot) import.meta.hot.accept(${JSON.stringify(manifestId)}, () => {
+              manifest = __NEXT_FONT_MANIFEST__;
+            })`,
           ].join('\n')
         }
       },

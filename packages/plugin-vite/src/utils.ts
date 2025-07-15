@@ -1,5 +1,4 @@
 import queryString from 'query-string'
-import type { ResolvedConfig } from 'vite'
 
 export const getQuerySuffix = (id: string) => {
   const queryStart = id.indexOf('?')
@@ -15,18 +14,6 @@ export const removeQuerySuffix = (id: string) => {
     return id
   }
   return id.slice(0, queryStart)
-}
-
-// regexp is based on https://github.com/sindresorhus/escape-string-regexp
-const reHasRegExp = /[|\\{}()[\]^$+*?.-]/
-const reReplaceRegExp = /[|\\{}()[\]^$+*?.-]/g
-
-export const escapeStringRegexp = (str: string) => {
-  // see also: https://github.com/lodash/lodash/blob/2da024c3b4f9947a48517639de7560457cd4ec6c/escapeRegExp.js#L23
-  if (reHasRegExp.test(str)) {
-    return str.replace(reReplaceRegExp, '\\$&')
-  }
-  return str
 }
 
 export const createCachedImport = <T>(imp: () => Promise<T>): (() => T | Promise<T>) => {
@@ -89,10 +76,15 @@ export const fontNameToUrl = (fontName: string) => {
 export const normalizeTargetCssId = (id: string) => {
   return queryString.stringifyUrl({
     url: removeQuerySuffix(id),
-    query: queryString.parse(getQuerySuffix(id)),
+    query: pickKeys(queryString.parse(getQuerySuffix(id)), [
+      'arguments',
+      'path',
+      'import',
+      'variableName',
+    ]),
   })
 }
 
-export const isTargetCssId = (id: string) => {
-  return /\.css(?:$|\?)/.test(id)
+const pickKeys = <K extends string, V>(obj: Record<string, V>, keys: K[]) => {
+  return Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key as K)))
 }

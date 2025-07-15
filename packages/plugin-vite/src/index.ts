@@ -1,5 +1,6 @@
+import { fileURLToPath } from 'node:url'
 import type { NextFontManifest } from 'next-font/manifest'
-import type { PluginOption } from 'vite'
+import type { PluginOption, ViteDevServer } from 'vite'
 import type { Mutable, TargetCss } from './declarations'
 import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest'
 import {
@@ -8,129 +9,10 @@ import {
   nextFontTransformerPlugin,
   type OnFinished,
 } from './plugins'
-
-// import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
-// import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
+import { getQuerySuffix, normalizeTargetCssId, removeQuerySuffix } from './utils'
 
 const nextFontPlugin = (): PluginOption[] => {
-  // const viteFontsResolvedId = fileURLToPath(import.meta.resolve('./fonts'));
-
-  /*
-  const preloadedFonts = new Set<string>();
-  const preloadFont = (href: string): HtmlTagDescriptor => {
-    const ext = /\.(woff|woff2|eot|ttf|otf)$/.exec(path.basename(href))![1];
-    const type = `font/${ext}`;
-
-    return {
-      tag: 'link',
-      injectTo: 'head',
-      attrs: {
-        as: 'font',
-        rel: 'preload',
-        crossorigin: 'anonymous',
-        href,
-        type,
-      },
-    };
-  };
-
-  const fileFontImports = new Map<string, string[]>();
-  const targetCssCache = new Map<
-    string,
-    Awaited<ReturnType<typeof compileTargetCss>>
-  >();
-  const targetCssToFontFile = new Map<string, string[]>();
-
-  const fontFileCache = new Map<string, Buffer>() as unknown as Omit<
-    Map<string, Buffer>,
-    'set' | 'delete'
-  > & {
-    _set: (id: string, content: Buffer) => void;
-    _delete: (id: string) => void;
-    set: (
-      id: string,
-      content: Buffer,
-    ) => {
-      preloaded: boolean;
-    };
-    delete: (id: string) => {
-      preloaded: boolean;
-    };
-  };
-  Object.assign(fontFileCache, {
-    _set: fontFileCache.set,
-    _delete: fontFileCache.delete,
-    set: (id: string, content: Buffer) => {
-      const lastPreloadFontsLength = structuredClone(preloadedFonts).size;
-
-      fontFileCache._set(id, content);
-      if (id.includes('.p') && !preloadedFonts.has(id)) {
-        preloadedFonts.add(id);
-      }
-
-      return {
-        preloaded: preloadedFonts.size !== lastPreloadFontsLength,
-      };
-    },
-    delete: (id: string) => {
-      const lastPreloadFontsLength = structuredClone(preloadedFonts).size;
-
-      fontFileCache._delete(id);
-      preloadedFonts.delete(id);
-
-      return {
-        preloaded: preloadedFonts.size !== lastPreloadFontsLength,
-      };
-    },
-  });
-
-  const getPreloadedFontsCode = () => {
-    return `export function getPreloadedFonts() {
-  return ${JSON.stringify(
-    Array.from(preloadedFonts)
-      .map(preloadFont)
-      .map((p) => p.attrs),
-  )};
-}`;
-  };
-
-  const invalidatePreloadedFonts = async () => {
-    for (const server of servers) {
-      const preloadedFontsModule =
-        server.moduleGraph.getModulesByFile(viteFontsResolvedId);
-      console.log('preloadedFontsModule', !!preloadedFontsModule);
-      const s = new MagicString(getPreloadedFontsCode());
-      for (const mod of preloadedFontsModule ?? []) {
-        server.moduleGraph.updateModuleTransformResult(
-          mod,
-          {
-            code: s.toString(),
-            map: s.generateMap({ hires: true }),
-          },
-          true,
-        );
-      }
-
-      // server.ws.send({
-      //   type: 'update',
-      //   updates: [
-      //     {
-      //       type: 'js-update',
-      //       path: '/@next-font/vite/fonts',
-      //       acceptedPath: '/@next-font/vite/fonts',
-      //       timestamp: Date.now(),
-      //     },
-      //   ],
-      // });
-      // server.moduleGraph.onFileChange(viteFontsResolvedId);
-      // server.ws.send({
-      //   type: 'full-reload',
-      // });
-      if (Array.from(preloadedFontsModule ?? []).length > 0)
-        server.moduleGraph.invalidateAll();
-    }
-  };
-  */
+  const servers: ViteDevServer[] = []
 
   const fontImports = new Proxy<Record<string, TargetCss[]>>(
     {},
@@ -148,82 +30,116 @@ const nextFontPlugin = (): PluginOption[] => {
     isUsingSizeAdjust: false,
   } as Mutable<NextFontManifest>
 
-  const onFinished: OnFinished = async (fileToFontNames) => {
-    for (const [id, fontFiles] of fileToFontNames) {
-      // Look if size-adjust fallback font is being used
-      if (!nextFontManifest.isUsingSizeAdjust) {
-        nextFontManifest.isUsingSizeAdjust = getPageIsUsingSizeAdjust(fontFiles)
-      }
-
-      const preloadedFontFiles = getPreloadedFontFiles(fontFiles)
-
-      // Add an entry of the module's font files in the manifest.
-      // We'll add an entry even if no files should preload.
-      // When an entry is present but empty, instead of preloading the font files, a preconnect tag is added.
-      if (fontFiles.length > 0) {
-        nextFontManifest[id] ||= []
-        nextFontManifest[id].push(...preloadedFontFiles)
+  const reloadManifest = () => {
+    for (const server of servers) {
+      const manifestId = fileURLToPath(import.meta.resolve('next-font/manifest'))
+      const manifestMod = server.moduleGraph.getModuleById(manifestId)
+      if (manifestMod) {
+        server.reloadModule(manifestMod)
+        server.moduleGraph.invalidateModule(manifestMod)
+        server.moduleGraph.onFileChange(manifestId)
+        server.ws.send({
+          type: 'full-reload',
+          path: manifestId,
+        })
       }
     }
   }
 
+  const onFinished: OnFinished = async (fileToFontNames) => {
+    for (const [id, targetCss] of fileToFontNames) {
+      for (const fontFiles of Object.values(targetCss)) {
+        // Look if size-adjust fallback font is being used
+        if (!nextFontManifest.isUsingSizeAdjust) {
+          nextFontManifest.isUsingSizeAdjust = getPageIsUsingSizeAdjust(fontFiles)
+        }
+
+        const preloadedFontFiles = getPreloadedFontFiles(fontFiles)
+
+        // Add an entry of the module's font files in the manifest.
+        // We'll add an entry even if no files should preload.
+        // When an entry is present but empty, instead of preloading the font files, a preconnect tag is added.
+        if (fontFiles.length > 0) {
+          nextFontManifest[id] ||= []
+          nextFontManifest[id] = Array.from(
+            new Set(nextFontManifest[id].concat(preloadedFontFiles))
+          )
+        }
+      }
+    }
+
+    reloadManifest()
+  }
+
+  const [{ resetCalledFinished, removeTargetCss }, loaderPlugin] = nextFontLoaderPlugin({
+    nextFontManifest,
+    fontImports,
+    onFinished,
+  })
+
   return [
+    {
+      name: 'next-font:scan',
+      configureServer(server) {
+        servers.push(server)
+      },
+    },
     nextFontTransformerPlugin({
       fontImports,
-      onFontImportsChanged: () => {},
+      onFontImportsChanged: async (_id, newValue, previousValue) => {
+        resetCalledFinished()
+
+        const removed = previousValue.filter((p) => !newValue.includes(p))
+
+        for (const server of servers) {
+          for (const id of removed) {
+            const resolvedId =
+              fileURLToPath(import.meta.resolve(removeQuerySuffix(id))) + getQuerySuffix(id)
+
+            removeTargetCss(normalizeTargetCssId(resolvedId))
+
+            const module = server.moduleGraph.getModuleById(resolvedId)
+            if (module) {
+              server.moduleGraph.onFileDelete(resolvedId)
+              server.ws.send({
+                type: 'prune',
+                paths: [resolvedId],
+              })
+              server.ws.send({
+                type: 'update',
+                updates: [
+                  {
+                    type: 'css-update',
+                    path: resolvedId,
+                    acceptedPath: resolvedId,
+                    timestamp: Date.now(),
+                  },
+                  {
+                    type: 'css-update',
+                    path: id,
+                    acceptedPath: id,
+                    timestamp: Date.now(),
+                  },
+                ],
+              })
+              // server.moduleGraph.invalidateModule(module)
+              server.reloadModule(module)
+
+              server.ws.send({
+                type: 'full-reload',
+                path: resolvedId,
+              })
+            }
+          }
+
+          reloadManifest()
+        }
+      },
     }),
-    nextFontLoaderPlugin({
-      fontImports,
-      onFinished,
-    }),
+    loaderPlugin,
     nextFontManifestPlugin({
       nextFontManifest,
     }),
-    // {
-    //   name: 'next-font:preloaded-fonts:pre',
-    //   enforce: 'pre',
-    //   handleHotUpdate({ file }) {
-    //     console.log('handleHotUpdate', file);
-    //   },
-    //   async transform(_code, id) {
-    //     const matchId = viteFontsResolvedId;
-    //     let match = false;
-
-    //     if (!match) match = id === matchId;
-    //     if (!match) {
-    //       const { data: resolvedId, error } = await tryCatch(
-    //         importResolve(removeQuerySuffix(id)),
-    //       );
-    //       if (error) return null;
-
-    //       match = resolvedId === matchId;
-    //     }
-
-    //     if (match) {
-    //       console.log('match', id);
-
-    //       if (!this.getWatchFiles().includes(id)) {
-    //         this.addWatchFile(id);
-    //       }
-
-    //       for (const server of servers) {
-    //         if (!(await server.moduleGraph.getModulesByFile(id))?.size) {
-    //           server.moduleGraph.createFileOnlyEntry(id);
-    //         }
-    //       }
-
-    //       return getPreloadedFontsCode();
-    //     }
-    //   },
-    // },
-    // {
-    //   name: 'next-font:preloaded-fonts:post',
-    //   enforce: 'post',
-
-    // },
-    // {
-    //   name: 'next-font:manifest',
-    // }
   ] as PluginOption[]
 }
 
