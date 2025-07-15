@@ -16,8 +16,7 @@ export type FontLoaderOptions = Omit<
   },
   'loaderContext'
 > & {
-  id: string
-  ctx: {
+  loaderContext: {
     fs?: {
       readFile: (...args: any[]) => Promise<Buffer | Uint8Array | string>
     }

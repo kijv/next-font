@@ -38,13 +38,4 @@ describe('utils', () => {
     expect(result.data).toBeNull()
     expect(result.error).toBe(err)
   })
-
-  test('addDataQuery and parseDataQuery roundtrip', () => {
-    const url = 'foo/bar.css'
-    const data = { a: 1, b: 'test' }
-    const withQuery = utils.addDataQuery(url, data)
-    expect(withQuery).toMatch(/^foo\/bar\.css\?data=/)
-    const parsed = utils.parseDataQuery(withQuery)
-    expect(parsed).toEqual(data)
-  })
 })

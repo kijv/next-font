@@ -30,7 +30,7 @@ const loader: FontLoader = async ({
   data,
   emitFontFile,
   resolve,
-  ctx,
+  loaderContext: ctx,
 }) => {
   const {
     src,
@@ -51,7 +51,7 @@ const loader: FontLoader = async ({
   const fontFiles = await Promise.all(
     src.map(async ({ path, style, weight, ext, format }) => {
       const resolved = resolve(path)
-      const fileBuffer = Buffer.from(await (ctx.fs ?? fs).readFile(resolved!))
+      const fileBuffer = Buffer.from(await (ctx.fs ?? fs).readFile(resolved))
       const fontUrl = emitFontFile(
         fileBuffer,
         ext,

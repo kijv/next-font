@@ -39,7 +39,7 @@ const loader: FontLoader = async ({
   emitFontFile,
   isDev,
   isServer,
-  ctx,
+  loaderContext: ctx,
   cache: { css: cssCache, font: fontCache } = {},
 }) => {
   const {

@@ -168,7 +168,7 @@ export const nextFontLoaderPlugin = ({
             variableName,
             data,
             emitFontFile,
-            ctx: this,
+            loaderContext: this,
             cache,
             isDev,
             isServer: opts?.ssr ?? false,
