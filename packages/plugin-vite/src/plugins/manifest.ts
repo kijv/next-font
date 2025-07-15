@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'node:url'
 import { dataToEsm } from '@rollup/pluginutils'
 import type { NextFontManifest } from 'next-font/manifest'
 import type { PluginOption, ResolvedConfig } from 'vite'
@@ -81,7 +80,7 @@ export const nextFontManifestPlugin = ({
       if (preloadedFontFiles.length) {
         for (let i = 0; i < preloadedFontFiles.length; i++) {
           const fontFilename = preloadedFontFiles[i];
-          const ext = /\.(woff|woff2|eot|ttf|otf)$/.exec(fontFilename)[1];
+          const ext = /.(woff|woff2|eot|ttf|otf)$/.exec(fontFilename)[1];
           const type = \`font/\${ext}\`;
           const href = encodeURIPath(fontFilename);
 

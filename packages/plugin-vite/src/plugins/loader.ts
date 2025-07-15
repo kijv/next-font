@@ -215,7 +215,7 @@ export const nextFontLoaderPlugin = ({
             })
 
             fileToFontNames.set(absPath, {
-              ...(fileToFontNames.get(absPath) || {}),
+              ...fileToFontNames.get(absPath),
               [normalizedId]: Array.from(
                 new Set((fileToFontNames.get(absPath)?.[normalizedId] || []).concat(fontNames))
               ),
