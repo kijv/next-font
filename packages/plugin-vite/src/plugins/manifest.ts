@@ -1,27 +1,27 @@
-import { fileURLToPath } from 'node:url';
-import { dataToEsm } from '@rollup/pluginutils';
-import type { NextFontManifest } from 'next-font/manifest';
-import type { PluginOption, ResolvedConfig } from 'vite';
-import { importResolve, tryCatch } from '@/utils';
+import { fileURLToPath } from 'node:url'
+import { dataToEsm } from '@rollup/pluginutils'
+import type { NextFontManifest } from 'next-font/manifest'
+import type { PluginOption, ResolvedConfig } from 'vite'
+import { importResolve, tryCatch } from '@/utils'
 
 export const nextFontManifestPlugin = ({
   nextFontManifest,
 }: {
-  nextFontManifest: NextFontManifest;
+  nextFontManifest: NextFontManifest
 }): PluginOption[] => {
-  let config: ResolvedConfig | null = null;
+  let config: ResolvedConfig | null = null
 
-  const manifestId = import.meta.resolve('next-font/manifest');
+  const manifestId = import.meta.resolve('next-font/manifest')
 
   return [
     {
       name: 'next-font:manifest',
       configResolved(resolvedConfig) {
-        config = resolvedConfig;
+        config = resolvedConfig
       },
       async load(id) {
-        const { data: resolvedId, error } = await tryCatch(importResolve(id));
-        if (error != null || resolvedId == null) return;
+        const { data: resolvedId, error } = await tryCatch(importResolve(id))
+        if (error != null || resolvedId == null) return
 
         if (resolvedId === manifestId) {
           return [
@@ -42,7 +42,7 @@ export const nextFontManifestPlugin = ({
               {
                 preferConst: true,
                 namedExports: true,
-              },
+              }
             )
               .replace(
                 'export const getPreloadableFonts = undefined;',
@@ -67,7 +67,7 @@ export const nextFontManifestPlugin = ({
 	} else {
 	 return null;
 	}
-}`,
+}`
               )
               .replace(
                 'export const getFontMetadata = undefined;',
@@ -115,12 +115,12 @@ export const nextFontManifestPlugin = ({
     }
 
     return metadata;
-}`,
+}`
               ),
             `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`,
-          ].join('\n');
+          ].join('\n')
         }
       },
     },
-  ];
-};
+  ]
+}

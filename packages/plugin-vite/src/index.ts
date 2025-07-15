@@ -1,13 +1,13 @@
-import type { NextFontManifest } from 'next-font/manifest';
-import type { PluginOption } from 'vite';
-import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest';
+import type { NextFontManifest } from 'next-font/manifest'
+import type { PluginOption } from 'vite'
+import type { Mutable, TargetCss } from './declarations'
+import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest'
 import {
   nextFontLoaderPlugin,
   nextFontManifestPlugin,
   nextFontTransformerPlugin,
   type OnFinished,
-} from './plugins';
-import type { Mutable, TargetCss } from './declarations';
+} from './plugins'
 
 // import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
 // import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
@@ -136,37 +136,36 @@ const nextFontPlugin = (): PluginOption[] => {
     {},
     {
       get(t, p, r) {
-        return Reflect.get(t, p, r);
+        return Reflect.get(t, p, r)
       },
       set(t, p, v, r) {
-        return Reflect.set(t, p, v, r);
+        return Reflect.set(t, p, v, r)
       },
-    },
-  );
+    }
+  )
 
   const nextFontManifest = {
     isUsingSizeAdjust: false,
-  } as Mutable<NextFontManifest>;
+  } as Mutable<NextFontManifest>
 
   const onFinished: OnFinished = async (fileToFontNames) => {
     for (const [id, fontFiles] of fileToFontNames) {
       // Look if size-adjust fallback font is being used
       if (!nextFontManifest.isUsingSizeAdjust) {
-        nextFontManifest.isUsingSizeAdjust =
-          getPageIsUsingSizeAdjust(fontFiles);
+        nextFontManifest.isUsingSizeAdjust = getPageIsUsingSizeAdjust(fontFiles)
       }
 
-      const preloadedFontFiles = getPreloadedFontFiles(fontFiles);
+      const preloadedFontFiles = getPreloadedFontFiles(fontFiles)
 
       // Add an entry of the module's font files in the manifest.
       // We'll add an entry even if no files should preload.
       // When an entry is present but empty, instead of preloading the font files, a preconnect tag is added.
       if (fontFiles.length > 0) {
-        nextFontManifest[id] ||= [];
-        nextFontManifest[id].push(...preloadedFontFiles);
+        nextFontManifest[id] ||= []
+        nextFontManifest[id].push(...preloadedFontFiles)
       }
     }
-  };
+  }
 
   return [
     nextFontTransformerPlugin({
@@ -225,7 +224,7 @@ const nextFontPlugin = (): PluginOption[] => {
     // {
     //   name: 'next-font:manifest',
     // }
-  ] as PluginOption[];
-};
+  ] as PluginOption[]
+}
 
-export default nextFontPlugin;
+export default nextFontPlugin

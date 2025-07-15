@@ -8,9 +8,7 @@
  * This function returns those files from an array that can include both preloaded and non-preloaded files.
  */
 export function getPreloadedFontFiles(fontFiles: string[]) {
-  return fontFiles.filter((file: string) =>
-    /\.p\.(woff|woff2|eot|ttf|otf)$/.test(file),
-  );
+  return fontFiles.filter((file: string) => /\.p\.(woff|woff2|eot|ttf|otf)$/.test(file))
 }
 
 /**
@@ -19,5 +17,5 @@ export function getPreloadedFontFiles(fontFiles: string[]) {
  * This was added to enable adding data-size-adjust="true" to the dom, used by the Google Aurora team to collect statistics.
  */
 export function getPageIsUsingSizeAdjust(fontFiles: string[]) {
-  return fontFiles.some((file) => file.includes('-s'));
+  return fontFiles.some((file) => file.includes('-s'))
 }

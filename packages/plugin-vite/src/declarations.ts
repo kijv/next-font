@@ -1,8 +1,8 @@
 export type Mutable<T> = {
-  -readonly [K in keyof T]: T[K];
-};
+  -readonly [K in keyof T]: T[K]
+}
 
 export type TargetCss = {
-  id: string;
-  css?: string;
-};
+  id: string
+  css?: string
+}

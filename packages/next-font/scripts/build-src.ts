@@ -1,8 +1,8 @@
-import path from 'node:path';
-import { type BundleConfig, bundle } from 'bunchee';
-import glob from 'fast-glob';
+import path from 'node:path'
+import { type BundleConfig, bundle } from 'bunchee'
+import glob from 'fast-glob'
 
-const cwd = path.join(import.meta.dirname, '..');
+const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
   minify: true,
   tsconfig: path.join(cwd, 'tsconfig.json'),
@@ -21,22 +21,18 @@ const config: BundleConfig = {
     './pick-font-file-for-fallback-generation.js',
     './validate-local-font-function-call.js',
   ],
-};
+}
 
-const distDir = path.join(cwd, 'dist');
+const distDir = path.join(cwd, 'dist')
 
-const files = await glob(
-  ['src/{google,local}/loader.ts', 'src/{fontkit,index}.ts'],
-  {
-    cwd,
-  },
-);
+const files = await glob(['src/{google,local}/loader.ts', 'src/{fontkit,index}.ts'], {
+  cwd,
+})
 
 const exports = Object.fromEntries(
   files.map((file) => {
-    const noSrc = path.relative('src', file);
-    const ext = (ext: string) =>
-      path.join(path.join(distDir, noSrc.replace(/\.ts$/, ext)));
+    const noSrc = path.relative('src', file)
+    const ext = (ext: string) => path.join(path.join(distDir, noSrc.replace(/\.ts$/, ext)))
 
     return [
       `./${noSrc.replace(/\.ts$/, '')}`,
@@ -44,11 +40,11 @@ const exports = Object.fromEntries(
         import: ext('.js'),
         types: ext('.d.ts'),
       },
-    ];
-  }),
-);
+    ]
+  })
+)
 
-const start = performance.now();
+const start = performance.now()
 await bundle(
   '',
   Object.assign({}, config, {
@@ -59,10 +55,8 @@ await bundle(
     },
     _callbacks: {
       async onBuildEnd() {
-        console.log(
-          `Built fonkit and @next/font loaders [${performance.now() - start}ms]`,
-        );
+        console.log(`Built fonkit and @next/font loaders [${performance.now() - start}ms]`)
       },
     },
-  }),
-);
+  })
+)

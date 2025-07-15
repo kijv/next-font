@@ -1,37 +1,30 @@
-import path from 'node:path';
-import { type BundleConfig, bundle } from 'bunchee';
-import glob from 'fast-glob';
+import path from 'node:path'
+import { type BundleConfig, bundle } from 'bunchee'
+import glob from 'fast-glob'
 
-const cwd = path.join(import.meta.dirname, '..');
+const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
   minify: true,
   tsconfig: path.join(cwd, 'tsconfig.json'),
-};
+}
 
 const nextFontDir = Bun.fileURLToPath(
-  path.dirname(
-    import.meta.resolve('@vercel/next.js/packages/font/package.json'),
-  ),
-);
-const distDir = path.join(cwd, 'dist');
+  path.dirname(import.meta.resolve('@vercel/next.js/packages/font/package.json'))
+)
+const distDir = path.join(cwd, 'dist')
 
 const files = (
   await glob('src/**/*.ts', {
     cwd: nextFontDir,
     ignore: ['src/**/*.test.ts'],
   })
-).filter((file) => !path.basename(file).startsWith('loader'));
+).filter((file) => !path.basename(file).startsWith('loader'))
 
 const exports = Object.fromEntries(
   files.map((file) => {
-    const noSrc = path.relative('src', file);
+    const noSrc = path.relative('src', file)
     const ext = (ext: string) =>
-      path.join(
-        path.relative(
-          nextFontDir,
-          path.join(distDir, noSrc.replace(/\.ts$/, ext)),
-        ),
-      );
+      path.join(path.relative(nextFontDir, path.join(distDir, noSrc.replace(/\.ts$/, ext))))
 
     return [
       `./${noSrc.replace(/\.ts$/, '')}`,
@@ -39,11 +32,11 @@ const exports = Object.fromEntries(
         import: ext('.js'),
         types: ext('.d.ts'),
       },
-    ];
-  }),
-);
+    ]
+  })
+)
 
-const start = performance.now();
+const start = performance.now()
 await bundle(
   '',
   Object.assign({}, config, {
@@ -54,8 +47,8 @@ await bundle(
     },
     _callbacks: {
       async onBuildEnd() {
-        console.log(`Built @next/font [${performance.now() - start}ms]`);
+        console.log(`Built @next/font [${performance.now() - start}ms]`)
       },
     },
-  }),
-);
+  })
+)

@@ -1,1 +1,1 @@
-export type { AdjustFontFallback, FontLoader } from './declarations';
+export type { AdjustFontFallback, FontLoader } from './declarations'
