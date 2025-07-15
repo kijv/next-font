@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { dataToEsm } from '@rollup/pluginutils';
 import type { NextFontManifest } from 'next-font/manifest';
 import type { PluginOption, ResolvedConfig } from 'vite';
+import { importResolve, tryCatch } from '@/utils';
 
 export const nextFontManifestPlugin = ({
   nextFontManifest,
@@ -10,7 +11,7 @@ export const nextFontManifestPlugin = ({
 }): PluginOption[] => {
   let config: ResolvedConfig | null = null;
 
-  const MANIFEST_ID = fileURLToPath(import.meta.resolve('next-font/manifest'));
+  const manifestId = import.meta.resolve('next-font/manifest');
 
   return [
     {
@@ -19,13 +20,15 @@ export const nextFontManifestPlugin = ({
         config = resolvedConfig;
       },
       async load(id) {
-        const { id: resolvedId } = (await this.resolve(id)) || {};
-        if (!resolvedId) return;
+        const { data: resolvedId, error } = await tryCatch(
+          importResolve(id)
+        )
+        if (error != null || resolvedId == null) return;
 
-        if (resolvedId === MANIFEST_ID) {
+        if (resolvedId === manifestId) {
           return [
             `import { fileURLToPath } from 'node:url';`,
-            `export function encodeURIPath(file) {
+            `function encodeURIPath(file) {
               return file
                 .split('/')
                 .map((p) => encodeURIComponent(p))
@@ -34,7 +37,7 @@ export const nextFontManifestPlugin = ({
             `const injectedFontPreloadTags = new Set();`,
             dataToEsm(
               {
-                manifest: Object.freeze(nextFontManifest),
+                __NEXT_FONT_MANIFEST__: nextFontManifest,
                 getPreloadableFonts: undefined,
                 getFontMetadata: undefined
               },
@@ -111,7 +114,7 @@ export const nextFontManifestPlugin = ({
 
     return metadata;
 }`),
-            // `export const `
+            `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`
           ].join('\n');
         }
       },

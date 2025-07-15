@@ -1,7 +1,6 @@
 {
   "name": "next-font",
   "description": "@next/font (next/font) replacement",
-  "type": "module",
   "version": "1.0.6",
   "license": "BSD-2-Clause",
   "files": [
@@ -9,6 +8,9 @@
     "google",
     "local"
   ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./google": {
       "import": "./google/index.js",
@@ -35,14 +37,17 @@
     "./dist/*": {
       "import": "./dist/*.js",
       "types": "./dist/*.d.ts"
-    }
+    },
+    ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "bun run ./build.ts"
+    "build": "bun run clean && turbo run build-next-font && turbo run build-src",
+    "clean": "bun run ./scripts/clean-dist.ts",
+    "build-next-font": "bun run ./scripts/build-next-font.ts",
+    "build-src": "bun run ./scripts/build-src.ts"
   },
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
-    "@next/font": "canary",
     "fontkit": "^2.0.4"
   },
   "publishConfig": {

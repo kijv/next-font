@@ -14,8 +14,8 @@
     }
   },
   "scripts": {
-    "build": "bunchee --external=vite,postcss,next-font -m -clean --dts --sourcemap=false",
-    "dev": "bunchee --external=vite,postcss,next-font -w --dts",
+    "build": "bunchee --external=vite,postcss,next-font -m --dts --sourcemap=false",
+    "dev": "bunchee --external=vite,postcss,next-font -w --dts --sourcemap",
     "test": "vitest run"
   },
   "dependencies": {

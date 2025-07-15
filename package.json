@@ -32,11 +32,6 @@
   "peerDependencies": {
     "typescript": "^5.8.3"
   },
-  "trustedDependencies": [
-    "@tailwindcss/oxide",
-    "esbuild",
-    "sharp"
-  ],
   "patchedDependencies": {
     "bunchee@6.5.4": "patches/bunchee@6.5.4.patch"
   },

@@ -1,28 +1,30 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dataToEsm } from '@rollup/pluginutils';
+import { dataToEsm, normalizePath } from '@rollup/pluginutils';
 import loaderUtils from 'loader-utils';
 import MagicString from 'magic-string';
 import queryString from 'query-string';
-import type { PluginOption, ResolvedConfig } from 'vite';
+import { isCSSRequest, type PluginOption, type ResolvedConfig } from 'vite';
 import type { FontImportDataQuery } from '@/ast/transform';
-import type { FontLoader, FontLoaderOptions } from '@/declarations';
-import { nextFontPostcss, normalizeTargetCssId } from '@/postcss';
+import { nextFontPostcss } from '@/postcss';
 import {
   createCachedImport,
   encodeURIPath,
   fontNameToUrl,
   getQuerySuffix,
   importResolve,
+  normalizeTargetCssId,
   removeQuerySuffix,
   tryCatch,
 } from '@/utils';
+import type { FontLoader } from 'next-font';
+import type { TargetCss } from '@/declarations';
 
 const googleLoader = createCachedImport<FontLoader>(() =>
-  import('@/loaders/google').then((mod) => mod.default),
+  import('next-font/google/loader').then((mod) => mod.default),
 );
 const localLoader = createCachedImport<FontLoader>(() =>
-  import('@/loaders/local').then((mod) => mod.default),
+  import('next-font/local/loader').then((mod) => mod.default),
 );
 
 export type OnFinished = (
@@ -33,7 +35,7 @@ export const nextFontLoaderPlugin = ({
   fontImports,
   onFinished,
 }: {
-  fontImports: Record<string, string[]>;
+  fontImports: Record<string, TargetCss[]>;
   onFinished: OnFinished;
 }): PluginOption[] => {
   let config: ResolvedConfig | null = null;
@@ -63,10 +65,15 @@ export const nextFontLoaderPlugin = ({
     string,
     Awaited<ReturnType<typeof nextFontPostcss>>
   >();
+  const targetCssAssets = new Map<string, string[]>();
 
   const fontFileMap = new Map<string, Buffer>();
 
+  let lastEnv: string | null = null;
+
   let calledFinished = false;
+
+  const loadSideEffects = new Set<() => void>();
 
   return [
     {
@@ -76,7 +83,6 @@ export const nextFontLoaderPlugin = ({
         config = resolvedConfig;
       },
       configureServer(server) {
-        console.log('configureServer')
         return () => {
           server.middlewares.use((req, res, next) => {
             if (!req.originalUrl) return next();
@@ -87,7 +93,7 @@ export const nextFontLoaderPlugin = ({
             } else next();
           });
         };
-      }
+      },
     },
     {
       name: 'next-font:loader',
@@ -105,14 +111,18 @@ export const nextFontLoaderPlugin = ({
           );
           if (!pair) return null;
 
+          const [, fontLoader, cache] = pair;
+
           const normalizedId = normalizeTargetCssId(id);
-
-          if (targetCssMap.has(normalizedId)) return;
-
           const isDev = config?.command === 'serve';
-          const fontLoader = await pair[1];
 
-          const tempFileCache = new Map<string, Buffer>();
+          if (
+            // unnecessary to load the same file in dev mode
+            isDev &&
+            targetCssMap.has(normalizedId) &&
+            lastEnv === this.environment.name
+          ) return;
+          lastEnv = this.environment.name;
 
           const {
             path: relativePathFromRoot,
@@ -129,7 +139,7 @@ export const nextFontLoaderPlugin = ({
 
           const fontNames: string[] = [];
 
-          const emitFontFile: FontLoaderOptions['emitFontFile'] = (
+          const emitFontFile: Parameters<FontLoader>[0]['emitFontFile'] = (
             content: Buffer,
             ext: string,
             preload: boolean,
@@ -146,7 +156,7 @@ export const nextFontLoaderPlugin = ({
 
             fontNames.push(name);
 
-            const outputPath = fontNameToUrl(name, config);
+            const outputPath = fontNameToUrl(name);
 
             if (!isDev) {
               this.emitFile({
@@ -154,24 +164,22 @@ export const nextFontLoaderPlugin = ({
                 fileName: outputPath.slice(1),
                 source: content,
               });
-            } else {
-              fontFileMap.set(outputPath, content);
             }
 
-            tempFileCache.set(outputPath, content);
+            fontFileMap.set(outputPath, content);
 
             return outputPath;
           };
 
           const absPath = path.join(config!.root, relativePathFromRoot);
 
-          const fontData = await fontLoader({
+          const fontData = await (await fontLoader)({
             functionName,
             variableName,
             data,
             emitFontFile,
             ctx: this,
-            cache: pair[2],
+            cache,
             isDev,
             isServer: opts?.ssr ?? false,
             id: relativePathFromRoot,
@@ -188,15 +196,21 @@ export const nextFontLoaderPlugin = ({
             (fileToFontNames.get(absPath) || []).concat(fontNames),
           );
 
+          const targetCss = await nextFontPostcss(
+            relativePathFromRoot,
+            fontData,
+          );
+
           if (fontImports[absPath]) {
-            fontImports[absPath] = fontImports[absPath].filter(
-              (item) =>
-                encodeURIPath(
-                  fileURLToPath(
-                    import.meta.resolve(removeQuerySuffix(item)),
-                  ).concat(getQuerySuffix(item)),
-                ) !== encodeURIPath(id),
-            );
+            for (const fontImport of fontImports[absPath]) {
+              if (
+                fileURLToPath(
+                  import.meta.resolve(removeQuerySuffix(fontImport.id)),
+                ).concat(getQuerySuffix(fontImport.id)) === encodeURIPath(id)
+              ) {
+                fontImport.css = targetCss.code;
+              }
+            }
 
             if (!calledFinished && !Object.values(fontImports).flat().length) {
               await onFinished(fileToFontNames).finally(() => {
@@ -204,11 +218,6 @@ export const nextFontLoaderPlugin = ({
               });
             }
           }
-
-          const targetCss = await nextFontPostcss(
-            relativePathFromRoot,
-            fontData,
-          );
 
           /*
           let preloadedChanged = false;
@@ -232,8 +241,6 @@ export const nextFontLoaderPlugin = ({
           */
 
           targetCssMap.set(normalizedId, targetCss);
-
-          return targetCss.code;
         },
       },
       transform: {
@@ -275,8 +282,6 @@ export const nextFontLoaderPlugin = ({
             };
           }
 
-          // styles.set(id, css);
-
           return {
             code: modulesCode,
             map,
@@ -288,22 +293,39 @@ export const nextFontLoaderPlugin = ({
     {
       name: 'next-font:build',
       apply: 'build',
-      enforce: 'post',
-      async renderChunk(code, chunk, opts) {
-        /*
-        const chunkCSS = Array.from(styles.values()).join();
+      renderChunk: {
+        order: 'post',
+        async handler(_code, chunk) {
+          const resolvedModuleIds = (
+            await Promise.all(
+              chunk.moduleIds.map(async (moduleId) =>
+                this.resolve(moduleId).then((resolved) => resolved?.id),
+              ),
+            )
+          ).filter(Boolean) as string[];
 
-        function ensureFileExt(name: string, ext: string) {
-          return normalizePath(
-            path.format({ ...path.parse(name), base: undefined, ext }),
-          );
-        }
+          if (resolvedModuleIds.length) {
+            const targetCss = resolvedModuleIds
+              .map(
+                (id) =>
+                  Object.assign(
+                    {},
+                    targetCssMap.get(normalizeTargetCssId(id)) ?? {},
+                    { id },
+                  ) as { id: string; code?: string },
+              )
+              .filter(
+                (t) => t != null && 'code' in t && typeof t.code === 'string',
+              );
+            const chunkCSS = targetCss.map((t) => t.code).join();
 
-        let s: MagicString | undefined;
+            function ensureFileExt(name: string, ext: string) {
+              return normalizePath(
+                path.format({ ...path.parse(name), base: undefined, ext }),
+              );
+            }
 
-        if (chunkCSS) {
-          if (this.environment.config.build.cssCodeSplit) {
-            if (opts.format === 'es' || opts.format === 'cjs') {
+            if (chunkCSS) {
               const cssFullAssetName = ensureFileExt(chunk.name, '.css');
               // if facadeModuleId doesn't exist or doesn't have a CSS extension,
               // that means a JS entry file imports a CSS file.
@@ -318,141 +340,22 @@ export const nextFontLoaderPlugin = ({
               const referenceId = this.emitFile({
                 type: 'asset',
                 name: cssAssetName,
-                // originalFileName,
                 source: chunkCSS,
               });
               chunk.viteMetadata!.importedCss.add(
                 this.getFileName(referenceId),
               );
-            } else if (this.environment.config.consumer === 'client') {
-              // legacy build and inline css
 
-              // Entry chunk CSS will be collected into `chunk.viteMetadata.importedCss`
-              // and injected later by the `'vite:build-html'` plugin into the `index.html`
-              // so it will be duplicated. (https://github.com/vitejs/vite/issues/2062#issuecomment-782388010)
-              // But because entry chunk can be imported by dynamic import,
-              // we shouldn't remove the inlined CSS. (#10285)
-
-              const cssString = JSON.stringify(chunkCSS);
-              // cssString =
-              //   renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() ||
-              //   cssString;
-              const style = `__vite_style__`;
-              const injectCode =
-                `var ${style} = document.createElement('style');` +
-                `${style}.textContent = ${cssString};` +
-                `document.head.appendChild(${style});`;
-              let injectionPoint: number;
-              const wrapIdx = code.indexOf('System.register');
-              const singleQuoteUseStrict = `'use strict';`;
-              const doubleQuoteUseStrict = `"use strict";`;
-              if (wrapIdx >= 0) {
-                const executeFnStart = code.indexOf('execute:', wrapIdx);
-                injectionPoint = code.indexOf('{', executeFnStart) + 1;
-              } else if (code.includes(singleQuoteUseStrict)) {
-                injectionPoint =
-                  code.indexOf(singleQuoteUseStrict) +
-                  singleQuoteUseStrict.length;
-              } else if (code.includes(doubleQuoteUseStrict)) {
-                injectionPoint =
-                  code.indexOf(doubleQuoteUseStrict) +
-                  doubleQuoteUseStrict.length;
-              } else {
-                throw new Error('Injection point for inlined CSS not found');
+              for (const fileName of targetCss
+                .flatMap((t) => targetCssAssets.get(t.id))
+                .filter(Boolean) as string[]) {
+                chunk.viteMetadata!.importedAssets.add(fileName);
               }
-              s ||= new MagicString(code);
-              s.appendRight(injectionPoint, injectCode);
             }
-          } else {
-            // @ts-expect-error
-            const publicAssetUrlMap = publicAssetUrlCache.get(config!)!;
-
-            // resolve asset URL placeholders to their built file URLs
-            const resolveAssetUrlsInCss = (
-              chunkCSS: string,
-              cssAssetName: string
-            ) => {
-              const encodedPublicUrls = config?.command === "build";
-
-              const relative = config?.base === "./" || config?.base === "";
-              const cssAssetDirname =
-                encodedPublicUrls || relative
-                  ? slash(getCssAssetDirname(cssAssetName))
-                  : undefined;
-
-              const toRelative = (filename: string) => {
-                // relative base + extracted CSS
-                const relativePath = normalizePath(
-                  path.relative(cssAssetDirname!, filename)
-                );
-                return relativePath[0] === "."
-                  ? relativePath
-                  : "./" + relativePath;
-              };
-
-              // replace asset url references with resolved url.
-              chunkCSS = chunkCSS.replace(
-                assetUrlRE,
-                (_, fileHash, postfix = "") => {
-                  const filename = this.getFileName(fileHash) + postfix;
-                  chunk.viteMetadata!.importedAssets.add(cleanUrl(filename));
-                  return encodeURIPath(
-                    toOutputFilePathInCss(
-                      filename,
-                      "asset",
-                      cssAssetName,
-                      "css",
-                      // @ts-expect-error
-                      config,
-                      toRelative
-                    )
-                  );
-                }
-              );
-              // resolve public URL from CSS paths
-              if (encodedPublicUrls) {
-                const relativePathToPublicFromCSS = normalizePath(
-                  path.relative(cssAssetDirname!, "")
-                );
-                chunkCSS = chunkCSS.replace(publicAssetUrlRE, (_, hash) => {
-                  const publicUrl = publicAssetUrlMap.get(hash)!.slice(1);
-                  return encodeURIPath(
-                    toOutputFilePathInCss(
-                      publicUrl,
-                      "public",
-                      cssAssetName,
-                      "css",
-                      // @ts-ignore
-                      config!,
-                      () => `${relativePathToPublicFromCSS}/${publicUrl}`
-                    )
-                  );
-                });
-              }
-              return chunkCSS;
-            };
-
-            // resolve public URL from CSS paths, we need to use absolute paths
-            chunkCSS = resolveAssetUrlsInCss(chunkCSS, getCssBundleName());
-            // finalizeCss is called for the aggregated chunk in generateBundle
-
-            chunkCSSMap.set(chunk.fileName, chunkCSS);
           }
-        }
 
-        if (s) {
-          if (config?.build.sourcemap) {
-            return {
-              code: s.toString(),
-              map: s.generateMap({ hires: 'boundary' }),
-            };
-          } else {
-            return { code: s.toString() };
-          }
-        }
-        */
-
-        return null;
+          return null;
+        },
       },
     },
   ];

@@ -1,16 +1,13 @@
-#!/usr/bin/env bun
-
-import fs from 'node:fs/promises';
 import path from 'node:path';
 import { type BundleConfig, bundle } from 'bunchee';
 import glob from 'fast-glob';
 
+const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
   minify: true,
-  tsconfig: path.join(import.meta.dirname, 'tsconfig.json'),
+  tsconfig: path.join(cwd, 'tsconfig.json'),
 };
 
-const cwd = import.meta.dirname;
 const nextFontDir = Bun.fileURLToPath(
   path.dirname(
     import.meta.resolve('@vercel/next.js/packages/font/package.json'),
@@ -18,29 +15,12 @@ const nextFontDir = Bun.fileURLToPath(
 );
 const distDir = path.join(cwd, 'dist');
 
-await fs.rm(path.join(cwd, 'dist'), { recursive: true, force: true });
-
-let start = performance.now();
-await bundle(
-  path.resolve(nextFontDir, 'fontkit.js'),
-  Object.assign({}, config, {
-    cwd: import.meta.dirname,
-    file: path.join('dist', 'fontkit.js'),
-    pkg: {
-      exports: {},
-    },
-    _callbacks: {
-      onBuildEnd() {
-        console.log(`Built fontkit [${performance.now() - start}ms]`);
-      },
-    },
-  }),
-);
-
-const files = await glob('src/**/*.ts', {
-  cwd: nextFontDir,
-  ignore: ['src/**/*.test.ts'],
-});
+const files = (
+  await glob('src/**/*.ts', {
+    cwd: nextFontDir,
+    ignore: ['src/**/*.test.ts'],
+  })
+).filter((file) => !path.basename(file).startsWith('loader'));
 
 const exports = Object.fromEntries(
   files.map((file) => {
@@ -63,7 +43,7 @@ const exports = Object.fromEntries(
   }),
 );
 
-start = performance.now();
+const start = performance.now();
 await bundle(
   '',
   Object.assign({}, config, {

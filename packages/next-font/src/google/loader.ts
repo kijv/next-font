@@ -1,13 +1,42 @@
-import { fetchCSSFromGoogleFonts } from 'next-font/dist/google/fetch-css-from-google-fonts';
-import { fetchFontFile } from 'next-font/dist/google/fetch-font-file';
-import { findFontFilesInCss } from 'next-font/dist/google/find-font-files-in-css';
-import { getFallbackFontOverrideMetrics } from 'next-font/dist/google/get-fallback-font-override-metrics';
-import { getFontAxes } from 'next-font/dist/google/get-font-axes';
-import { getGoogleFontsUrl } from 'next-font/dist/google/get-google-fonts-url';
-import { validateGoogleFontFunctionCall } from 'next-font/dist/google/validate-google-font-function-call';
-import { nextFontError } from 'next-font/dist/next-font-error';
 import type { AdjustFontFallback, FontLoader } from '../declarations';
-import { escapeStringRegexp } from '../utils';
+import { createCachedImport, escapeStringRegexp } from '../utils';
+
+// @ts-expect-error treated as external (bunchee)
+import { findFontFilesInCss } from './find-font-files-in-css.js';
+// @ts-expect-error treated as external (bunchee)
+import { getFontAxes } from './get-font-axes.js';
+// @ts-expect-error treated as external (bunchee)
+import { getGoogleFontsUrl } from './get-google-fonts-url.js';
+// @ts-expect-error treated as external (bunchee)
+import { nextFontError as _nextFontError } from '../next-font-error.js';
+// @ts-expect-error treated as external (bunchee)
+import { validateGoogleFontFunctionCall } from './validate-google-font-function-call.js';
+
+const nextFontError =
+  _nextFontError as typeof import('../../dist/next-font-error')['nextFontError'];
+
+const importGetFallbackFontOverrideMetrics = createCachedImport<
+  typeof import('../../dist/google/get-fallback-font-override-metrics')
+>(() =>
+  // @ts-expect-error treated as external (bunchee)
+  import('./get-fallback-font-override-metrics.js').then(
+    (mod) => mod.default || mod,
+  ),
+);
+
+const importFetchCSSFromGoogleFonts = createCachedImport<
+  typeof import('../../dist/google/fetch-css-from-google-fonts')
+>(() =>
+  // @ts-expect-error treated as external (bunchee)
+  import('./fetch-css-from-google-fonts.js').then((mod) => mod.default || mod),
+);
+
+const importFetchFontFile = createCachedImport<
+  typeof import('../../dist/google/fetch-font-file')
+>(() =>
+  // @ts-expect-error treated as external (bunchee)
+  import('./fetch-font-file.js').then((mod) => mod.default || mod),
+);
 
 const loader: FontLoader = async ({
   functionName,
@@ -29,7 +58,9 @@ const loader: FontLoader = async ({
     adjustFontFallback,
     variable,
     subsets,
-  } = validateGoogleFontFunctionCall(functionName, data[0]);
+  } = (
+    validateGoogleFontFunctionCall as typeof import('../../dist/google/validate-google-font-function-call')['validateGoogleFontFunctionCall']
+  )(functionName, data[0]);
 
   // Validate and get the font axes required to generated the URL
   const fontAxes = getFontAxes(
@@ -44,7 +75,13 @@ const loader: FontLoader = async ({
 
   // Get precalculated fallback font metrics, used to generate the fallback font CSS
   const adjustFontFallbackMetrics: AdjustFontFallback | undefined =
-    adjustFontFallback ? getFallbackFontOverrideMetrics(fontFamily) : undefined;
+    adjustFontFallback
+      ? await (async () => {
+          const { getFallbackFontOverrideMetrics } =
+            await importGetFallbackFontOverrideMetrics();
+          return getFallbackFontOverrideMetrics(fontFamily);
+        })()
+      : undefined;
 
   const result = {
     fallbackFonts: fallback,
@@ -68,10 +105,16 @@ const loader: FontLoader = async ({
     let fontFaceDeclarations =
       cssCache != null && hasCachedCSS
         ? cssCache.get(url)
-        : await fetchCSSFromGoogleFonts(url, fontFamily, isDev).catch((err) => {
-            console.error(err);
-            return null;
-          });
+        : await (async () => {
+            const { fetchCSSFromGoogleFonts } =
+              await importFetchCSSFromGoogleFonts();
+            return await fetchCSSFromGoogleFonts(url, fontFamily, isDev).catch(
+              (err: Error) => {
+                console.error(err);
+                return null;
+              },
+            );
+          })();
     if (!hasCachedCSS) {
       cssCache?.set(url, fontFaceDeclarations ?? null);
     } else {
@@ -82,13 +125,12 @@ const loader: FontLoader = async ({
     }
 
     // CSS Variables may be set on a body tag, ignore them to keep the CSS module pure
-    fontFaceDeclarations = fontFaceDeclarations.split('body {', 1)[0]!;
+    fontFaceDeclarations = fontFaceDeclarations!.split('body {', 1)[0]!;
 
     // Find font files to download, provide the array of subsets we want to preload if preloading is enabled
-    const fontFiles = findFontFilesInCss(
-      fontFaceDeclarations,
-      preload ? subsets : undefined,
-    );
+    const fontFiles = (
+      findFontFilesInCss as typeof import('../../dist/google/find-font-files-in-css')['findFontFilesInCss']
+    )(fontFaceDeclarations, preload ? subsets : undefined);
 
     // Download the font files extracted from the CSS
     const downloadedFiles = await Promise.all(
@@ -98,10 +140,15 @@ const loader: FontLoader = async ({
         const fontFileBuffer =
           fontCache != null && hasCachedFont
             ? fontCache.get(googleFontFileUrl)
-            : await fetchFontFile(googleFontFileUrl, isDev).catch((err) => {
-                console.error(err);
-                return null;
-              });
+            : await (async () => {
+                const { fetchFontFile } = await importFetchFontFile();
+                return await fetchFontFile(googleFontFileUrl, isDev).catch(
+                  (err: Error) => {
+                    console.error(err);
+                    return null;
+                  },
+                );
+              })();
         if (!hasCachedFont) {
           fontCache?.set(googleFontFileUrl, fontFileBuffer ?? null);
         } else {

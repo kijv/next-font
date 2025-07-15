@@ -1,12 +1,31 @@
 import fs from 'node:fs/promises';
-import { getFallbackMetricsFromFontFile } from 'next-font/dist/local/get-fallback-metrics-from-font-file';
-import { pickFontFileForFallbackGeneration } from 'next-font/dist/local/pick-font-file-for-fallback-generation';
-import { validateLocalFontFunctionCall } from 'next-font/dist/local/validate-local-font-function-call';
+import type { Font, FontCollection } from 'fontkit';
 import type { AdjustFontFallback, FontLoader } from '../declarations';
 import { createCachedImport } from '../utils';
 
+// @ts-expect-error treated as external (bunchee)
+import { validateLocalFontFunctionCall } from './validate-local-font-function-call.js';
+
+const importGetFallbackMetricsFromFontFile = createCachedImport<
+  typeof import('../../dist/local/get-fallback-metrics-from-font-file')
+>(() =>
+  // @ts-expect-error treated as external (bunchee)
+  import('./get-fallback-metrics-from-font-file.js').then(
+    (mod) => mod.default || mod,
+  ),
+);
+
+const importPickFontFileForFallbackGeneration = createCachedImport<
+  typeof import('../../dist/local/pick-font-file-for-fallback-generation')
+>(() =>
+  // @ts-expect-error treated as external (bunchee)
+  import('./pick-font-file-for-fallback-generation.js').then(
+    (mod) => mod.default || mod,
+  ),
+);
+
 const importFontkit = createCachedImport(() =>
-  import('next-font/dist/fontkit').then((mod) => mod.default || mod),
+  import('../fontkit').then((mod) => mod.default || mod),
 );
 
 const loader: FontLoader = async ({
@@ -27,7 +46,9 @@ const loader: FontLoader = async ({
     declarations,
     weight: defaultWeight,
     style: defaultStyle,
-  } = validateLocalFontFunctionCall(functionName, data[0]);
+  } = (
+    validateLocalFontFunctionCall as typeof import('../../dist/local/validate-local-font-function-call')['validateLocalFontFunctionCall']
+  )(functionName, data[0]);
 
   // Load all font files and emit them to the .next output directory
   // Also generate a @font-face CSS for each font file
@@ -46,7 +67,7 @@ const loader: FontLoader = async ({
 
       // Try to load font metadata from the font file using fontkit.
       // The data is used to calculate the fallback font override values.
-      let fontMetadata: any;
+      let fontMetadata: Font | FontCollection | undefined;
       try {
         fontMetadata = fontFromBuffer(fileBuffer);
       } catch (e) {
@@ -91,10 +112,14 @@ const loader: FontLoader = async ({
   // Calculate the fallback font override values using the font file metadata
   let adjustFontFallbackMetrics: AdjustFontFallback | undefined;
   if (adjustFontFallback !== false) {
+    const { pickFontFileForFallbackGeneration } =
+      await importPickFontFileForFallbackGeneration();
     const fallbackFontFile = pickFontFileForFallbackGeneration(fontFiles);
     if (fallbackFontFile.fontMetadata) {
+      const { getFallbackMetricsFromFontFile } =
+        await importGetFallbackMetricsFromFontFile();
       adjustFontFallbackMetrics = getFallbackMetricsFromFontFile(
-        fallbackFontFile.fontMetadata,
+        fallbackFontFile.fontMetadata as Font,
         adjustFontFallback === 'Times New Roman' ? 'serif' : 'sans-serif',
       );
     }

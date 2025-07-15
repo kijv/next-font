@@ -4,7 +4,7 @@ import type {
 } from 'vite';
 import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest';
 import { nextFontLoaderPlugin, nextFontManifestPlugin, nextFontTransformerPlugin, type OnFinished } from './plugins';
-import type { Mutable } from "./declarations";
+import type { Mutable, TargetCss } from "./declarations";
 
 // import { toOutputFilePathInCss } from "@vitejs/vite/packages/vite/src/node/build";
 // import { slash, cleanUrl } from "@vitejs/vite/packages/vite/src/shared/utils";
@@ -129,8 +129,8 @@ const nextFontPlugin = (): PluginOption[] => {
   };
   */
 
-  const fontImports: Record<string, string[]> = new Proxy<
-    Record<string, string[]>
+  const fontImports = new Proxy<
+    Record<string, TargetCss[]>
   >(
     {},
     {

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build-src": {
+      "inputs": ["../../node_modules/@vercel/next.js/packages/font/**"],
+      "outputs": ["dist/*/loader*", "dist/fontkit*"]
+    },
+    "build-next-font": {
+      "inputs": ["src/**/*.ts"],
+      "outputs": ["dist/**"]
+    }
+  }
+}

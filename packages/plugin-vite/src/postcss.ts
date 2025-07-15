@@ -1,27 +1,15 @@
-import postcssNextFontPlugin from 'next/dist/build/webpack/loaders/next-font-loader/postcss-next-font.js';
 import loaderUtils from 'loader-utils';
+import postcssNextFontPlugin from 'next/dist/build/webpack/loaders/next-font-loader/postcss-next-font.js';
+import type { FontLoader } from 'next-font';
 import type PostCSS from 'postcss';
-import queryString from 'query-string';
-import type { FontImportDataQuery } from './ast/transform';
-import type { FontLoader } from './declarations';
 import {
   createCachedImport,
-  parseDataQuery,
-  removeQuerySuffix,
 } from './utils';
 
 const importPostcssModules = createCachedImport(
   () => import('postcss-modules'),
 );
 const importPostcss = createCachedImport(() => import('postcss'));
-
-export const normalizeTargetCssId = (id: string) => {
-  const data = parseDataQuery<FontImportDataQuery>(id);
-  return queryString.stringifyUrl({
-    url: removeQuerySuffix(id),
-    query: { data: data != null ? JSON.stringify(data) : undefined },
-  });
-};
 
 export const nextFontPostcss = async (
   relativePathFromRoot: string,
@@ -117,7 +105,7 @@ const runPostCss = async ({
       'column' in e &&
       typeof e.column === 'number'
     ) {
-      e = Object.assign(
+      throw Object.assign(
         {},
         {
           message: `[postcss] ${e.message}`,
@@ -130,11 +118,10 @@ const runPostCss = async ({
         },
       );
     }
-    throw e;
   }
 
   return {
-    code: postcssResult.css,
+    code: postcssResult!.css,
     map: { mappings: '' as const },
   };
 };

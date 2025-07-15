@@ -3,18 +3,24 @@ import MagicString from 'magic-string';
 import type { PluginOption, ResolvedConfig } from 'vite';
 import { visit } from '@/ast/transform';
 import { createCachedImport, tryCatch } from '@/utils';
+import type { TargetCss } from '@/declarations';
 
-// @ts-expect-error
-const importEscodegen = createCachedImport(() => import('escodegen-wallaby') as unknown as Promise<typeof import('escodegen')>);
+const importEscodegen = createCachedImport(
+  () =>
+    // @ts-expect-error
+    import('escodegen-wallaby') as unknown as Promise<
+      typeof import('escodegen')
+    >,
+);
 
 export type OnFontImportsChanged = (id: string, newValue: string[]) => void;
 
 export const nextFontTransformerPlugin = ({
   fontImports,
-  onFontImportsChanged
+  onFontImportsChanged,
 }: {
-  fontImports: Record<string, string[]>,
-  onFontImportsChanged: OnFontImportsChanged,
+  fontImports: Record<string, TargetCss[]>;
+  onFontImportsChanged: OnFontImportsChanged;
 }): PluginOption[] => {
   let config: ResolvedConfig | null = null;
 
@@ -60,18 +66,19 @@ export const nextFontTransformerPlugin = ({
             (i as import('estree').ImportDeclaration).source.value as string,
         );
 
-
         const previousFontImports = fontImports[id];
         if (previousFontImports) {
           const importsChanged = nextFontImports.some(
-            (i) => !previousFontImports.includes(i),
+            (i) => !previousFontImports.some((p) => p.id === i),
           );
           if (importsChanged) {
             onFontImportsChanged(id, nextFontImports);
           }
         }
 
-        fontImports[id] = nextFontImports;
+        fontImports[id] = nextFontImports.map((i) => ({
+          id: i,
+        }));
 
         /*
           const promises: Promise<void>[] = [];
@@ -139,10 +146,6 @@ export const nextFontTransformerPlugin = ({
               (i as import('estree').ImportDeclaration).source.value as string,
           ),
         );*/
-
-        if (!this.getWatchFiles().includes(id)) {
-          this.addWatchFile(id);
-        }
 
         const escodegen = await importEscodegen();
 

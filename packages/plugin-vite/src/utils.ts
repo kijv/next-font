@@ -72,21 +72,6 @@ export const tryCatch = async <T, E = Error>(
 export const importResolve = async (id: string) =>
   import.meta.resolve(removeQuerySuffix(id));
 
-export const addDataQuery = <T>(url: string, data: T) => {
-  return `${url}?${queryString.stringify({
-    data: JSON.stringify(data),
-  })}`;
-};
-
-export const parseDataQuery = <T>(url: string) => {
-  const query = queryString.parse(getQuerySuffix(url));
-  try {
-    return JSON.parse(query.data as string) as T;
-  } catch {
-    return null;
-  }
-};
-
 /**
  * Encodes the URI path portion (ignores part after ? or #)
  */
@@ -98,13 +83,25 @@ export function encodeURIPath(uri: string): string {
 }
 
 const postfixRE = /[?#].*$/;
-export function cleanUrl(url: string): string {
+function cleanUrl(url: string): string {
   return url.replace(postfixRE, '');
 }
 
 export const fontNameToUrl = (
   fontName: string,
-  viteConfig?: ResolvedConfig | null,
 ) => {
-  return [''].concat([viteConfig?.build?.assetsDir, '_next', fontName].filter(Boolean) as string[]).join('/');
+  return [''].concat(['_next', fontName].filter(Boolean) as string[]).join('/');
+};
+
+export const normalizeTargetCssId = (id: string) => {
+  return queryString.stringifyUrl({
+    url: removeQuerySuffix(id),
+    query: queryString.parse(
+      getQuerySuffix(id),
+    )
+  });
+};
+
+export const isTargetCssId = (id: string) => {
+  return /\.css(?:$|\?)/.test(id)
 };
