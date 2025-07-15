@@ -20,7 +20,6 @@
     "bunchee": "^6.5.4",
     "fast-glob": "^3.3.3",
     "next": "15.4.0-canary.110",
-    "next-font": "workspace:*",
     "shell-quote": "^1.8.3",
     "turbo": "^2.5.4",
     "vc": "^0.1.4",
@@ -35,5 +34,5 @@
   "patchedDependencies": {
     "bunchee@6.5.4": "patches/bunchee@6.5.4.patch"
   },
-  "packageManager": "bun@1.2.17"
+  "packageManager": "bun@1.2.18"
 }

@@ -1,12 +1,14 @@
 {
   "name": "@next-font/plugin-vite",
   "description": "Vite plugin for next/font (@next/font)",
-  "type": "module",
   "version": "1.1.3",
   "license": "BSD-2-Clause",
+  "type": "module",
   "files": [
     "dist"
   ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
