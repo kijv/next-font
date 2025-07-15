@@ -2,7 +2,7 @@
   "name": "@next-font/plugin-vite",
   "description": "Vite plugin for next/font (@next/font)",
   "type": "module",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "license": "BSD-2-Clause",
   "files": [
     "dist"
@@ -18,7 +18,7 @@
     "dev": "bunchee --external=vite,postcss,next-font -w --dts --sourcemap"
   },
   "dependencies": {
-    "next-font": "workspace:~",
+    "next-font": "workspace:*",
     "postcss": "^8.5.6"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "vite": "7.0.1"
   },
   "peerDependencies": {
-    "next-font": "workspace:~"
+    "next-font": "workspace:*"
   },
   "publishConfig": {
     "access": "public"
