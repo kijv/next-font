@@ -13,7 +13,6 @@
     "biome:fix": "biome check --write"
   },
   "devDependencies": {
-    "@next-font/plugin-vite": "workspace:*",
     "@next/font": "canary",
     "@types/bun": "latest",
     "@types/shell-quote": "^1.7.5",
@@ -21,7 +20,6 @@
     "bunchee": "^6.5.4",
     "fast-glob": "^3.3.3",
     "next": "15.4.0-canary.110",
-    "next-font": "workspace:*",
     "shell-quote": "^1.8.3",
     "turbo": "^2.5.4",
     "vc": "^0.1.4",

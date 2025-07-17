@@ -4,7 +4,6 @@
     "": {
       "name": "@repo/next-font",
       "devDependencies": {
-        "@next-font/plugin-vite": "workspace:*",
         "@next/font": "canary",
         "@types/bun": "latest",
         "@types/shell-quote": "^1.7.5",
@@ -12,7 +11,6 @@
         "bunchee": "^6.5.4",
         "fast-glob": "^3.3.3",
         "next": "15.4.0-canary.110",
-        "next-font": "workspace:*",
         "shell-quote": "^1.8.3",
         "turbo": "^2.5.4",
         "vc": "^0.1.4",
@@ -26,7 +24,7 @@
     },
     "packages/next-font": {
       "name": "next-font",
-      "version": "1.1.3-canary.0",
+      "version": "1.1.3",
       "devDependencies": {
         "@types/fontkit": "^2.0.8",
         "fontkit": "^2.0.4",
@@ -34,7 +32,7 @@
     },
     "packages/plugin-vite": {
       "name": "@next-font/plugin-vite",
-      "version": "1.1.4-canary.0",
+      "version": "1.1.4",
       "dependencies": {
         "postcss": "^8.5.6",
       },

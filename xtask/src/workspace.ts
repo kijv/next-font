@@ -145,7 +145,7 @@ export async function runBump(names: Set<string>, versionType?: VersionType, dry
   }
 
   // 5. Update lockfile, git add, commit, tag
-  await createCommand(`${pm!.name} install`).dryRun(dryRun).execute()
+  await createCommand(`${pm!.name} install --force`).dryRun(dryRun).execute()
   await createCommand(`git add .`).dryRun(dryRun).execute()
 
   const tagsMessage = tagsToApply.map((s) => `- ${s}`).join('\n')
