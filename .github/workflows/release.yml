@@ -76,6 +76,8 @@ jobs:
           fi
 
           bun xtask workspace $ARGS
+          # update lockfile
+          bun install
 
       - name: Stage
         run: |
