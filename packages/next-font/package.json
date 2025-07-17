@@ -39,7 +39,10 @@
       "import": "./dist/*.js",
       "types": "./dist/*.d.ts"
     },
-    ".": "./dist/index.js"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "scripts": {
     "build": "bun run clean && turbo run build-next-font && turbo run build-src",
