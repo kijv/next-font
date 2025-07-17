@@ -124,7 +124,7 @@ export const nextFontManifestPlugin = ({
               })`,
             ].join('\n')
           }
-        }
+        },
       },
     },
   ]

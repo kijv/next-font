@@ -1,7 +1,6 @@
 import path from 'node:path'
 import { type BundleConfig, bundle } from 'bunchee'
 import glob from 'fast-glob'
-import { setTimeout } from 'node:timers/promises'
 
 const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
