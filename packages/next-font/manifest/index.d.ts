@@ -4,7 +4,7 @@ export type NextFontManifest = Readonly<
   }
 >
 
-declare const manifest: NextFontManifest
+export declare const manifest: NextFontManifest
 
 /**
  * Get hrefs for fonts to preload
@@ -13,9 +13,9 @@ declare const manifest: NextFontManifest
  * Returns empty string[] if there are fonts but none to preload and no other fonts have been preloaded
  * Returns null if there are fonts but none to preload and at least some were previously preloaded
  */
-declare const getPreloadableFonts: (filePath?: string) => string[] | null
+export declare const getPreloadableFonts: (filePath?: string) => string[] | null
 
-declare const getFontMetadata: (filePath?: string) => {
+export declare const getFontMetadata: (filePath?: string) => {
   preconnect: {
     href: string
     type: string
@@ -29,4 +29,8 @@ declare const getFontMetadata: (filePath?: string) => {
   }[]
 }
 
-export { manifest, getPreloadableFonts, getFontMetadata }
+export default {
+  manifest,
+  getPreloadableFonts,
+  getFontMetadata,
+}

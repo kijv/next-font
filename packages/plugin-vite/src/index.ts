@@ -11,7 +11,7 @@ import {
 } from './plugins'
 import { getQuerySuffix, normalizeTargetCssId, removeQuerySuffix } from './utils'
 
-const nextFontPlugin = (): PluginOption[] => {
+const nextFont = (): PluginOption[] => {
   const servers: ViteDevServer[] = []
 
   const fontImports = new Proxy<Record<string, TargetCss[]>>(
@@ -143,4 +143,4 @@ const nextFontPlugin = (): PluginOption[] => {
   ] as PluginOption[]
 }
 
-export default nextFontPlugin
+export default nextFont

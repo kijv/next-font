@@ -109,7 +109,7 @@ export const nextFontLoaderPlugin = ({
     { resetCalledFinished, removeTargetCss },
     [
       {
-        name: 'next-fon:scan',
+        name: 'next-font:loader:scan',
         enforce: 'pre',
         async configResolved(resolvedConfig) {
           config = resolvedConfig
@@ -132,7 +132,7 @@ export const nextFontLoaderPlugin = ({
         load: {
           order: 'pre',
           async handler(id, opts) {
-            if (!/\.css(?:$|\?)/.test(id)) return
+            if (!/\.css(?:$|\?)/.test(id)) return null
 
             const { data: resolvedId, error } = await tryCatch(importResolve(removeQuerySuffix(id)))
             if (error) return null
@@ -252,12 +252,12 @@ export const nextFontLoaderPlugin = ({
         transform: {
           order: 'post',
           async handler(_code, id, opts) {
-            if (!/\.css(?:$|\?)/.test(id)) return
+            if (!/\.css(?:$|\?)/.test(id)) return null
 
             const normalizedId = normalizeTargetCssId(id)
 
             const targetCss = targetCssMap.get(normalizedId)
-            if (!targetCss) return
+            if (!targetCss) return null
             const { modules, code: css } = targetCss
 
             const modulesCode = dataToEsm(modules, {
