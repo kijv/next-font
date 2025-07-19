@@ -14,7 +14,7 @@ Vite config file:
 
 ```js
 import { defineConfig } from 'vite'
-import nextFont from '@next-font/vite'
+import nextFont from '@next-font/plugin-vite'
 
 export default defineConfig({
   plugins: [nextFont()],
