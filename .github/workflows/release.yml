@@ -46,6 +46,8 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.18"
 
       - name: Install dependencies
         run: bun install
@@ -75,7 +77,6 @@ jobs:
             ARGS="$ARGS --dry-run"
           fi
 
-          rm -f bun.lock
           bun xtask workspace $ARGS
 
       - name: Stage
