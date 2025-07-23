@@ -1,7 +1,7 @@
 {
   "name": "@next-font/plugin-vite",
   "description": "Vite plugin for next/font (@next/font)",
-  "version": "1.2.1",
+  "version": "1.2.2-canary.0",
   "license": "BSD-2-Clause",
   "type": "module",
   "files": [
