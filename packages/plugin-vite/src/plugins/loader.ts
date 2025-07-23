@@ -214,17 +214,21 @@ export const nextFontLoaderPlugin = ({
               },
             })
 
-            fileToFontNames.set(absPath, {
-              ...fileToFontNames.get(absPath),
+            const normalizedAbsPath = normalizePath(absPath)
+
+            fileToFontNames.set(normalizedAbsPath, {
+              ...fileToFontNames.get(normalizedAbsPath),
               [normalizedId]: Array.from(
-                new Set((fileToFontNames.get(absPath)?.[normalizedId] || []).concat(fontNames))
+                new Set(
+                  (fileToFontNames.get(normalizedAbsPath)?.[normalizedId] || []).concat(fontNames)
+                )
               ),
             })
 
             const targetCss = await nextFontPostcss(relativePathFromRoot, fontData)
 
-            if (fontImports[absPath]) {
-              for (const fontImport of fontImports[absPath]) {
+            if (fontImports[normalizedAbsPath]) {
+              for (const fontImport of fontImports[normalizedAbsPath]) {
                 if (
                   fileURLToPath(import.meta.resolve(removeQuerySuffix(fontImport.id))).concat(
                     getQuerySuffix(fontImport.id)
@@ -258,12 +262,15 @@ export const nextFontLoaderPlugin = ({
 
             const targetCss = targetCssMap.get(normalizedId)
             if (!targetCss) return null
-            const { modules, code: css } = targetCss
+            const { modules, code: css, exports } = targetCss
 
-            const modulesCode = dataToEsm(modules, {
-              namedExports: true,
-              preferConst: true,
-            })
+            const modulesCode = dataToEsm(
+              Object.assign({}, modules, Object.fromEntries(exports.map((e) => [e.name, e.value]))),
+              {
+                namedExports: true,
+                preferConst: true,
+              }
+            )
 
             const map = config?.css.devSourcemap
               ? new MagicString(css).generateMap({ hires: true })
