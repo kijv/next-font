@@ -9,12 +9,12 @@ const config: BundleConfig = {
   tsconfig: path.join(cwd, 'tsconfig.json'),
 }
 
-console.log(cwd);
+const pkgJsonPath = Bun.fileURLToPath(import.meta.resolve('@next/font/package.json'))
+const pkgJson = await Bun.file(pkgJsonPath)
+assert.equal(await pkgJson.exists(), true)
+const pkg = await pkgJson.json()
 
-const nextFontDir = Bun.fileURLToPath(
-  path.dirname(import.meta.resolve('@vercel/next.js/packages/font/package.json'))
-)
-assert.equal(await Bun.file(nextFontDir).exists(), true)
+const nextFontDir = path.dirname(pkgJsonPath)
 const distDir = path.join(cwd, 'dist')
 
 const files = (
@@ -44,14 +44,15 @@ const start = performance.now()
 await bundle(
   '',
   Object.assign({}, config, {
-    cwd: nextFontDir,
     pkg: {
       types: undefined,
       exports,
     },
+    cwd: nextFontDir,
     _callbacks: {
       async onBuildEnd() {
         console.log(`Built @next/font [${performance.now() - start}ms]`)
+        Bun.write(pkgJson, JSON.stringify(pkg, null, 2))
       },
     },
   })
