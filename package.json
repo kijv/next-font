@@ -32,6 +32,6 @@
   },
   "packageManager": "bun@1.2.19",
   "patchedDependencies": {
-    "bunchee@6.5.4": "patches/bunchee@6.5.4.patch"
+    "bunchee": "patches/bunchee@6.5.4.patch"
   }
 }
