@@ -7,7 +7,6 @@
         "@next/font": "canary",
         "@types/bun": "latest",
         "@types/shell-quote": "^1.7.5",
-        "@vercel/next.js": "github:vercel/next.js#v15.4.0-canary.110",
         "bunchee": "6.5.4",
         "fast-glob": "^3.3.3",
         "next": "15.4.0-canary.110",
@@ -27,6 +26,7 @@
       "version": "1.2.0",
       "devDependencies": {
         "@types/fontkit": "^2.0.8",
+        "@vercel/next.js": "github:vercel/next.js#v15.4.0-canary.110",
         "fontkit": "^2.0.4",
       },
     },
@@ -67,9 +67,6 @@
         "semver": "^7.7.2",
       },
     },
-  },
-  "patchedDependencies": {
-    "bunchee@6.5.4": "patches/bunchee@6.5.4.patch",
   },
   "packages": {
     "@babel/code-frame": ["@babel/code-frame@7.27.1", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.27.1", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg=="],

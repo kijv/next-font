@@ -1,7 +1,7 @@
+import assert from 'node:assert'
 import path from 'node:path'
 import { type BundleConfig, bundle } from 'bunchee'
 import glob from 'fast-glob'
-import assert from 'node:assert'
 
 const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
