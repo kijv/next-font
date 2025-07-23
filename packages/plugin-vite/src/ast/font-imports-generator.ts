@@ -128,7 +128,7 @@ export class FontImportsGenerator {
           source: {
             type: 'Literal',
             value: queryString.stringifyUrl({
-              url: path.join(
+              url: path.posix.join(
                 this.remapImports[fontFunction.loader] || fontFunction.loader,
                 'target.css'
               ),
