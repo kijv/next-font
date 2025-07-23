@@ -105,7 +105,9 @@ jobs:
 
       # patches dont work with linker isolated so after we build we use linker isolate so workspace versions "should" resolve correctly
       - name: Workspace install
-        run: bun install --linker=isolated
+        run: |
+          rm -f bun.lock
+          bun install --linker=isolated
 
       - name: .npmrc
         run: |
