@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       semver:
-        description: 'Semver increment type'
+        description: "Semver increment type"
         required: true
-        default: 'patch'
+        default: "patch"
         type: choice
         options:
           - major
@@ -16,12 +16,12 @@ on:
           - beta
           - canary
       dry_run:
-        description: 'Dry run (do not actually release)'
+        description: "Dry run (do not actually release)"
         required: false
         default: false
         type: boolean
       packages:
-        description: 'Packages to release (space-separated)'
+        description: "Packages to release (space-separated)"
         required: true
         type: string
 
@@ -96,12 +96,20 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.18"
 
       - name: Install dependencies
         run: bun install
 
       - name: Build
         run: bun run build
+
+      # patches dont work with linker isolated so after we build we use linker isolate so workspace versions "should" resolve correctly
+      - name: Workspace install
+        run: |
+          rm -f bun.lock
+          bun install 
 
       - name: .npmrc
         run: |

@@ -51,8 +51,10 @@
     "build-src": "bun run ./scripts/build-src.ts"
   },
   "devDependencies": {
+    "@next/font": "https://gitpkg.vercel.app/vercel/next.js/packages/font?v15.4.3",
     "@types/fontkit": "^2.0.8",
-    "fontkit": "^2.0.4"
+    "fontkit": "^2.0.4",
+    "next": "15.4.3"
   },
   "publishConfig": {
     "access": "public"
