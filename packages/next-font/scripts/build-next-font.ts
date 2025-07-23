@@ -9,6 +9,8 @@ const config: BundleConfig = {
   tsconfig: path.join(cwd, 'tsconfig.json'),
 }
 
+console.log(cwd);
+
 const nextFontDir = Bun.fileURLToPath(
   path.dirname(import.meta.resolve('@vercel/next.js/packages/font/package.json'))
 )
