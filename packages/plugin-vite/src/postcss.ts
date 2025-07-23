@@ -26,13 +26,16 @@ export const nextFontPostcss = async (
 
   let modules: Record<string, string> | undefined
 
+  // biome-ignore lint/suspicious/noExplicitAny: unknown put from nextjs function
+  const exports: { name: any; value: any }[] = []
+
   const result = await runPostCss({
     postcssPlugins: [
       (
         (postcssNextFontPlugin as unknown as Record<'default', typeof postcssNextFontPlugin>)
           .default || postcssNextFontPlugin
       )({
-        exports: [],
+        exports,
         fallbackFonts,
         weight,
         style,
@@ -56,6 +59,7 @@ export const nextFontPostcss = async (
   })
 
   return {
+    exports,
     ...result,
     modules,
   }
