@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { type BundleConfig, bundle } from 'bunchee'
 import glob from 'fast-glob'
+import assert from 'node:assert'
 
 const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
@@ -11,6 +12,7 @@ const config: BundleConfig = {
 const nextFontDir = Bun.fileURLToPath(
   path.dirname(import.meta.resolve('@vercel/next.js/packages/font/package.json'))
 )
+assert.equal(await Bun.file(nextFontDir).exists(), true)
 const distDir = path.join(cwd, 'dist')
 
 const files = (
