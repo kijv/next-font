@@ -8,7 +8,7 @@
         "@types/bun": "latest",
         "@types/shell-quote": "^1.7.5",
         "@vercel/next.js": "github:vercel/next.js#v15.4.0-canary.110",
-        "bunchee": "^6.5.4",
+        "bunchee": "6.5.4",
         "fast-glob": "^3.3.3",
         "next": "15.4.0-canary.110",
         "shell-quote": "^1.8.3",

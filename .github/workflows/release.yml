@@ -48,7 +48,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun install --linker=isolated
+        run: bun install
 
       - name: Configure Git
         run: |
@@ -98,7 +98,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun install --linker=isolated
+        run: bun install
 
       - name: Build
         run: bun run build
