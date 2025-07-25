@@ -1,11 +1,11 @@
-import path from 'node:path'
 import type * as acorn from 'acorn'
-import { walk } from 'estree-walker'
+import type { FontImportDataQuery, ProgramNode, State } from './transform'
+import { DUMMY_SP } from '../constants'
+import { exprToJson } from './utils'
+import path from 'node:path'
 import queryString from 'query-string'
 import stableHash from 'stable-hash'
-import { DUMMY_SP } from '../constants'
-import type { FontImportDataQuery, ProgramNode, State } from './transform'
-import { exprToJson } from './utils'
+import { walk } from 'estree-walker'
 
 export class FontImportsGenerator {
   state: State

@@ -1,0 +1,11 @@
+{
+  "plugins": ["typescript", "unicorn", "oxc", "import", "vitest"],
+  "categories": {
+    "perf": "warn"
+  },
+  "rules": {
+    "unicorn/prefer-node-protocol": "error",
+    "no-duplicate-imports": "error",
+    "sort-imports": "error"
+  }
+}

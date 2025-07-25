@@ -1,6 +1,6 @@
-import path from 'node:path'
 import { type BundleConfig, bundle } from 'bunchee'
 import glob from 'fast-glob'
+import path from 'node:path'
 
 const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {

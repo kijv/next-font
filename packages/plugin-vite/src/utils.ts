@@ -1,3 +1,5 @@
+import nodeUrl from 'node:url'
+import path from 'node:path'
 import queryString from 'query-string'
 
 export const getQuerySuffix = (id: string) => {
@@ -87,4 +89,37 @@ export const normalizeTargetCssId = (id: string) => {
 
 const pickKeys = <K extends string, V>(obj: Record<string, V>, keys: K[]) => {
   return Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key as K)))
+}
+
+export const isWindows = typeof process !== 'undefined' && process.platform === 'win32'
+const windowsSlashRE = /\\/g
+export function slash(p: string) {
+  return p.replace(windowsSlashRE, '/')
+}
+export function normalizePath(id: string) {
+  return path.posix.normalize(isWindows ? slash(id) : id)
+}
+
+export const fileUrlToPath = (url: string) => {
+  let path = isFileUrl(url) ? nodeUrl.fileURLToPath(url) : url
+  if (isWindows) {
+    path = path.replace(/^((\\|\/)?)[Cc]:/, '')
+  }
+  return path
+}
+
+const isFileUrl = (url: string) => {
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'file:'
+  } catch {
+    return false
+  }
+}
+
+export const isSamePath = (a: string, b: string) => {
+  return (
+    encodeURIPath(normalizePath(fileUrlToPath(a))) ===
+    encodeURIPath(normalizePath(fileUrlToPath(b)))
+  )
 }

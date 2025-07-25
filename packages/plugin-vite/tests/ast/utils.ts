@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'vitest'
 import * as astUtils from '../../src/ast/utils'
+import { describe, expect, test } from 'vitest'
 
 // Minimal node types for the tests
 interface BaseNode {

@@ -1,6 +1,6 @@
 import type * as acorn from 'acorn'
-import { walk } from 'estree-walker'
 import type { ProgramNode, State } from './transform'
+import { walk } from 'estree-walker'
 
 export class FindFunctionsOutsideModuleScope {
   state: State

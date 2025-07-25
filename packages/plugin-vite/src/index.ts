@@ -1,15 +1,15 @@
-import { fileURLToPath } from 'node:url'
-import type { NextFontManifest } from 'next-font/manifest'
-import type { PluginOption, ViteDevServer } from 'vite'
 import type { Mutable, TargetCss } from './declarations'
-import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest'
 import {
+  type OnFinished,
   nextFontLoaderPlugin,
   nextFontManifestPlugin,
   nextFontTransformerPlugin,
-  type OnFinished,
 } from './plugins'
+import type { PluginOption, ViteDevServer } from 'vite'
+import { getPageIsUsingSizeAdjust, getPreloadedFontFiles } from './manifest'
 import { getQuerySuffix, normalizeTargetCssId, removeQuerySuffix } from './utils'
+import type { NextFontManifest } from 'next-font/manifest'
+import { fileURLToPath } from 'node:url'
 
 const nextFont = (): PluginOption[] => {
   const servers: ViteDevServer[] = []

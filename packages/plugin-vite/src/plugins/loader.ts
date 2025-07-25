@@ -1,25 +1,24 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { dataToEsm, normalizePath } from '@rollup/pluginutils'
-import loaderUtils from 'loader-utils'
-import MagicString from 'magic-string'
-import type { FontLoader } from 'next-font'
-import type { NextFontManifest } from 'next-font/manifest'
-import queryString from 'query-string'
-import { isCSSRequest, type PluginOption, type ResolvedConfig } from 'vite'
-import type { FontImportDataQuery } from '@/ast/transform'
 import type { Mutable, TargetCss } from '@/declarations'
-import { nextFontPostcss } from '@/postcss'
+import { type PluginOption, type ResolvedConfig, isCSSRequest } from 'vite'
 import {
   createCachedImport,
-  encodeURIPath,
   fontNameToUrl,
   getQuerySuffix,
   importResolve,
+  isSamePath,
   normalizeTargetCssId,
   removeQuerySuffix,
   tryCatch,
 } from '@/utils'
+import { dataToEsm, normalizePath } from '@rollup/pluginutils'
+import type { FontImportDataQuery } from '@/ast/transform'
+import type { FontLoader } from 'next-font'
+import MagicString from 'magic-string'
+import type { NextFontManifest } from 'next-font/manifest'
+import loaderUtils from 'loader-utils'
+import { nextFontPostcss } from '@/postcss'
+import path from 'node:path'
+import queryString from 'query-string'
 
 const googleLoader = createCachedImport<FontLoader>(() =>
   import('next-font/google/loader').then((mod) => mod.default)
@@ -53,13 +52,13 @@ export const nextFontLoaderPlugin = ({
       font: new Map<string, string | null>(),
     },
   }
-  const fontLoaders: [
-    string,
-    Promise<FontLoader> | FontLoader,
-    (typeof loaderCache)[keyof typeof loaderCache],
-  ][] = [
-    ['next-font/google/target.css', googleLoader(), loaderCache.google],
-    ['next-font/local/target.css', localLoader(), loaderCache.local],
+  const fontLoaders: {
+    id: string
+    loader: Promise<FontLoader> | FontLoader
+    cache: (typeof loaderCache)[keyof typeof loaderCache]
+  }[] = [
+    { id: 'next-font/google/target.css', loader: googleLoader(), cache: loaderCache.google },
+    { id: 'next-font/local/target.css', loader: localLoader(), cache: loaderCache.local },
   ] as const
 
   const targetCssMap = new Map<string, Awaited<ReturnType<typeof nextFontPostcss>>>()
@@ -136,10 +135,12 @@ export const nextFontLoaderPlugin = ({
 
             const { data: resolvedId, error } = await tryCatch(importResolve(removeQuerySuffix(id)))
             if (error) return null
-            const pair = fontLoaders.find((id) => import.meta.resolve(id[0]) === resolvedId)
+            const pair = fontLoaders.find((loader) =>
+              isSamePath(import.meta.resolve(loader.id), resolvedId)
+            )
             if (!pair) return null
 
-            const [, fontLoader, cache] = pair
+            const { loader, cache } = pair
 
             const normalizedId = normalizeTargetCssId(id)
             const isDev = config?.command === 'serve'
@@ -200,7 +201,7 @@ export const nextFontLoaderPlugin = ({
 
             const absPath = path.join(config!.root, relativePathFromRoot)
 
-            const fontData = await (await fontLoader)({
+            const fontData = await (await loader)({
               functionName,
               variableName,
               data,
@@ -229,11 +230,7 @@ export const nextFontLoaderPlugin = ({
 
             if (fontImports[normalizedAbsPath]) {
               for (const fontImport of fontImports[normalizedAbsPath]) {
-                if (
-                  fileURLToPath(import.meta.resolve(removeQuerySuffix(fontImport.id))).concat(
-                    getQuerySuffix(fontImport.id)
-                  ) === encodeURIPath(id)
-                ) {
+                if (isSamePath(import.meta.resolve(removeQuerySuffix(fontImport.id)), id)) {
                   fontImport.css = targetCss.code
                 }
               }
