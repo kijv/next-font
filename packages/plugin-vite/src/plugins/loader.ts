@@ -1,18 +1,7 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { dataToEsm, normalizePath } from '@rollup/pluginutils'
-import loaderUtils from 'loader-utils'
-import MagicString from 'magic-string'
-import type { FontLoader } from 'next-font'
-import type { NextFontManifest } from 'next-font/manifest'
-import queryString from 'query-string'
-import { isCSSRequest, type PluginOption, type ResolvedConfig } from 'vite'
-import type { FontImportDataQuery } from '@/ast/transform'
 import type { Mutable, TargetCss } from '@/declarations'
-import { nextFontPostcss } from '@/postcss'
+import { type PluginOption, type ResolvedConfig, isCSSRequest } from 'vite'
 import {
   createCachedImport,
-  encodeURIPath,
   fontNameToUrl,
   getQuerySuffix,
   importResolve,
@@ -21,6 +10,15 @@ import {
   removeQuerySuffix,
   tryCatch,
 } from '@/utils'
+import { dataToEsm, normalizePath } from '@rollup/pluginutils'
+import type { FontImportDataQuery } from '@/ast/transform'
+import type { FontLoader } from 'next-font'
+import MagicString from 'magic-string'
+import type { NextFontManifest } from 'next-font/manifest'
+import loaderUtils from 'loader-utils'
+import { nextFontPostcss } from '@/postcss'
+import path from 'node:path'
+import queryString from 'query-string'
 
 const googleLoader = createCachedImport<FontLoader>(() =>
   import('next-font/google/loader').then((mod) => mod.default)
@@ -232,12 +230,7 @@ export const nextFontLoaderPlugin = ({
 
             if (fontImports[normalizedAbsPath]) {
               for (const fontImport of fontImports[normalizedAbsPath]) {
-                if (
-                  isSamePath(
-                    import.meta.resolve(removeQuerySuffix(fontImport.id)),
-                    id
-                  )
-                ) {
+                if (isSamePath(import.meta.resolve(removeQuerySuffix(fontImport.id)), id)) {
                   fontImport.css = targetCss.code
                 }
               }

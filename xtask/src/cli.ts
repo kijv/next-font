@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
+import { VERSION_TYPE, isVersionType, publishWorkspace, runBump } from './workspace'
 import { cac } from 'cac'
-import { isVersionType, publishWorkspace, runBump, VERSION_TYPE } from './workspace'
 
 const cli = cac('xtask')
 

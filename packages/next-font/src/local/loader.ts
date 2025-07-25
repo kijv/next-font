@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises'
-import type { Font, FontCollection } from 'fontkit'
 import type { AdjustFontFallback, FontLoader } from '../declarations'
+import type { Font, FontCollection } from 'fontkit'
 import { createCachedImport } from '../utils'
+import fs from 'node:fs/promises'
 
 // @ts-expect-error treated as external (bunchee)
 import { validateLocalFontFunctionCall } from './validate-local-font-function-call.js'

@@ -1,9 +1,9 @@
-import type estree from 'estree'
-import { walk } from 'estree-walker'
-import type { parseAst } from 'vite'
 import { FindFunctionsOutsideModuleScope } from './find-functions-outside-module-scope'
 import { FontFunctionsCollector } from './font-functions-collector'
 import { FontImportsGenerator } from './font-imports-generator'
+import type estree from 'estree'
+import type { parseAst } from 'vite'
+import { walk } from 'estree-walker'
 
 export interface FontImportDataQuery {
   path: string

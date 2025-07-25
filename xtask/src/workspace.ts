@@ -1,8 +1,9 @@
-import * as path from 'node:path'
+// oxlint-disable no-await-in-loop
 import * as inquirer from '@inquirer/prompts'
-import { detect } from 'package-manager-detector/detect'
+import * as path from 'node:path'
 import * as semver from 'semver'
 import { createCommand } from './command'
+import { detect } from 'package-manager-detector/detect'
 import { getNightlyVersion } from './utils'
 
 const workspaceRoot = path.join(import.meta.dirname, '../../')

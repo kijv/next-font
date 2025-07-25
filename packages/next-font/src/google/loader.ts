@@ -1,7 +1,7 @@
 import type { AdjustFontFallback, FontLoader } from '../declarations'
+import { createCachedImport, escapeStringRegexp } from '../utils'
 // @ts-expect-error treated as external (bunchee)
 import { nextFontError as _nextFontError } from '../next-font-error.js'
-import { createCachedImport, escapeStringRegexp } from '../utils'
 // @ts-expect-error treated as external (bunchee)
 import { findFontFilesInCss } from './find-font-files-in-css.js'
 // @ts-expect-error treated as external (bunchee)

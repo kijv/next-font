@@ -1,9 +1,9 @@
-import path from 'node:path'
-import MagicString from 'magic-string'
 import type { PluginOption, ResolvedConfig } from 'vite'
-import { visit } from '@/ast/transform'
-import type { TargetCss } from '@/declarations'
 import { createCachedImport, tryCatch } from '@/utils'
+import MagicString from 'magic-string'
+import type { TargetCss } from '@/declarations'
+import path from 'node:path'
+import { visit } from '@/ast/transform'
 
 const importEscodegen = createCachedImport(
   () =>

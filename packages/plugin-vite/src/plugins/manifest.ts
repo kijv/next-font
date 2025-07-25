@@ -1,7 +1,7 @@
-import { dataToEsm } from '@rollup/pluginutils'
-import type { NextFontManifest } from 'next-font/manifest'
 import type { PluginOption, ResolvedConfig } from 'vite'
 import { importResolve, tryCatch } from '@/utils'
+import type { NextFontManifest } from 'next-font/manifest'
+import { dataToEsm } from '@rollup/pluginutils'
 
 export const nextFontManifestPlugin = ({
   nextFontManifest,

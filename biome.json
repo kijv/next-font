@@ -1,5 +1,8 @@
 {
   "$schema": "https://biomejs.dev/schemas/latest/schema.json",
+  "linter": {
+    "enabled": false
+  },
   "formatter": {
     "enabled": true,
     "lineEnding": "lf",
@@ -11,7 +14,7 @@
     "enabled": true,
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": "off"
       }
     }
   },

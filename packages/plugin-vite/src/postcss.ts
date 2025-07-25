@@ -1,8 +1,8 @@
-import loaderUtils from 'loader-utils'
-import postcssNextFontPlugin from 'next/dist/build/webpack/loaders/next-font-loader/postcss-next-font.js'
 import type { FontLoader } from 'next-font'
 import type PostCSS from 'postcss'
 import { createCachedImport } from './utils'
+import loaderUtils from 'loader-utils'
+import postcssNextFontPlugin from 'next/dist/build/webpack/loaders/next-font-loader/postcss-next-font.js'
 
 const importPostcssModules = createCachedImport(() => import('postcss-modules'))
 const importPostcss = createCachedImport(() => import('postcss'))
