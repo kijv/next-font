@@ -1,6 +1,6 @@
 import type * as acorn from 'acorn'
 import { walk } from 'estree-walker'
-import { removeQuerySuffix } from '../utils'
+import { isSamePath, removeQuerySuffix } from '../utils'
 import type { ProgramNode, State } from './transform'
 
 export class FontFunctionsCollector {
@@ -45,7 +45,9 @@ export class FontFunctionsCollector {
 
     if (
       resolvedId != null &&
-      this.fontLoaders.map((fontLoader) => import.meta.resolve(fontLoader)).includes(resolvedId)
+      this.fontLoaders.some((fontLoader) =>
+        isSamePath(import.meta.resolve(fontLoader), resolvedId)
+      )
     ) {
       this.state.removeableModuleItems.push(importDecl.start)
 
