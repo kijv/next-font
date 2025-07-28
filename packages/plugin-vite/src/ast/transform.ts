@@ -83,10 +83,10 @@ export const visit = ({
     const firstRemovableIndex = ast.body.findIndex(isRemovable)
 
     // Remove marked module items
-    walk(ast as import('estree-walker').Node, {
+    walk(ast, {
       enter(node) {
         // @ts-expect-error
-        if (isRemovable(node)) this.remove()
+        if (ast != node && isRemovable(node)) this.remove()
       },
     })
 
