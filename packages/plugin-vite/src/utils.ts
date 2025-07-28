@@ -118,8 +118,12 @@ const isFileUrl = (url: string) => {
 }
 
 export const isSamePath = (a: string, b: string) => {
+  const aPath = fileUrlToPath(a)
+  const bPath = fileUrlToPath(b)
+
   return (
-    encodeURIPath(normalizePath(fileUrlToPath(a))) ===
-    encodeURIPath(normalizePath(fileUrlToPath(b)))
+    aPath == bPath ||
+    normalizePath(aPath) === normalizePath(bPath) ||
+    encodeURIPath(normalizePath(aPath)) === encodeURIPath(normalizePath(bPath))
   )
 }
