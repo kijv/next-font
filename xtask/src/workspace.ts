@@ -209,7 +209,7 @@ export async function publishWorkspace(isNightly?: boolean, dryRun?: boolean) {
             : 'latest'
 
     createCommand(
-      `cp ${path.join(workspaceRoot, 'LICENSE')} ${path.join(workspace.path, 'LICENSE')}`
+      `cp "${path.join(workspaceRoot, 'LICENSE')}" "${path.join(workspace.path, 'LICENSE')}"`
     )
       .dryRun(dryRun)
       .execute()
