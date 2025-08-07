@@ -127,15 +127,17 @@ export class FontImportsGenerator {
           type: 'ImportDeclaration',
           source: {
             type: 'Literal',
-            value: queryString.stringifyUrl({
-              url: path.posix.join(
-                this.remapImports[fontFunction.loader] || fontFunction.loader,
-                'target.css'
-              ),
-              query: Object.assign({}, queryJson, {
-                arguments: JSON.stringify(queryJson.arguments),
+            value:
+              'virtual:' +
+              queryString.stringifyUrl({
+                url: path.posix.join(
+                  this.remapImports[fontFunction.loader] || fontFunction.loader,
+                  'target.css'
+                ),
+                query: Object.assign({}, queryJson, {
+                  arguments: JSON.stringify(queryJson.arguments),
+                }),
               }),
-            }),
             ...DUMMY_SP,
           },
           specifiers: [],
