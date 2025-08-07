@@ -132,10 +132,23 @@ export const nextFontLoaderPlugin = ({
       },
       {
         name: 'next-font:loader',
-        resolveId(id) {
+        async resolveId(id, importer) {
           if (!/\.css(?:$|\?)/.test(id)) return null
 
-          if (fontLoaders.some((l) => id.startsWith(l.id))) {
+          let { id: resolvedId } = (await this.resolve(removeQuerySuffix(id), importer)) ?? {
+            id: null,
+          }
+
+          if (
+            fontLoaders.some(async (loader) => {
+              const resolvedLoaderId = await this.resolve(
+                loader.id.replace(/$virtual:/, ''),
+                importer
+              )
+
+              return resolvedId === resolvedLoaderId
+            })
+          ) {
             return '\0' + id
           }
 
