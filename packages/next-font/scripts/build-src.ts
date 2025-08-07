@@ -1,6 +1,7 @@
 import { type BundleConfig, bundle } from 'bunchee'
 import glob from 'fast-glob'
 import path from 'node:path'
+import { toExports } from './util'
 
 const cwd = path.join(import.meta.dirname, '..')
 const config: BundleConfig = {
@@ -35,20 +36,9 @@ const files = await glob(['src/{google,local}/loader.ts', 'src/{fontkit,index}.t
   cwd,
 })
 
-const exports = Object.fromEntries(
-  files.map((file) => {
-    const noSrc = path.relative('src', file)
-    const ext = (ext: string) => path.join(path.join(distDir, noSrc.replace(/\.ts$/, ext)))
-
-    return [
-      `./${noSrc.replace(/\.ts$/, '')}`,
-      {
-        import: ext('.js'),
-        types: ext('.d.ts'),
-      },
-    ]
-  })
-)
+const exports = toExports(files, function (ext) {
+  return path.join(path.join(distDir, this.noSrc.replace(/\.ts$/, ext)))
+})
 
 const start = performance.now()
 await bundle(

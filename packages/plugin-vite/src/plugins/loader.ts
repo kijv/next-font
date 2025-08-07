@@ -57,8 +57,12 @@ export const nextFontLoaderPlugin = ({
     loader: Promise<FontLoader> | FontLoader
     cache: (typeof loaderCache)[keyof typeof loaderCache]
   }[] = [
-    { id: 'next-font/google/target.css', loader: googleLoader(), cache: loaderCache.google },
-    { id: 'next-font/local/target.css', loader: localLoader(), cache: loaderCache.local },
+    {
+      id: 'virtual:next-font/google/target.css',
+      loader: googleLoader(),
+      cache: loaderCache.google,
+    },
+    { id: 'virtual:next-font/local/target.css', loader: localLoader(), cache: loaderCache.local },
   ] as const
 
   const targetCssMap = new Map<string, Awaited<ReturnType<typeof nextFontPostcss>>>()
@@ -128,16 +132,21 @@ export const nextFontLoaderPlugin = ({
       },
       {
         name: 'next-font:loader',
+        resolveId(id) {
+          if (!/\.css(?:$|\?)/.test(id)) return null
+
+          if (fontLoaders.some((l) => id.startsWith(l.id))) {
+            return '\0' + id
+          }
+
+          return null
+        },
         load: {
           order: 'pre',
           async handler(id, opts) {
             if (!/\.css(?:$|\?)/.test(id)) return null
 
-            const { data: resolvedId, error } = await tryCatch(importResolve(removeQuerySuffix(id)))
-            if (error) return null
-            const pair = fontLoaders.find((loader) =>
-              isSamePath(import.meta.resolve(loader.id), resolvedId)
-            )
+            const pair = fontLoaders.find((loader) => '\0' + loader.id === removeQuerySuffix(id))
             if (!pair) return null
 
             const { loader, cache } = pair
@@ -248,6 +257,8 @@ export const nextFontLoaderPlugin = ({
             }
 
             targetCssMap.set(normalizedId, targetCss)
+
+            return targetCss.code
           },
         },
         transform: {
@@ -272,6 +283,7 @@ export const nextFontLoaderPlugin = ({
             const map = config?.css.devSourcemap
               ? new MagicString(css).generateMap({ hires: true })
               : undefined
+
             if (config?.command === 'serve' && !opts?.ssr) {
               const code = [
                 `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(
@@ -281,10 +293,14 @@ export const nextFontLoaderPlugin = ({
                 `const __vite__css = ${JSON.stringify(css)}`,
                 `__vite__updateStyle(__vite__id, __vite__css)`,
                 modulesCode,
-                `if (import.meta.hot) {
-                  import.meta.hot.accept()
-                  import.meta.hot.prune(() => __vite__removeStyle(__vite__id))
-                }`,
+                `if (import.meta.hot) {`,
+                [
+                  `import.meta.hot.accept()`,
+                  `import.meta.hot.prune(() => __vite__removeStyle(__vite__id))`,
+                ]
+                  .map((s) => `\t${s}`)
+                  .join('\n'),
+                `}`,
               ].join('\n')
               return {
                 code,
