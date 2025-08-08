@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/*",
     "examples/*",
+    "scripts/*",
     "xtask"
   ],
   "scripts": {
@@ -11,9 +12,13 @@
     "test": "vitest",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "biome:fix": "biome check --write"
+    "biome:fix": "biome check --write",
+    "ci:version": "bun run ./scripts/release/version.ts",
+    "ci:publish": "bun run ./scripts/release/publish.ts"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.5",
     "@types/bun": "latest",
     "@types/shell-quote": "^1.7.5",
     "bunchee": "6.5.4",

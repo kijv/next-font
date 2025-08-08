@@ -1,0 +1,7 @@
+{
+  "name": "release",
+  "private": true,
+  "devDependencies": {
+    "shell-quote": "^1.8.3"
+  }
+}
