@@ -42,6 +42,7 @@ jobs:
     environment: release-${{ github.event.inputs.releaseType }}
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Setup node
         uses: actions/setup-node@v4
