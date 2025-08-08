@@ -4,11 +4,9 @@ import {
   createCachedImport,
   fontNameToUrl,
   getQuerySuffix,
-  importResolve,
   isSamePath,
   normalizeTargetCssId,
   removeQuerySuffix,
-  tryCatch,
 } from '@/utils'
 import { dataToEsm, normalizePath } from '@rollup/pluginutils'
 import type { FontImportDataQuery } from '@/ast/transform'
@@ -149,7 +147,7 @@ export const nextFontLoaderPlugin = ({
               return resolvedId === resolvedLoaderId
             })
           ) {
-            return '\0' + id
+            return id
           }
 
           return null
@@ -159,7 +157,7 @@ export const nextFontLoaderPlugin = ({
           async handler(id, opts) {
             if (!/\.css(?:$|\?)/.test(id)) return null
 
-            const pair = fontLoaders.find((loader) => '\0' + loader.id === removeQuerySuffix(id))
+            const pair = fontLoaders.find((loader) => loader.id === removeQuerySuffix(id))
             if (!pair) return null
 
             const { loader, cache } = pair
@@ -172,8 +170,9 @@ export const nextFontLoaderPlugin = ({
               isDev &&
               targetCssMap.has(normalizedId) &&
               lastEnv === this.environment.name
-            )
+            ) {
               return
+            }
             lastEnv = this.environment.name
 
             const {
@@ -297,32 +296,29 @@ export const nextFontLoaderPlugin = ({
               ? new MagicString(css).generateMap({ hires: true })
               : undefined
 
-            if (config?.command === 'serve' && !opts?.ssr) {
-              const code = [
-                `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(
-                  path.posix.join(config.base, '/@vite/client')
-                )}`,
-                `const __vite__id = ${JSON.stringify(id)}`,
-                `const __vite__css = ${JSON.stringify(css)}`,
-                `__vite__updateStyle(__vite__id, __vite__css)`,
-                modulesCode,
-                `if (import.meta.hot) {`,
-                [
-                  `import.meta.hot.accept()`,
-                  `import.meta.hot.prune(() => __vite__removeStyle(__vite__id))`,
-                ]
-                  .map((s) => `\t${s}`)
-                  .join('\n'),
-                `}`,
-              ].join('\n')
-              return {
-                code,
-                map,
-              }
-            }
+            const code =
+              config?.command === 'serve' && !opts?.ssr
+                ? [
+                    `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(
+                      path.posix.join(config.base, '/@vite/client')
+                    )};`,
+                    `const __vite__id = ${JSON.stringify(id)};`,
+                    `const __vite__css = ${JSON.stringify(css)};`,
+                    `__vite__updateStyle(__vite__id, __vite__css);`,
+                    modulesCode,
+                    `if (import.meta.hot) {`,
+                    [
+                      `import.meta.hot.accept();`,
+                      `import.meta.hot.prune(() => __vite__removeStyle(__vite__id));`,
+                    ]
+                      .map((s) => `\t${s}`)
+                      .join('\n'),
+                    `}`,
+                  ].join('\n')
+                : modulesCode
 
             return {
-              code: modulesCode,
+              code,
               map,
               moduleSideEffects: false,
             }
