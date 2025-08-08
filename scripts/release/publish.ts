@@ -64,8 +64,7 @@ async function publishNpm() {
     withFileTypes: true,
   })
 
-
-  for await (const packageDir of packageDirs.filter(d => d.name != "next-font")) {
+  for await (const packageDir of packageDirs.filter((d) => d.name != 'next-font')) {
     if (!packageDir.isDirectory()) {
       continue
     }
