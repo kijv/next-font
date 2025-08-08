@@ -64,7 +64,7 @@ async function publishNpm() {
     withFileTypes: true,
   })
 
-  for await (const packageDir of packageDirs) {
+  for await (const packageDir of packageDirs.filter((d) => d.name != 'next-font')) {
     if (!packageDir.isDirectory()) {
       continue
     }
@@ -92,7 +92,7 @@ async function publishNpm() {
     })
 
     const packagePath = join(packagesDir, packageDir.name)
-    const args = ['publish', packagePath, '--tag', tag]
+    const args = ['publish', '--cwd', packagePath, '--tag', tag]
 
     console.log(`Running command: "bun ${args.join(' ')}" for ${pkgJson.name}@${pkgJson.version}`)
     await Bun.$`${sq.parse(`bun ${args.join(' ')}`)}`
