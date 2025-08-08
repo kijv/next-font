@@ -141,6 +141,10 @@ jobs:
     env:
       NPM_TOKEN: ${{ secrets.VVV_NPM_TOKEN }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
