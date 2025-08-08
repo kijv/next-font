@@ -54,7 +54,7 @@ async function versionPackages() {
         console.log('▲   Changeset Status:')
         console.log(changesetStatus)
 
-        anyHasChangeset = changesetStatus.releases.length > 0;
+        anyHasChangeset = changesetStatus.releases.length > 0
 
         await changesetStatusFile.unlink()
       }
@@ -79,10 +79,10 @@ async function versionPackages() {
     }
   }
 
-  await Bun.$`bun run changeset version`;
+  await Bun.$`bun run changeset version`
   // TODO: Update the pnpm-lock.yaml since the packages' depend on
   // each other. Remove this once they use `workspace:` protocol.
-  await Bun.$`bun install --frozen-lockfile`;
+  await Bun.$`bun install --frozen-lockfile`
 }
 
 versionPackages()

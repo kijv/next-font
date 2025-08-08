@@ -5,9 +5,7 @@ import semver from 'semver'
 import sq from 'shell-quote'
 
 async function fetchTagsFromRegistry(packageName: string) {
-  const res = await fetch(
-    `https://registry.npmjs.org/-/package/${packageName}/dist-tags`
-  )
+  const res = await fetch(`https://registry.npmjs.org/-/package/${packageName}/dist-tags`)
   const tags = await res.json()
   return tags
 }
@@ -72,10 +70,7 @@ async function publishNpm() {
     }
 
     const pkgJson = JSON.parse(
-      await readFile(
-        join(process.cwd(), 'packages', packageDir.name, 'package.json'),
-        'utf-8'
-      )
+      await readFile(join(process.cwd(), 'packages', packageDir.name, 'package.json'), 'utf-8')
     )
 
     if (pkgJson.private) {
@@ -86,9 +81,7 @@ async function publishNpm() {
     // If the current version is already published in the
     // registry, skip the process.
     if (semver.eq(pkgJson.version, tags.latest)) {
-      console.log(
-        `Skipping ${pkgJson.name}@${pkgJson.version} because it is already published.`
-      )
+      console.log(`Skipping ${pkgJson.name}@${pkgJson.version} because it is already published.`)
       continue
     }
 
@@ -101,10 +94,8 @@ async function publishNpm() {
     const packagePath = join(packagesDir, packageDir.name)
     const args = ['publish', packagePath, '--tag', tag]
 
-    console.log(
-      `Running command: "bun ${args.join(' ')}" for ${pkgJson.name}@${pkgJson.version}`
-    )
-    await Bun.$`${sq.parse(`bun ${args.join(' ')}`)}`;
+    console.log(`Running command: "bun ${args.join(' ')}" for ${pkgJson.name}@${pkgJson.version}`)
+    await Bun.$`${sq.parse(`bun ${args.join(' ')}`)}`
   }
 }
 
