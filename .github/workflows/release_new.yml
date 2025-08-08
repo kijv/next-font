@@ -127,7 +127,7 @@ jobs:
         id: cache-build
         with:
           path: ./*
-          key: ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt}}
+          key: ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}
 
   publish:
     name: Potentially publish release
@@ -143,7 +143,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 25
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -166,7 +166,17 @@ jobs:
           key: ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}
           restore-keys: |
             ${{ github.sha }}-${{ github.run_number }}
-            ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt}}
+            ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}
+
+      # Restoring the cache can overwrite the checkout's stored credentials.
+      # Reconfigure git to use the workflow token for any pushes/tags.
+      - name: Restore Git credentials
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
 
