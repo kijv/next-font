@@ -1,9 +1,0 @@
-{
-  "mode": "pre",
-  "tag": "canary",
-  "initialVersions": {
-    "next-font": "1.2.0",
-    "@next-font/plugin-vite": "1.4.0"
-  },
-  "changesets": ["some-experts-give"]
-}
