@@ -39,8 +39,9 @@ jobs:
   version:
     if: github.repository_owner == 'kijv'
     runs-on: ubuntu-latest
-
     environment: release-${{ github.event.inputs.releaseType }}
+    permissions:
+      contents: write
     steps:
       - name: Setup node
         uses: actions/setup-node@v4
