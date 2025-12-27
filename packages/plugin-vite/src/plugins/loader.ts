@@ -2,7 +2,8 @@ import type { Mutable, TargetCss } from '@/declarations'
 import { type PluginOption, type ResolvedConfig, isCSSRequest } from 'vite'
 import {
   createCachedImport,
-  createFontNameToUrl,
+  createFontNameToBasedUrl,
+  fontNameToUrl,
   getQuerySuffix,
   isSamePath,
   normalizeTargetCssId,
@@ -60,7 +61,11 @@ export const nextFontLoaderPlugin = ({
       loader: googleLoader(),
       cache: loaderCache.google,
     },
-    { id: 'virtual:next-font/local/target.css', loader: localLoader(), cache: loaderCache.local },
+    {
+      id: 'virtual:next-font/local/target.css',
+      loader: localLoader(),
+      cache: loaderCache.local,
+    },
   ] as const
 
   const targetCssMap = new Map<string, Awaited<ReturnType<typeof nextFontPostcss>>>()
@@ -80,12 +85,13 @@ export const nextFontLoaderPlugin = ({
         )
       }
 
-      const fontNameToUrl = createFontNameToUrl(config?.base)
+      const fontNameToBasedUrl = createFontNameToBasedUrl(config?.base)
 
       for (const fontName of fontNames) {
+        const fontUrl = fontNameToBasedUrl(fontName)
         fontFileMap.set(
-          fontNameToUrl(fontName),
-          Object.assign({}, fontFileMap.get(fontNameToUrl(fontName)), {
+          fontUrl,
+          Object.assign({}, fontFileMap.get(fontUrl), {
             serve: false,
           })
         )
@@ -190,7 +196,7 @@ export const nextFontLoaderPlugin = ({
 
             const fontNames: string[] = []
 
-            const fontNameToUrl = createFontNameToUrl(config?.base)
+            const fontNameToBasedUrl = createFontNameToBasedUrl(config?.base)
 
             const emitFontFile: Parameters<FontLoader>[0]['emitFontFile'] = (
               content: Buffer,
@@ -209,9 +215,10 @@ export const nextFontLoaderPlugin = ({
 
               fontNames.push(name)
 
-              const outputPath = fontNameToUrl(name)
+              const basedOutputPath = fontNameToBasedUrl(name)
 
               if (!isDev) {
+                const outputPath = fontNameToUrl(name)
                 this.emitFile({
                   type: 'asset',
                   fileName: outputPath.slice(1),
@@ -219,9 +226,9 @@ export const nextFontLoaderPlugin = ({
                 })
               }
 
-              fontFileMap.set(outputPath, { content, serve: isDev })
+              fontFileMap.set(basedOutputPath, { content, serve: isDev })
 
-              return outputPath
+              return basedOutputPath
             }
 
             const absPath = path.join(config!.root, relativePathFromRoot)
