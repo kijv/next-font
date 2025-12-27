@@ -1,5 +1,5 @@
-import type { Mutable, TargetCss } from '@/declarations'
-import { type PluginOption, type ResolvedConfig, isCSSRequest } from 'vite'
+import type { Mutable, TargetCss } from "@/declarations";
+import { type PluginOption, type ResolvedConfig, isCSSRequest } from "vite";
 import {
   createCachedImport,
   createFontNameToBasedUrl,
@@ -8,38 +8,40 @@ import {
   isSamePath,
   normalizeTargetCssId,
   removeQuerySuffix,
-} from '@/utils'
-import { dataToEsm, normalizePath } from '@rollup/pluginutils'
-import type { FontImportDataQuery } from '@/ast/transform'
-import type { FontLoader } from 'next-font'
-import MagicString from 'magic-string'
-import type { NextFontManifest } from 'next-font/manifest'
-import loaderUtils from 'loader-utils'
-import { nextFontPostcss } from '@/postcss'
-import path from 'node:path'
-import queryString from 'query-string'
+} from "@/utils";
+import { dataToEsm, normalizePath } from "@rollup/pluginutils";
+import type { FontImportDataQuery } from "@/ast/transform";
+import type { FontLoader } from "next-font";
+import MagicString from "magic-string";
+import type { NextFontManifest } from "next-font/manifest";
+import loaderUtils from "loader-utils";
+import { nextFontPostcss } from "@/postcss";
+import path from "node:path";
+import queryString from "query-string";
 
 const googleLoader = createCachedImport<FontLoader>(() =>
-  import('next-font/google/loader').then((mod) => mod.default)
-)
+  import("next-font/google/loader").then((mod) => mod.default)
+);
 const localLoader = createCachedImport<FontLoader>(() =>
-  import('next-font/local/loader').then((mod) => mod.default)
-)
+  import("next-font/local/loader").then((mod) => mod.default)
+);
 
-export type OnFinished = (fileToFontNames: Map<string, Record<string, string[]>>) => Promise<void>
+export type OnFinished = (
+  fileToFontNames: Map<string, Record<string, string[]>>
+) => Promise<void>;
 
 export const nextFontLoaderPlugin = ({
   nextFontManifest,
   fontImports,
   onFinished,
 }: {
-  nextFontManifest: Mutable<NextFontManifest>
-  fontImports: Record<string, TargetCss[]>
-  onFinished: OnFinished
+  nextFontManifest: Mutable<NextFontManifest>;
+  fontImports: Record<string, TargetCss[]>;
+  onFinished: OnFinished;
 }) => {
-  let config: ResolvedConfig | null = null
+  let config: ResolvedConfig | null = null;
 
-  const fileToFontNames = new Map<string, Record<string, string[]>>()
+  const fileToFontNames = new Map<string, Record<string, string[]>>();
 
   const loaderCache = {
     google: {
@@ -50,42 +52,45 @@ export const nextFontLoaderPlugin = ({
       css: new Map<string, string | null>(),
       font: new Map<string, string | null>(),
     },
-  }
+  };
   const fontLoaders: {
-    id: string
-    loader: Promise<FontLoader> | FontLoader
-    cache: (typeof loaderCache)[keyof typeof loaderCache]
+    id: string;
+    loader: Promise<FontLoader> | FontLoader;
+    cache: (typeof loaderCache)[keyof typeof loaderCache];
   }[] = [
     {
-      id: 'virtual:next-font/google/target.css',
+      id: "virtual:next-font/google/target.css",
       loader: googleLoader(),
       cache: loaderCache.google,
     },
     {
-      id: 'virtual:next-font/local/target.css',
+      id: "virtual:next-font/local/target.css",
       loader: localLoader(),
       cache: loaderCache.local,
     },
-  ] as const
+  ] as const;
 
-  const targetCssMap = new Map<string, Awaited<ReturnType<typeof nextFontPostcss>>>()
+  const targetCssMap = new Map<
+    string,
+    Awaited<ReturnType<typeof nextFontPostcss>>
+  >();
   const removeTargetCss = (id: string) => {
-    targetCssMap.delete(id)
+    targetCssMap.delete(id);
 
     const { path: relativePathFromRoot } = queryString.parse(
       getQuerySuffix(id)
-    ) as unknown as FontImportDataQuery
-    const absPath = path.join(config!.root, relativePathFromRoot)
+    ) as unknown as FontImportDataQuery;
+    const absPath = path.join(config!.root, relativePathFromRoot);
 
-    const fontNames = fileToFontNames.get(absPath)?.[id]
+    const fontNames = fileToFontNames.get(absPath)?.[id];
     if (fontNames) {
       if (nextFontManifest[absPath]) {
         nextFontManifest[absPath] = nextFontManifest[absPath].filter(
           (font) => !fontNames.includes(font)
-        )
+        );
       }
 
-      const fontNameToUrl = createFontNameToUrl(config?.base)
+      const fontNameToUrl = createFontNameToUrl(config?.base);
 
       for (const fontName of fontNames) {
         fontFileMap.set(
@@ -93,84 +98,89 @@ export const nextFontLoaderPlugin = ({
           Object.assign({}, fontFileMap.get(fontNameToUrl(fontName)), {
             serve: false,
           })
-        )
+        );
       }
     }
-  }
+  };
 
   const fontFileMap = new Map<
     string,
     {
-      content: Buffer
-      serve: boolean
+      content: Buffer;
+      serve: boolean;
     }
-  >()
+  >();
 
-  let lastEnv: string | null = null
+  let lastEnv: string | null = null;
 
-  let calledFinished = false
+  let calledFinished = false;
   const resetCalledFinished = () => {
-    calledFinished = false
-  }
+    calledFinished = false;
+  };
 
   return [
     { resetCalledFinished, removeTargetCss },
     [
       {
-        name: 'next-font:loader:scan',
-        enforce: 'pre',
+        name: "next-font:loader:scan",
+        enforce: "pre",
         async configResolved(resolvedConfig) {
-          config = resolvedConfig
+          config = resolvedConfig;
         },
         configureServer(server) {
           return () => {
             server.middlewares.use((req, res, next) => {
-              if (!req.originalUrl) return next()
+              if (!req.originalUrl) return next();
 
-              const font = fontFileMap.get(req.originalUrl)
+              const font = fontFileMap.get(req.originalUrl);
               if (font?.serve) {
-                res.end(font.content)
-              } else next()
-            })
-          }
+                res.end(font.content);
+              } else next();
+            });
+          };
         },
       },
       {
-        name: 'next-font:loader',
+        name: "next-font:loader",
         async resolveId(id, importer) {
-          if (!/\.css(?:$|\?)/.test(id)) return null
+          if (!/\.css(?:$|\?)/.test(id)) return null;
 
-          let { id: resolvedId } = (await this.resolve(removeQuerySuffix(id), importer)) ?? {
+          let { id: resolvedId } = (await this.resolve(
+            removeQuerySuffix(id),
+            importer
+          )) ?? {
             id: null,
-          }
+          };
 
           if (
             fontLoaders.some(async (loader) => {
               const resolvedLoaderId = await this.resolve(
-                loader.id.replace(/$virtual:/, ''),
+                loader.id.replace(/$virtual:/, ""),
                 importer
-              )
+              );
 
-              return resolvedId === resolvedLoaderId
+              return resolvedId === resolvedLoaderId;
             })
           ) {
-            return id
+            return id;
           }
 
-          return null
+          return null;
         },
         load: {
-          order: 'pre',
+          order: "pre",
           async handler(id, opts) {
-            if (!/\.css(?:$|\?)/.test(id)) return null
+            if (!/\.css(?:$|\?)/.test(id)) return null;
 
-            const pair = fontLoaders.find((loader) => loader.id === removeQuerySuffix(id))
-            if (!pair) return null
+            const pair = fontLoaders.find(
+              (loader) => loader.id === removeQuerySuffix(id)
+            );
+            if (!pair) return null;
 
-            const { loader, cache } = pair
+            const { loader, cache } = pair;
 
-            const normalizedId = normalizeTargetCssId(id)
-            const isDev = config?.command === 'serve'
+            const normalizedId = normalizeTargetCssId(id);
+            const isDev = config?.command === "serve";
 
             if (
               // unnecessary to load the same file in dev mode
@@ -178,26 +188,28 @@ export const nextFontLoaderPlugin = ({
               targetCssMap.has(normalizedId) &&
               lastEnv === this.environment.name
             ) {
-              return
+              return;
             }
-            lastEnv = this.environment.name
+            lastEnv = this.environment.name;
 
             const {
               path: relativePathFromRoot,
               import: functionName,
               arguments: stringifiedArguments,
               variableName,
-            } = queryString.parse(getQuerySuffix(id)) as unknown as FontImportDataQuery & {
-              arguments: string
-            }
+            } = queryString.parse(
+              getQuerySuffix(id)
+            ) as unknown as FontImportDataQuery & {
+              arguments: string;
+            };
 
-            const data = JSON.parse(stringifiedArguments)
+            const data = JSON.parse(stringifiedArguments);
 
-            const fontNames: string[] = []
+            const fontNames: string[] = [];
 
-            const fontNameToBasedUrl = createFontNameToBasedUrl(config?.base)
+            const fontNameToBasedUrl = createFontNameToBasedUrl(config?.base);
 
-            const emitFontFile: Parameters<FontLoader>[0]['emitFontFile'] = (
+            const emitFontFile: Parameters<FontLoader>[0]["emitFontFile"] = (
               content: Buffer,
               ext: string,
               preload: boolean,
@@ -206,34 +218,37 @@ export const nextFontLoaderPlugin = ({
               const name = loaderUtils.interpolateName(
                 // @ts-expect-error
                 {},
-                `static/media/[hash]${isUsingSizeAdjust ? '-s' : ''}${preload ? '.p' : ''}.${ext}`,
+                `static/media/[hash]${isUsingSizeAdjust ? "-s" : ""}${
+                  preload ? ".p" : ""
+                }.${ext}`,
                 {
                   content,
                 }
-              )
+              );
 
-              fontNames.push(name)
+              fontNames.push(name);
 
-              const basedOutputPath = fontNameToBasedUrl(name)
+              const basedOutputPath = fontNameToBasedUrl(name);
+              const outputPath = fontNameToUrl(name);
 
               if (!isDev) {
-                const outputPath = fontNameToUrl(name)
-
                 this.emitFile({
-                  type: 'asset',
+                  type: "asset",
                   fileName: outputPath.slice(1),
                   source: content,
-                })
+                });
               }
 
-              fontFileMap.set(basedOutputPath, { content, serve: isDev })
+              fontFileMap.set(outputPath, { content, serve: isDev });
 
-              return basedOutputPath
-            }
+              return basedOutputPath;
+            };
 
-            const absPath = path.join(config!.root, relativePathFromRoot)
+            const absPath = path.join(config!.root, relativePathFromRoot);
 
-            const fontData = await (await loader)({
+            const fontData = await (
+              await loader
+            )({
               functionName,
               variableName,
               data,
@@ -243,27 +258,40 @@ export const nextFontLoaderPlugin = ({
               isDev,
               isServer: opts?.ssr ?? false,
               resolve: (src) => {
-                return path.join(path.dirname(absPath), src.startsWith('.') ? src : `./${src}`)
+                return path.join(
+                  path.dirname(absPath),
+                  src.startsWith(".") ? src : `./${src}`
+                );
               },
-            })
+            });
 
-            const normalizedAbsPath = normalizePath(absPath)
+            const normalizedAbsPath = normalizePath(absPath);
 
             fileToFontNames.set(normalizedAbsPath, {
               ...fileToFontNames.get(normalizedAbsPath),
               [normalizedId]: Array.from(
                 new Set(
-                  (fileToFontNames.get(normalizedAbsPath)?.[normalizedId] || []).concat(fontNames)
+                  (
+                    fileToFontNames.get(normalizedAbsPath)?.[normalizedId] || []
+                  ).concat(fontNames)
                 )
               ),
-            })
+            });
 
-            const targetCss = await nextFontPostcss(relativePathFromRoot, fontData)
+            const targetCss = await nextFontPostcss(
+              relativePathFromRoot,
+              fontData
+            );
 
             if (fontImports[normalizedAbsPath]) {
               for (const fontImport of fontImports[normalizedAbsPath]) {
-                if (isSamePath(import.meta.resolve(removeQuerySuffix(fontImport.id)), id)) {
-                  fontImport.css = targetCss.code
+                if (
+                  isSamePath(
+                    import.meta.resolve(removeQuerySuffix(fontImport.id)),
+                    id
+                  )
+                ) {
+                  fontImport.css = targetCss.code;
                 }
               }
 
@@ -274,44 +302,48 @@ export const nextFontLoaderPlugin = ({
                   .filter((i) => !i.css).length
               ) {
                 await onFinished(fileToFontNames).finally(() => {
-                  calledFinished = true
-                })
+                  calledFinished = true;
+                });
               }
             }
 
-            targetCssMap.set(normalizedId, targetCss)
+            targetCssMap.set(normalizedId, targetCss);
 
-            return targetCss.code
+            return targetCss.code;
           },
         },
         transform: {
-          order: 'post',
+          order: "post",
           async handler(_code, id, opts) {
-            if (!/\.css(?:$|\?)/.test(id)) return null
+            if (!/\.css(?:$|\?)/.test(id)) return null;
 
-            const normalizedId = normalizeTargetCssId(id)
+            const normalizedId = normalizeTargetCssId(id);
 
-            const targetCss = targetCssMap.get(normalizedId)
-            if (!targetCss) return null
-            const { modules, code: css, exports } = targetCss
+            const targetCss = targetCssMap.get(normalizedId);
+            if (!targetCss) return null;
+            const { modules, code: css, exports } = targetCss;
 
             const modulesCode = dataToEsm(
-              Object.assign({}, modules, Object.fromEntries(exports.map((e) => [e.name, e.value]))),
+              Object.assign(
+                {},
+                modules,
+                Object.fromEntries(exports.map((e) => [e.name, e.value]))
+              ),
               {
                 namedExports: true,
                 preferConst: true,
               }
-            )
+            );
 
             const map = config?.css.devSourcemap
               ? new MagicString(css).generateMap({ hires: true })
-              : undefined
+              : undefined;
 
             const code =
-              config?.command === 'serve' && !opts?.ssr
+              config?.command === "serve" && !opts?.ssr
                 ? [
                     `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(
-                      path.posix.join(config.base, '/@vite/client')
+                      path.posix.join(config.base, "/@vite/client")
                     )};`,
                     `const __vite__id = ${JSON.stringify(id)};`,
                     `const __vite__css = ${JSON.stringify(css)};`,
@@ -323,24 +355,24 @@ export const nextFontLoaderPlugin = ({
                       `import.meta.hot.prune(() => __vite__removeStyle(__vite__id));`,
                     ]
                       .map((s) => `\t${s}`)
-                      .join('\n'),
+                      .join("\n"),
                     `}`,
-                  ].join('\n')
-                : modulesCode
+                  ].join("\n")
+                : modulesCode;
 
             return {
               code,
               map,
               moduleSideEffects: false,
-            }
+            };
           },
         },
       },
       {
-        name: 'next-font:build',
-        apply: 'build',
+        name: "next-font:build",
+        apply: "build",
         renderChunk: {
-          order: 'post',
+          order: "post",
           async handler(_code, chunk) {
             const resolvedModuleIds = (
               await Promise.all(
@@ -348,48 +380,59 @@ export const nextFontLoaderPlugin = ({
                   this.resolve(moduleId).then((resolved) => resolved?.id)
                 )
               )
-            ).filter(Boolean) as string[]
+            ).filter(Boolean) as string[];
 
             if (resolvedModuleIds.length) {
               const targetCss = resolvedModuleIds
                 .map(
                   (id) =>
-                    Object.assign({}, targetCssMap.get(normalizeTargetCssId(id)) ?? {}, { id }) as {
-                      id: string
-                      code?: string
+                    Object.assign(
+                      {},
+                      targetCssMap.get(normalizeTargetCssId(id)) ?? {},
+                      { id }
+                    ) as {
+                      id: string;
+                      code?: string;
                     }
                 )
-                .filter((t) => t != null && 'code' in t && typeof t.code === 'string')
-              const chunkCSS = targetCss.map((t) => t.code).join()
+                .filter(
+                  (t) => t != null && "code" in t && typeof t.code === "string"
+                );
+              const chunkCSS = targetCss.map((t) => t.code).join();
 
               function ensureFileExt(name: string, ext: string) {
-                return normalizePath(path.format({ ...path.parse(name), base: undefined, ext }))
+                return normalizePath(
+                  path.format({ ...path.parse(name), base: undefined, ext })
+                );
               }
 
               if (chunkCSS) {
-                const cssFullAssetName = ensureFileExt(chunk.name, '.css')
+                const cssFullAssetName = ensureFileExt(chunk.name, ".css");
                 // if facadeModuleId doesn't exist or doesn't have a CSS extension,
                 // that means a JS entry file imports a CSS file.
                 // in this case, only use the filename for the CSS chunk name like JS chunks.
                 const cssAssetName =
-                  chunk.isEntry && (!chunk.facadeModuleId || !isCSSRequest(chunk.facadeModuleId))
+                  chunk.isEntry &&
+                  (!chunk.facadeModuleId || !isCSSRequest(chunk.facadeModuleId))
                     ? path.basename(cssFullAssetName)
-                    : cssFullAssetName
+                    : cssFullAssetName;
 
                 // emit corresponding css file
                 const referenceId = this.emitFile({
-                  type: 'asset',
+                  type: "asset",
                   name: cssAssetName,
                   source: chunkCSS,
-                })
-                chunk.viteMetadata!.importedCss.add(this.getFileName(referenceId))
+                });
+                chunk.viteMetadata!.importedCss.add(
+                  this.getFileName(referenceId)
+                );
               }
             }
 
-            return null
+            return null;
           },
         },
       },
     ] as const satisfies PluginOption[],
-  ] as const
-}
+  ] as const;
+};
