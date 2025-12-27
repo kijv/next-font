@@ -23,7 +23,7 @@
     "@types/shell-quote": "^1.7.5",
     "bunchee": "6.5.4",
     "fast-glob": "^3.3.3",
-    "oxlint": "1.8.0",
+    "oxlint": "^1.35.0",
     "shell-quote": "^1.8.3",
     "turbo": "^2.7.2",
     "vc": "^0.1.4",
