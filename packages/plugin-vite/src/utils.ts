@@ -76,16 +76,21 @@ function cleanUrl(url: string): string {
   return url.replace(postfixRE, "");
 }
 
-export const createFontNameToUrl = (basePath = "") => {
-  const correctedBasePath = basePath.endsWith("/")
-    ? basePath.slice(0, -1)
-    : basePath;
+export const fontNameToUrl =  (fontName: string) => {
+  return ['']
+    .concat(["_next", fontName].filter(Boolean) as string[])
+    .join("/");
+}
+
+export const createFontNameToBasedUrl = (baseUrl = '/') => {
+  const normalizedBaseUrl = baseUrl.endsWith('/')
+    ? baseUrl.slice(0, -1)
+    : baseUrl;
+
   return (fontName: string) => {
-    return [correctedBasePath]
-      .concat(["_next", fontName].filter(Boolean) as string[])
-      .join("/");
+    return normalizedBaseUrl + fontNameToUrl(fontName)
   };
-};
+}
 
 export const normalizeTargetCssId = (id: string) => {
   return queryString.stringifyUrl({
