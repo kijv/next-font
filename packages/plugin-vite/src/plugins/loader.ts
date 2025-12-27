@@ -2,7 +2,7 @@ import type { Mutable, TargetCss } from '@/declarations'
 import { type PluginOption, type ResolvedConfig, isCSSRequest } from 'vite'
 import {
   createCachedImport,
-  fontNameToUrl,
+  createFontNameToUrl,
   getQuerySuffix,
   isSamePath,
   normalizeTargetCssId,
@@ -79,6 +79,8 @@ export const nextFontLoaderPlugin = ({
           (font) => !fontNames.includes(font)
         )
       }
+
+      const fontNameToUrl = createFontNameToUrl(config?.base)
 
       for (const fontName of fontNames) {
         fontFileMap.set(
@@ -187,6 +189,8 @@ export const nextFontLoaderPlugin = ({
             const data = JSON.parse(stringifiedArguments)
 
             const fontNames: string[] = []
+
+            const fontNameToUrl = createFontNameToUrl(config?.base)
 
             const emitFontFile: Parameters<FontLoader>[0]['emitFontFile'] = (
               content: Buffer,
