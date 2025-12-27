@@ -90,8 +90,6 @@ export const nextFontLoaderPlugin = ({
         );
       }
 
-      const fontNameToUrl = createFontNameToUrl(config?.base);
-
       for (const fontName of fontNames) {
         fontFileMap.set(
           fontNameToUrl(fontName),
