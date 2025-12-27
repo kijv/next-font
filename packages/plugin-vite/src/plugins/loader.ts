@@ -90,10 +90,13 @@ export const nextFontLoaderPlugin = ({
         );
       }
 
+      const fontNameToBasedUrl = createFontNameToBasedUrl(config?.base);
+
       for (const fontName of fontNames) {
+        const fontUrl = fontNameToBasedUrl(fontName);
         fontFileMap.set(
-          fontNameToUrl(fontName),
-          Object.assign({}, fontFileMap.get(fontNameToUrl(fontName)), {
+          fontUrl,
+          Object.assign({}, fontFileMap.get(fontUrl), {
             serve: false,
           })
         );
@@ -227,9 +230,9 @@ export const nextFontLoaderPlugin = ({
               fontNames.push(name);
 
               const basedOutputPath = fontNameToBasedUrl(name);
-              const outputPath = fontNameToUrl(name);
 
               if (!isDev) {
+              const outputPath = fontNameToUrl(name);
                 this.emitFile({
                   type: "asset",
                   fileName: outputPath.slice(1),
@@ -237,7 +240,7 @@ export const nextFontLoaderPlugin = ({
                 });
               }
 
-              fontFileMap.set(outputPath, { content, serve: isDev });
+              fontFileMap.set(basedOutputPath, { content, serve: isDev });
 
               return basedOutputPath;
             };
