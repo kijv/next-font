@@ -10,7 +10,7 @@ const config: BundleConfig = {
   tsconfig: path.join(cwd, 'tsconfig.json'),
 }
 
-const pkgJsonPath = Bun.fileURLToPath(import.meta.resolve('@next/font/package.json'))
+const pkgJsonPath = Bun.fileURLToPath(import.meta.resolve('next-repo/packages/font/package.json'))
 const pkgJson = await Bun.file(pkgJsonPath)
 assert.equal(await pkgJson.exists(), true)
 const pkg = await pkgJson.json()
