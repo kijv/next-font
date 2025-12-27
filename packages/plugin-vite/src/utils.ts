@@ -71,9 +71,11 @@ function cleanUrl(url: string): string {
   return url.replace(postfixRE, '')
 }
 
-export const fontNameToUrl = (fontName: string) => {
-  return [''].concat(['_next', fontName].filter(Boolean) as string[]).join('/')
-}
+export const createFontNameToUrl =
+  (basePath = '') =>
+  (fontName: string) => {
+    return [basePath].concat(['_next', fontName].filter(Boolean) as string[]).join('/')
+  }
 
 export const normalizeTargetCssId = (id: string) => {
   return queryString.stringifyUrl({
