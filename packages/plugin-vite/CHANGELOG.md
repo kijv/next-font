@@ -1,5 +1,11 @@
 # @next-font/plugin-vite
 
+## 1.5.2
+
+### Patch Changes
+
+- [`68e8ed4`](https://github.com/kijv/next-font/commit/68e8ed4c009445877aa2a3699ccb0885f6d157aa) Thanks [@kijv](https://github.com/kijv)! - fix pkg.json
+
 ## 1.5.1
 
 ### Patch Changes
