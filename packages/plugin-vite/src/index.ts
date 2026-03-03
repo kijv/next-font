@@ -34,23 +34,24 @@ const nextFont = (): PluginOption[] => {
     isUsingSizeAdjust: false,
   } as Mutable<NextFontManifest>;
 
-  const reloadManifest = () => {
-    for (const server of servers) {
-      const manifestId = fileURLToPath(
-        import.meta.resolve('next-font/manifest'),
-      );
-      const manifestMod = server.moduleGraph.getModuleById(manifestId);
-      if (manifestMod) {
-        server.reloadModule(manifestMod);
-        server.moduleGraph.invalidateModule(manifestMod);
-        server.moduleGraph.onFileChange(manifestId);
-        server.ws.send({
-          type: 'full-reload',
-          path: manifestId,
-        });
-      }
-    }
-  };
+  const reloadManifest = async () =>
+    Promise.all(
+      servers.map(async (server) => {
+        const manifestId = fileURLToPath(
+          import.meta.resolve('next-font/manifest'),
+        );
+        const manifestMod = server.moduleGraph.getModuleById(manifestId);
+        if (manifestMod) {
+          await server.reloadModule(manifestMod);
+          server.moduleGraph.invalidateModule(manifestMod);
+          server.moduleGraph.onFileChange(manifestId);
+          server.ws.send({
+            type: 'full-reload',
+            path: manifestId,
+          });
+        }
+      }),
+    );
 
   const onFinished: OnFinished = async (fileToFontNames) => {
     for (const [id, targetCss] of fileToFontNames) {
@@ -75,7 +76,7 @@ const nextFont = (): PluginOption[] => {
       }
     }
 
-    reloadManifest();
+    await reloadManifest();
   };
 
   const [{ resetCalledFinished, removeTargetCss }, loaderPlugin] =
@@ -99,50 +100,54 @@ const nextFont = (): PluginOption[] => {
 
         const removed = previousValue.filter((p) => !newValue.includes(p));
 
-        for (const server of servers) {
-          for (const id of removed) {
-            const resolvedId =
-              fileURLToPath(import.meta.resolve(removeQuerySuffix(id))) +
-              getQuerySuffix(id);
+        await Promise.all(
+          servers.map(async (server) => {
+            await Promise.all(
+              removed.map(async (id) => {
+                const resolvedId =
+                  fileURLToPath(import.meta.resolve(removeQuerySuffix(id))) +
+                  getQuerySuffix(id);
 
-            removeTargetCss(normalizeTargetCssId(resolvedId));
+                removeTargetCss(normalizeTargetCssId(resolvedId));
 
-            const module = server.moduleGraph.getModuleById(resolvedId);
-            if (module) {
-              server.moduleGraph.onFileDelete(resolvedId);
-              server.ws.send({
-                type: 'prune',
-                paths: [resolvedId],
-              });
-              server.ws.send({
-                type: 'update',
-                updates: [
-                  {
-                    type: 'css-update',
+                const module = server.moduleGraph.getModuleById(resolvedId);
+                if (module) {
+                  server.moduleGraph.onFileDelete(resolvedId);
+                  server.ws.send({
+                    type: 'prune',
+                    paths: [resolvedId],
+                  });
+                  server.ws.send({
+                    type: 'update',
+                    updates: [
+                      {
+                        type: 'css-update',
+                        path: resolvedId,
+                        acceptedPath: resolvedId,
+                        timestamp: Date.now(),
+                      },
+                      {
+                        type: 'css-update',
+                        path: id,
+                        acceptedPath: id,
+                        timestamp: Date.now(),
+                      },
+                    ],
+                  });
+                  // server.moduleGraph.invalidateModule(module)
+                  await server.reloadModule(module);
+
+                  server.ws.send({
+                    type: 'full-reload',
                     path: resolvedId,
-                    acceptedPath: resolvedId,
-                    timestamp: Date.now(),
-                  },
-                  {
-                    type: 'css-update',
-                    path: id,
-                    acceptedPath: id,
-                    timestamp: Date.now(),
-                  },
-                ],
-              });
-              // server.moduleGraph.invalidateModule(module)
-              server.reloadModule(module);
+                  });
+                }
+              }),
+            );
 
-              server.ws.send({
-                type: 'full-reload',
-                path: resolvedId,
-              });
-            }
-          }
-
-          reloadManifest();
-        }
+            await reloadManifest();
+          }),
+        );
       },
     }),
     loaderPlugin,
