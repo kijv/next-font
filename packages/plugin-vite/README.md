@@ -13,12 +13,12 @@ npm install @next-font/plugin-vite
 Vite config file:
 
 ```js
-import { defineConfig } from 'vite'
-import nextFont from '@next-font/plugin-vite'
+import { defineConfig } from 'vite';
+import nextFont from '@next-font/plugin-vite';
 
 export default defineConfig({
   plugins: [nextFont()],
-})
+});
 ```
 
 > You can use `next/font`, `@next/font`, or `next-font` when loading fonts, and it will work with this plugin

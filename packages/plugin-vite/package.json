@@ -1,23 +1,31 @@
 {
   "name": "@next-font/plugin-vite",
-  "description": "Vite plugin for next/font (@next/font)",
   "version": "1.4.1",
+  "description": "Vite plugin for next/font (@next/font)",
   "license": "BSD-2-Clause",
-  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kijv/next-font.git",
+    "directory": "packages/plugin-vite"
+  },
   "files": [
     "dist"
   ],
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "bunchee --external=vite,postcss,next-font --clean --minify --dts --sourcemap=false",
-    "dev": "bunchee --external=vite,postcss,next-font --watch --dts --sourcemap"
+    "build": "tsdown --minify",
+    "dev": "tsdown --watch --sourcemap"
   },
   "dependencies": {
     "postcss": "^8.5.6"
@@ -32,6 +40,7 @@
     "estree-walker": "^3.0.3",
     "loader-utils": "^3.3.1",
     "magic-string": "^0.30.17",
+    "next": "^16.1.6",
     "postcss-modules": "^6.0.1",
     "query-string": "^9.2.1",
     "stable-hash": "^0.0.6",
@@ -39,13 +48,5 @@
   },
   "peerDependencies": {
     "next-font": "workspace:~"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kijv/next-font.git",
-    "directory": "packages/plugin-vite"
   }
 }

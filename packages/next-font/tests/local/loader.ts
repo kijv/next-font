@@ -1,5 +1,5 @@
-import { describe, expect, test, vi } from 'vitest'
-import nextFontLocalFontLoader from '../../local/loader'
+import { describe, expect, test, vi } from 'vitest';
+import nextFontLocalFontLoader from '../../local/loader';
 
 describe('next/font/local loader', () => {
   describe('generated CSS', () => {
@@ -17,7 +17,7 @@ describe('next/font/local loader', () => {
             readFile: async (_: string) => 'fontdata',
           },
         } as any,
-      })
+      });
 
       expect(css).toMatchInlineSnapshot(`
         "@font-face {
@@ -26,8 +26,8 @@ describe('next/font/local loader', () => {
         font-display: swap;
         }
         "
-      `)
-    })
+      `);
+    });
 
     test('Weight and style', async () => {
       const { css } = await nextFontLocalFontLoader({
@@ -43,7 +43,7 @@ describe('next/font/local loader', () => {
             readFile: async (_: string) => 'fontdata',
           },
         } as any,
-      })
+      });
 
       expect(css).toMatchInlineSnapshot(`
         "@font-face {
@@ -54,8 +54,8 @@ describe('next/font/local loader', () => {
         font-style: italic;
         }
         "
-      `)
-    })
+      `);
+    });
 
     test('Other properties', async () => {
       const { css } = await nextFontLocalFontLoader({
@@ -79,7 +79,7 @@ describe('next/font/local loader', () => {
             readFile: async (_: string) => 'fontdata',
           },
         } as any,
-      })
+      });
 
       expect(css).toMatchInlineSnapshot(`
         "@font-face {
@@ -90,8 +90,8 @@ describe('next/font/local loader', () => {
         font-display: swap;
         }
         "
-      `)
-    })
+      `);
+    });
 
     test('Multiple weights default style', async () => {
       const { css } = await nextFontLocalFontLoader({
@@ -131,7 +131,7 @@ describe('next/font/local loader', () => {
             readFile: async (path: string) => path,
           },
         } as any,
-      })
+      });
 
       expect(css).toMatchInlineSnapshot(`
         "@font-face {
@@ -166,8 +166,8 @@ describe('next/font/local loader', () => {
         font-style: normal;
         }
         "
-      `)
-    })
+      `);
+    });
 
     test('Multiple styles default weight', async () => {
       const { css } = await nextFontLocalFontLoader({
@@ -202,7 +202,7 @@ describe('next/font/local loader', () => {
             readFile: async (path: string) => path,
           },
         } as any,
-      })
+      });
 
       expect(css).toMatchInlineSnapshot(`
         "@font-face {
@@ -228,8 +228,8 @@ describe('next/font/local loader', () => {
         font-weight: 700;
         }
         "
-      `)
-    })
+      `);
+    });
 
     test('Custom font-family in declarations', async () => {
       const { css } = await nextFontLocalFontLoader({
@@ -250,7 +250,7 @@ describe('next/font/local loader', () => {
             readFile: async (_: string) => 'fontdata',
           },
         } as any,
-      })
+      });
 
       expect(css).toMatchInlineSnapshot(`
         "@font-face {
@@ -259,7 +259,7 @@ describe('next/font/local loader', () => {
         font-display: swap;
         }
         "
-      `)
-    })
-  })
-})
+      `);
+    });
+  });
+});

@@ -1,13 +1,15 @@
-import { readFile, readdir } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
-import { join } from 'node:path'
-import semver from 'semver'
-import sq from 'shell-quote'
+import { readFile, readdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import semver from 'semver';
+import sq from 'shell-quote';
 
 async function fetchTagsFromRegistry(packageName: string) {
-  const res = await fetch(`https://registry.npmjs.org/-/package/${packageName}/dist-tags`)
-  const tags = await res.json()
-  return tags
+  const res = await fetch(
+    `https://registry.npmjs.org/-/package/${packageName}/dist-tags`,
+  );
+  const tags = await res.json();
+  return tags;
 }
 
 async function getTag({
@@ -15,29 +17,29 @@ async function getTag({
   version,
   latest,
 }: {
-  name: string
-  version: string
-  latest: string
+  name: string;
+  version: string;
+  latest: string;
 }): Promise<string> {
-  const preConfigPath = join(process.cwd(), '.changeset', 'pre.json')
+  const preConfigPath = join(process.cwd(), '.changeset', 'pre.json');
 
   if (existsSync(preConfigPath)) {
-    const { tag, mode } = JSON.parse(await readFile(preConfigPath, 'utf-8'))
+    const { tag, mode } = JSON.parse(await readFile(preConfigPath, 'utf-8'));
     if (mode === 'pre') {
       if (!version.includes('-')) {
         throw new Error(
-          `The changeset is in pre mode, but the version of "${name}@${version}" is not prerelease. It is likely a bug from versioning the packages.`
-        )
+          `The changeset is in pre mode, but the version of "${name}@${version}" is not prerelease. It is likely a bug from versioning the packages.`,
+        );
       }
 
-      return tag
+      return tag;
     }
   }
 
   if (version.includes('-')) {
     throw new Error(
-      `The changeset is not in pre mode, but the version of "${name}@${version}" is prerelease. It is likely a bug from versioning the packages.`
-    )
+      `The changeset is not in pre mode, but the version of "${name}@${version}" is prerelease. It is likely a bug from versioning the packages.`,
+    );
   }
 
   // If the current version is less than the latest,
@@ -48,55 +50,64 @@ async function getTag({
   // version. Hence, we explicitly set the tag as
   // 'stable' for backports.
   if (semver.lt(version, latest)) {
-    return 'stable'
+    return 'stable';
   }
 
-  return 'latest'
+  return 'latest';
 }
 
 async function publishNpm() {
   if (!process.env.NPM_TOKEN) {
-    throw new Error('NPM_TOKEN is not set')
+    throw new Error('NPM_TOKEN is not set');
   }
 
-  const packagesDir = join(process.cwd(), 'packages')
+  const packagesDir = join(process.cwd(), 'packages');
   const packageDirs = await readdir(packagesDir, {
     withFileTypes: true,
-  })
+  });
 
-  for await (const packageDir of packageDirs.filter((d) => d.name != 'next-font')) {
+  for await (const packageDir of packageDirs.filter(
+    (d) => d.name != 'next-font',
+  )) {
     if (!packageDir.isDirectory()) {
-      continue
+      continue;
     }
 
     const pkgJson = JSON.parse(
-      await readFile(join(process.cwd(), 'packages', packageDir.name, 'package.json'), 'utf-8')
-    )
+      await readFile(
+        join(process.cwd(), 'packages', packageDir.name, 'package.json'),
+        'utf-8',
+      ),
+    );
 
     if (pkgJson.private) {
-      continue
+      continue;
     }
 
-    const tags = await fetchTagsFromRegistry(pkgJson.name)
+    const tags = await fetchTagsFromRegistry(pkgJson.name);
     // If the current version is already published in the
     // registry, skip the process.
     if (semver.eq(pkgJson.version, tags.latest)) {
-      console.log(`Skipping ${pkgJson.name}@${pkgJson.version} because it is already published.`)
-      continue
+      console.log(
+        `Skipping ${pkgJson.name}@${pkgJson.version} because it is already published.`,
+      );
+      continue;
     }
 
     const tag = await getTag({
       name: pkgJson.name,
       version: pkgJson.version,
       latest: tags.latest,
-    })
+    });
 
-    const packagePath = join(packagesDir, packageDir.name)
-    const args = ['publish', '--cwd', packagePath, '--tag', tag]
+    const packagePath = join(packagesDir, packageDir.name);
+    const args = ['publish', '--cwd', packagePath, '--tag', tag];
 
-    console.log(`Running command: "bun ${args.join(' ')}" for ${pkgJson.name}@${pkgJson.version}`)
-    await Bun.$`${sq.parse(`bun ${args.join(' ')}`)}`
+    console.log(
+      `Running command: "bun ${args.join(' ')}" for ${pkgJson.name}@${pkgJson.version}`,
+    );
+    await Bun.$`${sq.parse(`bun ${args.join(' ')}`)}`;
   }
 }
 
-publishNpm()
+publishNpm();

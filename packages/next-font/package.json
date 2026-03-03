@@ -1,8 +1,13 @@
 {
   "name": "next-font",
-  "description": "@next/font (next/font) replacement",
   "version": "1.2.0",
+  "description": "@next/font (next/font) replacement",
   "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kijv/next-font.git",
+    "directory": "packages/next-font"
+  },
   "files": [
     "dist",
     "google",
@@ -14,54 +19,46 @@
   "types": "./dist/index.d.ts",
   "exports": {
     "./google": {
-      "import": "./google/index.js",
-      "types": "./google/index.d.ts"
+      "types": "./google/index.d.ts",
+      "import": "./google/index.js"
     },
     "./local": {
-      "import": "./local/index.js",
-      "types": "./local/index.d.ts"
+      "types": "./local/index.d.ts",
+      "import": "./local/index.js"
     },
     "./google/loader": {
-      "import": "./google/loader.js",
-      "types": "./google/loader.d.ts"
+      "types": "./google/loader.d.ts",
+      "import": "./google/loader.js"
     },
     "./local/loader": {
-      "import": "./local/loader.js",
-      "types": "./local/loader.d.ts"
+      "types": "./local/loader.d.ts",
+      "import": "./local/loader.js"
     },
     "./google/target.css": "./google/target.css",
     "./local/target.css": "./local/target.css",
     "./manifest": {
-      "import": "./manifest/index.js",
-      "types": "./manifest/index.d.ts"
+      "types": "./manifest/index.d.ts",
+      "import": "./manifest/index.js"
     },
     "./dist/*": {
-      "import": "./dist/*.js",
-      "types": "./dist/*.d.ts"
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
     },
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
-  },
-  "scripts": {
-    "build": "bun run clean && turbo run build-next-font && turbo run build-src",
-    "clean": "bun run ./scripts/clean-dist.ts",
-    "build-next-font": "bun run ./scripts/build-next-font.ts",
-    "build-src": "bun run ./scripts/build-src.ts"
-  },
-  "devDependencies": {
-    "next-repo": "git://github.com/vercel/next.js#3aa5398",
-    "@types/fontkit": "^2.0.8",
-    "fontkit": "^2.0.4",
-    "next": "16.1.1"
   },
   "publishConfig": {
     "access": "public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kijv/next-font.git",
-    "directory": "packages/next-font"
+  "scripts": {
+    "build": "bun run ./scripts/build"
+  },
+  "devDependencies": {
+    "@types/fontkit": "^2.0.8",
+    "fontkit": "^2.0.4",
+    "next": "^16.1.6",
+    "next-repo": "git://github.com/vercel/next.js#adf8c612adddd103647c90ff0f511ea35c57076e"
   }
 }
