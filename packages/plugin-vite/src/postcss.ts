@@ -110,7 +110,7 @@ const runPostCss = async ({
       throw Object.assign(
         {},
         {
-          message: `[postcss] ${e.message}`,
+          message: `[postcss] ${String(e.message)}`,
           code,
           loc: {
             file: e.file,

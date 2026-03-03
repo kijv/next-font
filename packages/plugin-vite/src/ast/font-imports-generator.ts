@@ -27,6 +27,7 @@ export class FontImportsGenerator {
   }
 
   visit(ast: ProgramNode) {
+    // @ts-expect-error
     walk(ast, {
       enter: (node) => {
         if (node.type === 'VariableDeclaration') {
@@ -106,7 +107,6 @@ export class FontImportsGenerator {
             .map(stableHash)
             .includes(stableHash(importDecl))
         ) {
-          // @ts-expect-error
           this.state.fontImports.push(importDecl);
         }
 

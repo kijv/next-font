@@ -1,8 +1,7 @@
+import type { ModuleDeclaration, parse } from 'acorn';
 import { FindFunctionsOutsideModuleScope } from './find-functions-outside-module-scope';
 import { FontFunctionsCollector } from './font-functions-collector';
 import { FontImportsGenerator } from './font-imports-generator';
-import type estree from 'estree';
-import type { parseAst } from 'vite';
 import { walk } from 'estree-walker';
 
 export interface FontImportDataQuery {
@@ -23,18 +22,18 @@ export interface State {
       imported?: true;
     }
   >;
-  fontImports: estree.ModuleDeclaration[];
-  fontExports: estree.ModuleDeclaration[];
+  fontImports: ModuleDeclaration[];
+  fontExports: ModuleDeclaration[];
 }
 
-export type ProgramNode = ReturnType<typeof parseAst>;
+export type ProgramNode = ReturnType<typeof parse>;
 export const visit = ({
   ast,
   fontLoaders,
   id,
   remapImports,
 }: {
-  ast: ReturnType<typeof parseAst>;
+  ast: ReturnType<typeof parse>;
   fontLoaders: string[];
   remapImports: Record<string, string | undefined>;
   id: string;
@@ -79,10 +78,10 @@ export const visit = ({
       return state.removeableModuleItems.includes(node.start);
     };
 
-    // @ts-expect-error
     const firstRemovableIndex = ast.body.findIndex(isRemovable);
 
     // Remove marked module items
+    // @ts-expect-error
     walk(ast, {
       enter(node) {
         // @ts-expect-error

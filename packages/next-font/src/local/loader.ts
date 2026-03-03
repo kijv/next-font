@@ -3,22 +3,22 @@ import type { Font, FontCollection } from 'fontkit';
 import { createCachedImport } from '../utils';
 import fs from 'node:fs/promises';
 
-// @ts-expect-error treated as external (bunchee)
+// @ts-expect-error treated as external
 import { validateLocalFontFunctionCall } from './validate-local-font-function-call.js';
 
 const importGetFallbackMetricsFromFontFile = createCachedImport<
-  typeof import('../../dist/local/get-fallback-metrics-from-font-file')
+  typeof import('next-repo/packages/font/src/local/get-fallback-metrics-from-font-file')
 >(() =>
-  // @ts-expect-error treated as external (bunchee)
+  // @ts-expect-error treated as external
   import('./get-fallback-metrics-from-font-file.js').then(
     (mod) => mod.default || mod,
   ),
 );
 
 const importPickFontFileForFallbackGeneration = createCachedImport<
-  typeof import('../../dist/local/pick-font-file-for-fallback-generation')
+  typeof import('next-repo/packages/font/src/local/pick-font-file-for-fallback-generation')
 >(() =>
-  // @ts-expect-error treated as external (bunchee)
+  // @ts-expect-error treated as external
   import('./pick-font-file-for-fallback-generation.js').then(
     (mod) => mod.default || mod,
   ),
@@ -47,7 +47,7 @@ const loader: FontLoader = async ({
     weight: defaultWeight,
     style: defaultStyle,
   } = (
-    validateLocalFontFunctionCall as (typeof import('../../dist/local/validate-local-font-function-call'))['validateLocalFontFunctionCall']
+    validateLocalFontFunctionCall as (typeof import('next-repo/packages/font/src/local/validate-local-font-function-call'))['validateLocalFontFunctionCall']
   )(functionName, data[0]);
 
   // Load all font files and emit them to the .next output directory
@@ -71,7 +71,7 @@ const loader: FontLoader = async ({
       try {
         fontMetadata = fontFromBuffer(fileBuffer);
       } catch (e) {
-        console.error(`Failed to load font file: ${resolved}\n${e}`);
+        console.error(`Failed to load font file: ${resolved}\n${String(e)}`);
       }
 
       // Check if `font-family` is explicitly defined in `declarations`

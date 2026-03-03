@@ -13,6 +13,11 @@ const importEscodegen = createCachedImport(
     >,
 );
 
+const importAcorn = createCachedImport(() => import('acorn'));
+const importAcornJsx = createCachedImport(() =>
+  import('acorn-jsx').then((m) => m.default),
+);
+
 type OnFontImportsChanged = (
   id: string,
   newValue: string[],
@@ -46,9 +51,12 @@ export const nextFontTransformerPlugin = ({
         if (!/\.(?:j|t)sx?$|\.mjs|\.svelte$/.test(id)) return null;
 
         const parse = async () =>
-          this.parse(code, {
-            jsx: true,
-          });
+          (await importAcorn()).Parser.extend((await importAcornJsx())()).parse(
+            code,
+            {
+              ecmaVersion: 'latest',
+            },
+          );
 
         const { data: ast, error } = await tryCatch(parse());
         if (error) {
@@ -67,7 +75,7 @@ export const nextFontTransformerPlugin = ({
 
         const nextFontImports = state.fontImports.map(
           (i) =>
-            (i as import('estree').ImportDeclaration).source.value as string,
+            (i as import('acorn').ImportDeclaration).source.value as string,
         );
 
         const previousFontImports = fontImports[id];
@@ -76,7 +84,7 @@ export const nextFontTransformerPlugin = ({
             (i) => !previousFontImports.some((p) => p.id === i),
           );
           if (importsChanged) {
-            onFontImportsChanged(
+            await onFontImportsChanged(
               id,
               nextFontImports,
               previousFontImports.map((i) => i.id),
