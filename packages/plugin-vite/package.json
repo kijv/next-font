@@ -1,6 +1,6 @@
 {
   "name": "@next-font/plugin-vite",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Vite plugin for next/font (@next/font)",
   "license": "BSD-2-Clause",
   "repository": {
