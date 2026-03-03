@@ -1,26 +1,26 @@
-import type { PluginOption, ResolvedConfig } from 'vite'
-import { importResolve, tryCatch } from '@/utils'
-import type { NextFontManifest } from 'next-font/manifest'
-import { dataToEsm } from '@rollup/pluginutils'
+import type { PluginOption, ResolvedConfig } from 'vite';
+import { importResolve, tryCatch } from '@/utils';
+import type { NextFontManifest } from 'next-font/manifest';
+import { dataToEsm } from '@rollup/pluginutils';
 
 export const nextFontManifestPlugin = ({
   nextFontManifest,
 }: {
-  nextFontManifest: NextFontManifest
+  nextFontManifest: NextFontManifest;
 }): PluginOption[] => {
-  let config: ResolvedConfig | null = null
+  let config: ResolvedConfig | null = null;
 
   return [
     {
       name: 'next-font:manifest',
       configResolved(resolvedConfig) {
-        config = resolvedConfig
+        config = resolvedConfig;
       },
       transform: {
         order: 'post',
         async handler(_code, id) {
-          const { data: resolvedId, error } = await tryCatch(importResolve(id))
-          if (error != null || resolvedId == null) return
+          const { data: resolvedId, error } = await tryCatch(importResolve(id));
+          if (error != null || resolvedId == null) return;
 
           if (resolvedId === import.meta.resolve('next-font/manifest')) {
             return [
@@ -41,11 +41,11 @@ export const nextFontManifestPlugin = ({
                 {
                   preferConst: true,
                   namedExports: true,
-                }
+                },
               )
                 .replace(
                   'export const manifest = undefined;',
-                  `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`
+                  `export const manifest = Object.freeze(__NEXT_FONT_MANIFEST__);`,
                 )
                 .replace(
                   'export const getPreloadableFonts = undefined;',
@@ -69,7 +69,7 @@ export const nextFontManifestPlugin = ({
     } else {
      return null;
     }
-  }`
+  }`,
                 )
                 .replace(
                   'export const getFontMetadata = undefined;',
@@ -117,15 +117,15 @@ export const nextFontManifestPlugin = ({
       }
 
       return metadata;
-  }`
+  }`,
                 ),
               `if (import.meta.hot) import.meta.hot.accept(${JSON.stringify(id)}, () => {
                 manifest = __NEXT_FONT_MANIFEST__;
               })`,
-            ].join('\n')
+            ].join('\n');
           }
         },
       },
     },
-  ]
-}
+  ];
+};

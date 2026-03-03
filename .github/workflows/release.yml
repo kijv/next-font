@@ -1,158 +1,51 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      semver:
-        description: "Semver increment type"
-        required: true
-        default: "patch"
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
-          - alpha
-          - beta
-          - canary
-      dry_run:
-        description: "Dry run (do not actually release)"
-        required: false
-        default: false
-        type: boolean
-      packages:
-        description: "Packages to release (space-separated)"
-        required: true
-        type: string
+  push:
+    branches:
+      - main
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
-  stage:
-    name: Stage
+  release:
+    name: Release
     runs-on: ubuntu-latest
-    outputs:
-      stage_branch: ${{ steps.prepare-branch.outputs.STAGE_BRANCH }}
-    permissions:
-      contents: write
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install Dependencies
+        run: bun i --frozen-lockfile
+
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
         with:
-          bun-version: "1.2.18"
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
 
-      - name: Install dependencies
-        run: bun install
-
-      - name: Configure Git
-        run: |
-          git config --global user.name vvv
-          git config --global user.email vvv@vvv.org
-
-      - name: Prepare branch
-        id: prepare-branch
-        run: |
-          PACKAGES=$(echo "${{ github.event.inputs.packages }}" | tr ' ' '-')
-          git checkout -b release-$PACKAGES
-          echo "STAGE_BRANCH=$(git branch --show-current)" >> $GITHUB_OUTPUT
-
-      - name: Release packages
-        run: |
-          if [ -z "${{ github.event.inputs.packages }}" ]; then
-            echo "No packages selected for release"
-            exit 1
-          fi
-
-          ARGS="${{ github.event.inputs.packages }} --bump --semver ${{ github.event.inputs.semver }}"
-
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
-            ARGS="$ARGS --dry-run"
-          fi
-
-          bun xtask workspace $ARGS
-
-      - name: Stage
-        run: |
-          git push origin ${{ steps.prepare-branch.outputs.STAGE_BRANCH }} --tags
-
-  publish:
-    name: Publish to NPM
-    runs-on: ubuntu-latest
-    needs: stage
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ needs.stage.outputs.stage_branch }}
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.2.18"
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Build
-        run: bun run build
-
-      # patches dont work with linker isolated so after we build we use linker isolate so workspace versions "should" resolve correctly
-      - name: Workspace install
-        run: |
-          rm -f bun.lock
-          bun install 
-
-      - name: .npmrc
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.VVV_NPM_TOKEN }}" > .npmrc && echo "provenance=true" >> .npmrc
-
-      - name: Publish
-        run: |
-          ARGS="--publish"
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
-            ARGS="$ARGS --dry-run"
-          fi
-          bun xtask workspace $ARGS
+          publish: bun run release
+          version: bun run version
+          title: release packages
+          commit: release packages
         env:
-          NPM_TOKEN: ${{ secrets.VVV_NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
-
-  pull-request:
-    name: Pull Request
-    runs-on: ubuntu-latest
-    needs: stage
-    if: github.event.inputs.dry_run == 'false'
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ needs.stage.outputs.stage_branch }}
-
-      - name: Configure Git
-        run: |
-          git config --global user.name vvv
-          git config --global user.email vvv@vvv.org
-
-      - name: Create pull request
-        uses: thomaseizinger/create-pull-request@master
-        if: ${{ !inputs.dry_run }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          head: ${{ needs.stage.outputs.stage_branch }}
-          base: main
-          title: "release npm packages"
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
