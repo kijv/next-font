@@ -47,6 +47,6 @@
     "vite": "7.0.1"
   },
   "peerDependencies": {
-    "next-font": "workspace:~"
+    "next-font": "^1.2.1"
   }
 }
