@@ -10,6 +10,7 @@ export class FindFunctionsOutsideModuleScope {
   }
 
   visit(ast: ProgramNode) {
+    // @ts-expect-error
     walk(ast, {
       enter: (node) => {
         if (node.type === 'Identifier') {
