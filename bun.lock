@@ -659,7 +659,7 @@
 
     "next-font": ["next-font@workspace:packages/next-font"],
 
-    "next-repo": ["nextjs-project@github:vercel/next.js#adf8c61", {}, "vercel-next.js-adf8c61"],
+    "next-repo": ["nextjs-project@github:vercel/next.js#adf8c61", {}, "vercel-next.js-adf8c61", "sha512-5Sc3ltXar8k0IhIpu7ziTU31l+8INwJDnupWLuHpaU6AeuFOzNn3Mv9tZQL8ViDhZId77VFKbBA46ZF7iRVktg=="],
 
     "node-fetch": ["node-fetch@2.7.0", "", { "dependencies": { "whatwg-url": "^5.0.0" }, "peerDependencies": { "encoding": "^0.1.0" }, "optionalPeers": ["encoding"] }, "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A=="],
 

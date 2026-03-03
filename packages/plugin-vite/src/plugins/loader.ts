@@ -193,6 +193,7 @@ export const nextFontLoaderPlugin = ({
               lastEnv === this.environment.name
             ) {
               return targetCssMap.get(normalizedId)!;
+              return targetCssMap.get(normalizedId)!;
             }
             lastEnv = this.environment.name;
 
