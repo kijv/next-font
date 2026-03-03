@@ -9,6 +9,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions:
   id-token: write
   contents: write
+  pull_requests: write
 
 jobs:
   release:
@@ -48,4 +49,4 @@ jobs:
           title: release packages
           commit: release packages
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
