@@ -15,8 +15,8 @@
     "manifest"
   ],
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     "./google": {
       "types": "./google/index.d.ts",
@@ -41,19 +41,20 @@
       "import": "./manifest/index.js"
     },
     "./dist/*": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/*.js"
+      "types": "./dist/*.d.mts",
+      "import": "./dist/*.mjs"
     },
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "bun run ./scripts/build"
+    "build": "tsdown --minify",
+    "dev": "tsdown --watch --sourcemap"
   },
   "devDependencies": {
     "@types/fontkit": "^2.0.8",
