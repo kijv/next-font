@@ -27,27 +27,27 @@ export default defineConfig([
       },
     ],
   },
-  // {
-  //   dts: {
-  //     oxc: true,
-  //   },
-  //   entry: ['src/{google,local}/loader.ts', 'src/{fontkit,index}.ts'],
-  //   deps: {
-  //     neverBundle: [
-  //       '../next-font-error.js',
-  //       // google
-  //       './validate-google-font-function-call.js',
-  //       './fetch-css-from-google-fonts.js',
-  //       './fetch-font-file.js',
-  //       './find-font-files-in-css.js',
-  //       './get-fallback-font-override-metrics.js',
-  //       './get-font-axes.js',
-  //       './get-google-fonts-url.js',
-  //       // local
-  //       './get-fallback-metrics-from-font-file.js',
-  //       './pick-font-file-for-fallback-generation.js',
-  //       './validate-local-font-function-call.js',
-  //     ],
-  //   },
-  // },
+  {
+    dts: {
+      oxc: true,
+    },
+    entry: ['src/{google,local}/loader.ts', 'src/{fontkit,index}.ts'],
+    deps: {
+      neverBundle: [
+        '../next-font-error.js',
+        // google
+        './validate-google-font-function-call.js',
+        './fetch-css-from-google-fonts.js',
+        './fetch-font-file.js',
+        './find-font-files-in-css.js',
+        './get-fallback-font-override-metrics.js',
+        './get-font-axes.js',
+        './get-google-fonts-url.js',
+        // local
+        './get-fallback-metrics-from-font-file.js',
+        './pick-font-file-for-fallback-generation.js',
+        './validate-local-font-function-call.js',
+      ],
+    },
+  },
 ]);
