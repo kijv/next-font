@@ -57,12 +57,12 @@ export const nextFontLoaderPlugin = ({
     cache: (typeof loaderCache)[keyof typeof loaderCache]
   }[] = [
     {
-      id: 'virtual:next-font/google/target.css',
+      id: '\0virtual:next-font/google/target.css',
       loader: googleLoader(),
       cache: loaderCache.google,
     },
     {
-      id: 'virtual:next-font/local/target.css',
+      id: '\0virtual:next-font/local/target.css',
       loader: localLoader(),
       cache: loaderCache.local,
     },
@@ -141,21 +141,25 @@ export const nextFontLoaderPlugin = ({
         async resolveId(id, importer) {
           if (!/\.css(?:$|\?)/.test(id)) return null
 
-          let { id: resolvedId } = (await this.resolve(removeQuerySuffix(id), importer)) ?? {
+          let { id: resolvedId } = (await this.resolve(
+            removeQuerySuffix(id.replace(/^virtual:/, '')),
+            importer
+          )) ?? {
             id: null,
           }
 
           if (
+            resolvedId != null &&
             fontLoaders.some(async (loader) => {
               const resolvedLoaderId = await this.resolve(
-                loader.id.replace(/$virtual:/, ''),
+                loader.id.replace(/^virtual:/, ''),
                 importer
               )
 
-              return resolvedId === resolvedLoaderId
+              return resolvedLoaderId != null && resolvedId === resolvedLoaderId.id
             })
           ) {
-            return id
+            return '\0' + id
           }
 
           return null
@@ -179,7 +183,7 @@ export const nextFontLoaderPlugin = ({
               targetCssMap.has(normalizedId) &&
               lastEnv === this.environment.name
             ) {
-              return
+              return targetCssMap.get(normalizedId)!
             }
             lastEnv = this.environment.name
 

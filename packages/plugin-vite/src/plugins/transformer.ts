@@ -41,7 +41,7 @@ export const nextFontTransformerPlugin = ({
         config = resolvedConfig
       },
       async transform(code, id) {
-        if (!/\.(?:j|t)sx?$|\.mjs$/.test(id)) return null
+        if (!/\.(?:j|t)sx?$|\.mjs|\.svelte$/.test(id)) return null
 
         const parse = async () =>
           this.parse(code, {

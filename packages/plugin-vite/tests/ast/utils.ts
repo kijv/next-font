@@ -112,7 +112,9 @@ describe('ast/utils', () => {
   })
 
   test('exprToJson throws on non-literal', () => {
-    expect(() => astUtils.exprToJson(identifier('foo'))).toThrow()
+    expect(() => astUtils.exprToJson(identifier('foo'))).toThrow(
+      'Font loader values must be explicitly written literals.'
+    )
   })
 
   test('objectLitToJson throws on spread', () => {
