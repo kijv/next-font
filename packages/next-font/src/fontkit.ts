@@ -1,2 +1,1 @@
-import { create } from 'fontkit';
-export default create;
+export { create as default } from 'fontkit'
