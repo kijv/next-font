@@ -1,14 +1,14 @@
 import { builtinModules } from 'node:module'
 import { defineConfig } from 'tsdown'
 
-const IS_WORKFLOW = process.env.GITHUB_ACTIONS === 'true'
-
 export default defineConfig({
-  publint: IS_WORKFLOW ? false : true,
+  /*
+  publint: true,
   attw: {
     profile: 'esm-only',
     level: 'error',
   },
+  */
   platform: 'node',
   entry: [
     'src/{index,local,manifest}.ts',
