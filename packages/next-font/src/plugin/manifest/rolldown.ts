@@ -1,6 +1,7 @@
-import { cleanUrl, nextJsFilePath } from '@/plugin/util'
 import type { Plugin } from 'rolldown'
 import type { RolldownNextFontGoogleOptions } from '@/plugin/google/rolldown'
+import { cleanUrl } from '@/util'
+import { nextJsFilePath } from '@/plugin/util'
 import { prefixRegex } from '@rolldown/pluginutils'
 
 export const rolldownNextFontManifest = ({

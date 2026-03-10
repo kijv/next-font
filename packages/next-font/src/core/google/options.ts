@@ -1,6 +1,6 @@
 import type { FontWeights } from './util'
 import type { NextFontRequest } from './request'
-import { arraify } from '@/plugin/util'
+import { arraify } from '@/util'
 
 type Axis = {
   tag: string

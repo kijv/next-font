@@ -12,7 +12,6 @@ import {
 import { type FontFallback, hasSizeAdjust } from '@/core/font-fallback'
 import { HashableString, hashXxh3Hash64 } from '@/plugin/hash'
 import {
-  cleanUrl,
   createCachedImport,
   nextJsFilePath,
   splitExtension,
@@ -24,6 +23,7 @@ import { buildStylesheet } from './stylesheet'
 import fs from 'node:fs/promises'
 import { getFontFallback } from './font-fallback'
 import path from 'node:path'
+import { cleanUrl } from '@/util'
 
 type Context = {
   build: boolean
