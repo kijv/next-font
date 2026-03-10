@@ -1,12 +1,21 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc", "import", "vitest"],
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "vitest",
+    "node",
+    "promise"
+  ],
   "categories": {
     "perf": "warn"
   },
   "rules": {
     "unicorn/prefer-node-protocol": "error",
     "no-duplicate-imports": "error",
-    "sort-imports": "error"
+    "sort-imports": "error",
+    "import/no-cycle": ["error", { "maxDepth": 3 }]
   }
 }

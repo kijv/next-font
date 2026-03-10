@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   test: {
@@ -8,17 +8,13 @@ export default defineConfig({
         extends: true,
         name: 'next-font',
         test: {
-          include: ['packages/next-font/tests/**/*.{ts,js}'],
-        },
-      },
-      {
-        extends: true,
-        name: 'plugin-vite',
-        test: {
-          include: ['packages/plugin-vite/tests/**/*.{ts,js}'],
+          include: [
+            'packages/next-font/tests/**/*.{ts,js}',
+            'packages/next-font/src/**/*.test.{ts,js}',
+          ],
         },
       },
     ],
   },
   plugins: [tsconfigPaths()],
-});
+})
