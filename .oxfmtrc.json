@@ -2,8 +2,8 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "ignorePatterns": [".changeset/**"],
   "endOfLine": "lf",
-  "tabWidth": 2,
   "printWidth": 80,
-  "useTabs": false,
-  "singleQuote": true
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "semi": false
 }

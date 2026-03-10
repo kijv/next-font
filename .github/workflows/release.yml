@@ -10,6 +10,7 @@ permissions:
   id-token: write
   contents: write
   pull-requests: write
+  releases: write
 
 jobs:
   release:
@@ -19,31 +20,20 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: taiki-e/checkout-action@3ab630d442e198ebb0ca30872832406ca01c46eb # v1.4.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Install Dependencies
-        run: bun i --frozen-lockfile
-
-      - name: Cache turbo build setup
-        uses: actions/cache@v4
+      - uses: taiki-e/checkout-action@83ed61bfbe2b8abbb3c66e8b65b1335484c70009 # v1.4.1
+      - uses: oxc-project/setup-node@8958a8e040102244b619c4a94fccb657a44b1c21 # v1.0.6
+      - uses: actions/cache@v4
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-
-
-      - name: Create Release Pull Request or Publish to npm
+      - name: Changesets
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: bun run release
-          version: bun run version
+          publish: pnpm run release
+          version: pnpm run version
           title: release packages
           commit: release packages
         env:
