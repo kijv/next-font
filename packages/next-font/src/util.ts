@@ -20,6 +20,7 @@ export async function asyncFlatten<T extends unknown[]>(
   arr: T
 ): Promise<AsyncFlatten<T>> {
   do {
+    // oxlint-disable no-await-in-loop
     arr = (await Promise.all(arr)).flat(Infinity) as any
   } while (arr.some((v: any) => v?.then))
   return arr as unknown[] as AsyncFlatten<T>

@@ -1,3 +1,4 @@
+// oxlint-disable no-empty-file
 /*
 import {
   type RolldownNextFontGoogleOptions,
