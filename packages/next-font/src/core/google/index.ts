@@ -20,10 +20,10 @@ import { getFontAxes, getStylesheetUrl } from './util'
 import type { NextFontRequest } from './request'
 import type { PluginContext } from 'rolldown'
 import { buildStylesheet } from './stylesheet'
+import { cleanUrl } from '@/util'
 import fs from 'node:fs/promises'
 import { getFontFallback } from './font-fallback'
 import path from 'node:path'
-import { cleanUrl } from '@/util'
 
 type Context = {
   build: boolean
