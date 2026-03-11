@@ -1,0 +1,34 @@
+import { defineConfig } from 'vite-plus'
+
+export default defineConfig({
+  fmt: {
+    $schema: './node_modules/oxfmt/configuration_schema.json',
+    ignorePatterns: ['.changeset/**'],
+    endOfLine: 'lf',
+    printWidth: 80,
+    singleQuote: true,
+    trailingComma: 'es5',
+    semi: false,
+  },
+  lint: {
+    $schema: './node_modules/oxlint/configuration_schema.json',
+    plugins: [
+      'typescript',
+      'unicorn',
+      'oxc',
+      'import',
+      'vitest',
+      'node',
+      'promise',
+    ],
+    categories: {
+      perf: 'warn',
+    },
+    rules: {
+      'unicorn/prefer-node-protocol': 'error',
+      'no-duplicate-imports': 'error',
+      'sort-imports': 'error',
+      'import/no-cycle': ['error', { maxDepth: 3 }],
+    },
+  },
+})

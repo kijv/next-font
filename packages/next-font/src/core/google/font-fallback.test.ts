@@ -3,7 +3,7 @@ import {
   type FontMetricsMap,
   lookupFallback,
 } from './font-fallback'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vite-plus/test'
 
 describe('core/google/font-fallback', () => {
   it('fallback from metrics sans serif', () => {

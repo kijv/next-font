@@ -1,5 +1,5 @@
 import { type FontAxes, getFontAxes, getStylesheetUrl } from './util'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vite-plus/test'
 import type { FontData } from './options'
 import { GOOGLE_FONTS_STYLESHEET_URL } from '.'
 

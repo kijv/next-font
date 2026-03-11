@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite-plus'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
@@ -6,7 +6,6 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        name: 'next-font',
         test: {
           include: [
             'packages/next-font/tests/**/*.{ts,js}',

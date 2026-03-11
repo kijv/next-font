@@ -21,12 +21,9 @@ jobs:
     steps:
       - uses: taiki-e/checkout-action@83ed61bfbe2b8abbb3c66e8b65b1335484c70009 # v1.4.1
       - uses: oxc-project/setup-node@8958a8e040102244b619c4a94fccb657a44b1c21 # v1.0.6
-      - uses: actions/cache@v4
+      - uses: voidzero-dev/setup-vp@v1
         with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
+          cache: true
       - name: Changesets
         id: changesets
         uses: changesets/action@v1

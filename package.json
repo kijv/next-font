@@ -7,28 +7,25 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "test": "vitest",
-    "lint": "oxlint --deny-warnings --report-unused-disable-directives --type-aware",
-    "lint:fix": "oxlint --fix",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
+    "test": "vp test",
+    "lint": "vp lint --deny-warnings --report-unused-disable-directives --type-aware",
+    "lint:fix": "vp lint --fix",
+    "fmt": "vp fmt",
+    "fmt:check": "vp fmt --check",
     "version": "changeset version && pnpm install --lockfile-only",
     "release": "turbo run build --filter=./packages/* && changeset publish"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.2",
-    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.29.5",
     "@types/bun": "latest",
-    "oxfmt": "^0.36.0",
-    "oxlint": "^1.51.0",
-    "oxlint-tsgolint": "^0.16.0",
     "publint": "^0.3.18",
     "rolldown-plugin-dts": "^0.22.3",
-    "tsdown": "^0.21.0",
     "turbo": "^2.8.16",
+    "vite-plus": "catalog:",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.0.18"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"

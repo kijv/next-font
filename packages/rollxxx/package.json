@@ -24,8 +24,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown --minify",
-    "dev": "tsdown --watch --sourcemap"
+    "build": "vp pack --minify",
+    "dev": "vp pack --watch --sourcemap"
   },
   "devDependencies": {
     "@rolldown/pluginutils": "1.0.0-rc.7",

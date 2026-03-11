@@ -1,5 +1,5 @@
 import { builtinModules } from 'node:module'
-import { defineConfig } from 'tsdown'
+import { defineConfig } from 'vite-plus/pack'
 
 export default defineConfig({
   /*
