@@ -1,26 +1,35 @@
-// oxlint-disable no-empty-file
-/*
+import { type Plugin, version } from 'vite'
 import {
   type RolldownNextFontGoogleOptions,
   rolldownNextFontGoogle,
 } from './plugin/google/rolldown'
 import { nextJsFilePath, sanitizeFileName } from './plugin/util'
 import { NEXT_FONT_LOADERS } from './constants'
-import { type Plugin } from 'vite'
+import { downUp } from 'rollxxx'
 import { nextFontTransform } from './plugin/transform/rolldown'
 import { prefixRegex } from '@rolldown/pluginutils'
 import { rolldownNextFontLocal } from './plugin/local/rolldown'
+import { rolldownNextFontManifest } from './plugin/manifest/rolldown'
 
 const viteNextFont = (): Plugin[] => {
+  const major = parseInt(version.split('.')[0] ?? '0', 10)
+
   const fontFileMap = new Map<string, Uint8Array>()
   const virtualSources = new Map<string, string | Promise<string>>()
   const entryFileToFontFiles = new Map<string, Set<string>>()
 
-  const transformPlugin = nextFontTransform({
+  const rolldownTransformPlugin = nextFontTransform({
     fontLoaders: NEXT_FONT_LOADERS,
   })
+  const transformPlugin = Object.assign({}, rolldownTransformPlugin, {
+    transform: Object.assign({}, rolldownTransformPlugin.transform, {
+      filter: {
+        id: /\.(?:j|t)sx?$|\.(c|m)js$/,
+      },
+    }),
+  })
 
-  return [
+  const plugins: Plugin[] = [
     {
       name: 'next-font:virtual-source',
       async load(source) {
@@ -33,13 +42,7 @@ const viteNextFont = (): Plugin[] => {
         return null
       },
     },
-    Object.assign({}, transformPlugin, {
-      transform: Object.assign({}, transformPlugin.transform, {
-        filter: {
-          id: /\.(?:j|t)sx?$|\.(c|m)js$/,
-        },
-      }),
-    }),
+    transformPlugin,
     ...rolldownNextFontGoogle({
       fontFileMap,
       virtualSources,
@@ -82,7 +85,10 @@ const viteNextFont = (): Plugin[] => {
       entryFileToFontFiles,
     }),
   ]
+
+  if (major < 8) return downUp.pluginsCompat(plugins) as Plugin[]
+
+  return plugins
 }
 
 export default viteNextFont
-*/

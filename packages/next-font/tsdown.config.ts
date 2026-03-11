@@ -13,16 +13,19 @@ export default defineConfig({
   entry: [
     'src/{index,local,manifest}.ts',
     'src/google/index.ts',
-    'src/{rolldown,vite}.ts',
+    'src/{rolldown,vite,vite-rolldown}.ts',
   ],
   dts: {
     oxc: true,
   },
   shims: true,
   deps: {
-    neverBundle: ['@jridgewell/sourcemap-codec', 'rolldown', 'vite'].concat(
-      builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))
-    ),
+    neverBundle: [
+      '@jridgewell/sourcemap-codec',
+      'rolldown',
+      'vite',
+      'vite-rolldown',
+    ].concat(builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))),
     alwaysBundle: ['fontkit'],
     onlyAllowBundle: [
       '@capsizecss/metrics',
