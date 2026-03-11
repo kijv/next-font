@@ -2,7 +2,11 @@
   "mode": "pre",
   "tag": "beta",
   "initialVersions": {
-    "next-font": "1.2.1"
+    "next-font": "1.2.1",
+    "rollxxx": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "grumpy-berries-smile",
+    "ninety-dots-add"
+  ]
 }
