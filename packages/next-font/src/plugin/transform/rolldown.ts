@@ -1,6 +1,6 @@
+import type { ModuleType, Plugin } from 'rolldown'
 import { type Program, parse } from 'oxc-parser'
 import { and, id, include, moduleType, not, or } from '@rolldown/pluginutils'
-import type { ModuleType, Plugin } from 'rolldown'
 import { nextFontLoaders } from '@/transform'
 import path from 'node:path'
 import { print } from 'esrap'
