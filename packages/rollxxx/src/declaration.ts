@@ -1,5 +1,15 @@
 export type StringOrRegExp = string | RegExp
 export type MaybeArray<T> = T | T[]
+export type MaybePromise<T> = T | Promise<T>
+export type NullValue<T = void> = T | undefined | null | void
+export type Optionify<T> = MaybePromise<
+  | NullValue<T>
+  | {
+      name: string
+    }
+  | false
+  | Optionify<T>[]
+>
 
 type UnionToIntersection<U> = (U extends any ? (x: U) => void : never) extends (
   x: infer I

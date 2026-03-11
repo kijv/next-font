@@ -81,7 +81,7 @@ export const getStylesheetUrl = (
   axes: FontAxes,
   display: string
 ): string => {
-  const variants: Array<Array<[string, VariantValue]>> = []
+  const unorderedVariants: [string, VariantValue][][] = []
 
   let weights: VariantValue[] = []
   if (axes.wght.type === 'variable' && axes.wght.range)
@@ -93,37 +93,36 @@ export const getStylesheetUrl = (
     axes.variableAxes != null &&
     axes.variableAxes.length > 0
   ) {
-    variants.push(axes.variableAxes)
+    unorderedVariants.push(axes.variableAxes)
   } else {
     for (const w of weights) {
       if (axes.ital.size === 0) {
-        variants.push(
-          ([['wght', w]] as [string, VariantValue][]).concat(
-            axes.variableAxes?.map(([k, v]) => [k, v]) ?? []
-          )
-        )
+        const variant: [string, VariantValue][] = []
+        variant.push(['wght', w])
+        for (const axis of axes.variableAxes ?? []) {
+          variant.push(axis)
+        }
+        unorderedVariants.push(variant)
       } else {
         for (const ital of axes.ital) {
-          variants.push(
-            [
-              ital === 'italic' || axes.ital.size > 1
-                ? ['ital', ital === 'normal' ? '0' : '1']
-                : [],
-              ['wght', w],
-            ].concat(axes.variableAxes ?? []) as unknown as [
-              string,
-              VariantValue,
-            ][]
-          )
+          const variant: [string, VariantValue][] = []
+          if (ital === 'italic' || axes.ital.size > 1) {
+            variant.push(['ital', ital === 'normal' ? '0' : '1'])
+          }
+          variant.push(['wght', w])
+          for (const axis of axes.variableAxes ?? []) {
+            variant.push(axis)
+          }
+          unorderedVariants.push(variant)
         }
       }
     }
   }
 
-  for (let i = 0; i < variants.length; i++) {
-    variants[i] = variants[i]!.sort((a, b) => {
-      const isALowercase = a[0]!.charCodeAt(0) > 96
-      const isBLowercase = b[0]!.charCodeAt(0) > 96
+  const variants = unorderedVariants.map((v) =>
+    v.toSorted((a, b) => {
+      const isALowercase = a[0] != null && a[0].charCodeAt(0) > 96
+      const isBLowercase = b[0] != null && b[0].charCodeAt(0) > 96
       if (isALowercase && !isBLowercase) {
         return -1
       } else if (isBLowercase && !isALowercase) {
@@ -132,7 +131,7 @@ export const getStylesheetUrl = (
         return a[0].localeCompare(b[0])
       }
     })
-  }
+  )
 
   const firstVariant = variants[0]!
   if (!firstVariant)
@@ -141,6 +140,7 @@ export const getStylesheetUrl = (
   const variantKeysStr = firstVariant.map(([k]) => k).join(',')
   const variantValues = variants
     .map((variant) => variant.map((pair) => pair[1]))
+    .filter(Boolean)
     .toSorted((a, b) => {
       for (let i = 0; i < Math.min(a.length, a.length); i++) {
         const ai = a[i]!,
@@ -160,7 +160,9 @@ export const getStylesheetUrl = (
       return a.length - b.length
     })
   const variantValuesStr = variantValues
-    .map((v) => v.map((v) => v.toString()).join(','))
+    .map((v) => {
+      return v.map((vv) => (vv != null ? vv.toString() : '')).join(',')
+    })
     .join(';')
 
   return `${rootUrl}?family=${fontFamily.replace(/ /g, '+')}:${variantKeysStr}@${variantValuesStr}&display=${display}`
