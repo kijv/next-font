@@ -1,0 +1,38 @@
+{
+  "name": "rollxxx",
+  "version": "0.0.0",
+  "description": "Roll plugins up and down",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kijv/next-font.git",
+    "directory": "packages/rollxxx"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown --minify",
+    "dev": "tsdown --watch --sourcemap"
+  },
+  "devDependencies": {
+    "@rolldown/pluginutils": "1.0.0-rc.7",
+    "@types/picomatch": "^4.0.2",
+    "oxc-parser": "^0.116.0",
+    "picomatch": "^4.0.3",
+    "rolldown": "1.0.0-rc.7",
+    "rollup": "^4.59.0"
+  }
+}

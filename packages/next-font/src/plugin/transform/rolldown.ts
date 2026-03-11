@@ -1,6 +1,6 @@
+import type { ModuleType, Plugin } from 'rolldown'
 import { type Program, parse } from 'oxc-parser'
 import { and, id, include, moduleType, not, or } from '@rolldown/pluginutils'
-import type { ModuleType } from 'rolldown'
 import { nextFontLoaders } from '@/transform'
 import path from 'node:path'
 import { print } from 'esrap'
@@ -44,9 +44,8 @@ export const nextFontTransform = ({
         })
         const result = transformer(ast)
         if (!result) return null
-        // @ts-expect-error AST is valid
         return print(ast, id.endsWith('x') ? tsx() : ts())
       },
     },
-  }
+  } satisfies Plugin
 }

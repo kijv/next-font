@@ -14,7 +14,6 @@ describe('transform', () => {
   const transform = (code: string) => {
     const { program } = parseSync('pages/test.tsx', code)
     transformer(program)
-    // @ts-expect-error
     return print(program, ts(), {
       indent: '  ',
     }).code
