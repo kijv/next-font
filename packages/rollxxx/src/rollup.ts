@@ -1,29 +1,13 @@
 import * as rolldownCompat from './rolldown'
 import {
-  BindingMagicString,
-  type HookFilterExtension,
+  type BindingMagicString,
   type ModuleInfo,
   type ObjectHook,
 } from 'rolldown'
-import {
-  type HookHandler,
-  getCachedFilterForPlugin,
-  getHookHandler,
-} from './shared'
+import type { DeepMutable, NullValue, Optionify } from './declaration'
 import { arraify, flatten, isPromise } from './util'
-import type { DeepMutable } from './declaration'
+import { getHookHandler, hookFilterExt } from './shared'
 import path from 'node:path'
-
-type MaybePromise<T> = T | Promise<T>
-type NullValue<T = void> = T | undefined | null | void
-type Optionify<T> = MaybePromise<
-  | NullValue<T>
-  | {
-      name: string
-    }
-  | false
-  | Optionify<T>[]
->
 
 export function pluginsCompat<const T>(
   p: Optionify<T> | false | null | undefined
@@ -50,83 +34,8 @@ export function pluginsCompat<const T>(
 export function pluginCompat(
   plugin: import('rolldown').Plugin
 ): import('rollup').Plugin {
-  const objectHookWithAddonHook = (
-    hook?: ObjectHook<string | import('rolldown').AddonFunction>
-  ) => {
-    const handler = getHookHandler(hook)
-    return typeof handler === 'object' || typeof handler === 'function'
-      ? addonHookCompat(handler)
-      : handler
-  }
-  const hookFilterExt = <
-    H extends 'resolveId' | 'load' | 'transform',
-    T extends (...args: any[]) => any,
-    C extends (
-      this: import('rollup').PluginContext,
-      result: Awaited<ReturnType<T>>
-    ) => any = (
-      this: import('rollup').PluginContext,
-      result: Awaited<ReturnType<T>>
-    ) => ReturnType<T>,
-  >(
-    hookName: H,
-    hook: ObjectHook<T, HookFilterExtension<H>> | undefined,
-    makeArgs: (
-      this: import('rollup').PluginContext,
-      ...args: Parameters<
-        // @ts-expect-error
-        NonNullable<HookHandler<import('rollup').PluginHooks[H]>>
-      >
-    ) => [
-      import('rolldown').PluginContext,
-      ...Parameters<NonNullable<HookHandler<import('rolldown').Plugin[H]>>>,
-    ],
-    cb: C = ((result) => result) as C
-  ):
-    | {
-        order?: 'pre' | 'post' | null
-        handler: (
-          this: import('rollup').PluginContext,
-          ...args: Parameters<
-            // @ts-expect-error
-            NonNullable<HookHandler<import('rollup').PluginHooks[H]>>
-          >
-        ) => Promise<Awaited<ReturnType<typeof cb>>>
-      }
-    | undefined => {
-    if (!hook) return undefined
-    const handler = getHookHandler(hook)
-    const filter = getCachedFilterForPlugin(plugin, hookName)
-    return {
-      order:
-        typeof hook === 'object' && hook != null && 'order' in hook
-          ? hook.order
-          : undefined,
-      handler: async function (
-        this: import('rollup').PluginContext,
-        ...rawArgs: Parameters<typeof handler>
-      ) {
-        const args = makeArgs.call(this, ...rawArgs)
-        // @ts-expect-error args should be an array
-        if (filter && !filter(...args)) return
-        const result = await handler.call(this, ...args)
-        if (cb) return cb.call(this, result)
-        return result
-      } as typeof cb extends (...args: any[]) => any
-        ? (
-            this: import('rollup').PluginContext,
-            ...args: Parameters<
-              // @ts-expect-error
-              NonNullable<HookHandler<import('rollup').PluginHooks[H]>>
-            >
-          ) => MaybePromise<ReturnType<typeof cb>>
-        : NonNullable<HookHandler<import('rollup').PluginHooks[H]>>,
-    }
-  }
-
   return {
     ...plugin,
-    name: plugin.name,
 
     options:
       plugin.options != null
@@ -158,6 +67,7 @@ export function pluginCompat(
     outro: objectHookWithAddonHook(plugin.outro),
 
     resolveId: hookFilterExt(
+      plugin,
       'resolveId',
       plugin.resolveId,
       function (source, importer, options) {
@@ -173,6 +83,7 @@ export function pluginCompat(
       }
     ),
     load: hookFilterExt(
+      plugin,
       'load',
       plugin.load,
       function (id) {
@@ -181,6 +92,7 @@ export function pluginCompat(
       sourceDescriptionCompat
     ),
     transform: hookFilterExt(
+      plugin,
       'transform',
       plugin.transform,
       function (code, id, options) {
@@ -223,12 +135,13 @@ export function pluginCompat(
               meta
             )
             if (!result) return null
-            return result instanceof BindingMagicString
+            return typeof result === 'object' && 'original' in result
               ? result.original
               : typeof result === 'object'
                 ? {
                     code:
-                      result.code instanceof BindingMagicString
+                      typeof result.code === 'object' &&
+                      'original' in result.code
                         ? result.code.original
                         : result.code,
                     map:
@@ -423,8 +336,9 @@ export function sourceDescriptionCompat<
   return value != null && typeof value === 'object'
     ? {
         code: magicStringCode
-          ? (value.code as unknown as string | BindingMagicString) instanceof
-            BindingMagicString
+          ? typeof (value.code as unknown as string | BindingMagicString) ===
+              'object' &&
+            'original' in (value.code as unknown as BindingMagicString)
             ? (value.code as unknown as BindingMagicString).original
             : (value.code as string)
           : (value.code! as string),
@@ -448,7 +362,7 @@ export function sourceDescriptionCompat<
     : value
 }
 
-function inputOptionsCompat<T extends import('rolldown').InputOptions>(
+export function inputOptionsCompat<T extends import('rolldown').InputOptions>(
   inputOptions: T
 ): import('rollup').InputOptions {
   return {
@@ -499,7 +413,7 @@ function inputOptionsCompat<T extends import('rolldown').InputOptions>(
   }
 }
 
-function outputOptionsCompat<T extends import('rolldown').OutputOptions>(
+export function outputOptionsCompat<T extends import('rolldown').OutputOptions>(
   outputOptions: T
 ): import('rollup').OutputOptions {
   return {
@@ -614,25 +528,38 @@ function outputOptionsCompat<T extends import('rolldown').OutputOptions>(
   } satisfies import('rollup').OutputOptions
 }
 
-function addonHookCompat<
+export function addonHookCompat<
   const T extends ObjectHook<import('rolldown').AddonFunction>,
 >(
   hook?: T
 ): import('rollup').ObjectHook<import('rollup').AddonHook> | undefined {
   return hook != null &&
     (typeof hook === 'object' || typeof hook === 'function')
-    ? {
-        handler: addonFunctionCompat(
-          typeof hook === 'object' ? hook.handler : hook
-        ),
-        order: typeof hook === 'object' ? hook.order : null,
-      }
+    ? Object.assign(
+        typeof hook === 'object' && 'order' in hook
+          ? { order: hook.order }
+          : {},
+        {
+          handler: addonFunctionCompat(
+            typeof hook === 'object' ? hook.handler : hook
+          ),
+        }
+      )
     : hook
 }
 
-function addonFunctionCompat<const T extends import('rolldown').AddonFunction>(
-  fn?: T
-): import('rollup').AddonFunction {
+const objectHookWithAddonHook = (
+  hook?: ObjectHook<string | import('rolldown').AddonFunction>
+) => {
+  const handler = getHookHandler(hook)
+  return typeof handler === 'object' || typeof handler === 'function'
+    ? addonHookCompat(handler)
+    : handler
+}
+
+export function addonFunctionCompat<
+  const T extends import('rolldown').AddonFunction,
+>(fn?: T): import('rollup').AddonFunction {
   return fn != null && typeof fn === 'function'
     ? ((async (chunk: import('rollup').RenderedChunk) => {
         const result = await (fn as import('rollup').AddonFunction)({

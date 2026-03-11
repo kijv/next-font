@@ -19,16 +19,16 @@ export default defineConfig({
     oxc: true,
   },
   shims: true,
+  treeshake: {
+    moduleSideEffects: false,
+  },
   deps: {
-    neverBundle: [
-      '@jridgewell/sourcemap-codec',
-      'rolldown',
-      'vite',
-      'vite-rolldown',
-    ].concat(builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))),
-    alwaysBundle: ['fontkit'],
+    neverBundle: ['@jridgewell/sourcemap-codec', 'rolldown', 'vite'].concat(
+      builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))
+    ),
+    alwaysBundle: ['fontkit', 'rollxxx'],
     onlyAllowBundle: [
-      '@capsizecss/metrics',
+      'next',
       '@rolldown/pluginutils',
       'estree-walker',
       'stable-hash',
