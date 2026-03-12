@@ -1,5 +1,11 @@
 # next-font
 
+## 1.2.2-beta.1
+
+### Patch Changes
+
+- [#68](https://github.com/kijv/next-font/pull/68) [`585beb4`](https://github.com/kijv/next-font/commit/585beb4f55fb1897fa2fc9d557ae411a377766f8) Thanks [@kijv](https://github.com/kijv)! - fix: bundler fixes
+
 ## 1.2.2-beta.0
 
 ### Patch Changes

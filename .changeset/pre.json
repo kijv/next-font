@@ -6,6 +6,7 @@
     "rollxxx": "0.0.0"
   },
   "changesets": [
+    "full-readers-draw",
     "grumpy-berries-smile",
     "ninety-dots-add"
   ]
