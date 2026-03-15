@@ -1,12 +1,19 @@
 import type { ModuleType, Plugin } from 'rolldown'
 import { type Program, parse } from 'oxc-parser'
-import { and, id, include, moduleType, not, or } from '@rolldown/pluginutils'
+import {
+  type TopLevelFilterExpression,
+  and,
+  id,
+  include,
+  moduleType,
+  not,
+  or,
+} from '@rolldown/pluginutils'
 import { nextFontLoaders } from '@next-font/common/plugin/transform/index'
 import path from 'node:path'
 import { print } from 'esrap'
 import ts from 'esrap/languages/ts'
 import tsx from 'esrap/languages/tsx'
-import type { TopLevelFilterExpression } from 'rolldown/filter'
 
 export const nextFontTransform = ({
   fontLoaders,

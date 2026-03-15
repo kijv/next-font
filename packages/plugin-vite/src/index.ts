@@ -1,15 +1,15 @@
-import { NEXT_FONT_LOADERS } from '@next-font/common/plugin/constants'
-import type { Plugin } from 'vite'
-import { nextFontTransform } from '../../plugin-rolldown/src/transform'
 import {
   type RolldownNextFontGoogleOptions,
   rolldownNextFontGoogle,
 } from '../../plugin-rolldown/src/google'
+import { NEXT_FONT_LOADERS } from '@next-font/common/plugin/constants'
+import type { Plugin } from 'vite'
+import { nextFontTransform } from '../../plugin-rolldown/src/transform'
+import { nextJsFilePath } from '../../plugin-rolldown/src/util'
+import { prefixRegex } from '@rolldown/pluginutils'
 import { rolldownNextFontLocal } from '../../plugin-rolldown/src/local'
 import { rolldownNextFontManifest } from '../../plugin-rolldown/src/manifest'
-import { prefixRegex } from 'vite/rolldown/pluginutils'
 import { sanitizeFileName } from '@next-font/common/plugin/util'
-import { nextJsFilePath } from '../../plugin-rolldown/src/util'
 
 const viteNextFont = (): Plugin[] => {
   const fontFileMap = new Map<string, Uint8Array>()

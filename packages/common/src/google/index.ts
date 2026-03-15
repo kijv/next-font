@@ -11,13 +11,13 @@ import {
 } from './options'
 import { type FontFallback, hasSizeAdjust } from '../font-fallback'
 import { HashableString, hashXxh3Hash64 } from '../plugin/hash'
+import { cleanUrl, createCachedImport, splitExtension } from '../plugin/util'
 import { getFontAxes, getStylesheetUrl } from './util'
 import type { NextFontRequest } from './request'
 import { buildStylesheet } from './stylesheet'
 import fs from 'node:fs/promises'
 import { getFontFallback } from './font-fallback'
 import path from 'node:path'
-import { cleanUrl, createCachedImport, splitExtension } from '../plugin/util'
 
 type Context = {
   build: boolean

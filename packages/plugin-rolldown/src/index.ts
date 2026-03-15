@@ -1,11 +1,11 @@
+import {
+  type RolldownNextFontGoogleOptions,
+  rolldownNextFontGoogle,
+} from './google'
 import { NEXT_FONT_LOADERS } from '@next-font/common/plugin/constants'
 import type { Plugin } from 'rolldown'
 import { nextFontTransform } from './transform'
 import { rolldownNextFontLocal } from './local'
-import {
-  rolldownNextFontGoogle,
-  type RolldownNextFontGoogleOptions,
-} from './google'
 import { rolldownNextFontManifest } from './manifest'
 
 const rolldownFont = (): Plugin[] => {

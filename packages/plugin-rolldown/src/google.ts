@@ -4,8 +4,8 @@ import {
 } from '@next-font/common/google/index'
 import { NEXT_FONT_SOURCES } from '@next-font/common/plugin/constants'
 import type { Plugin } from 'rolldown'
-import { prefixRegex } from '@rolldown/pluginutils'
 import { nextJsFilePath } from './util'
+import { prefixRegex } from '@rolldown/pluginutils'
 
 export interface RolldownNextFontGoogleOptions {
   fontFileMap?: Map<string, Uint8Array>
