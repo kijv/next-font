@@ -1,0 +1,23 @@
+{
+  "name": "@next-font/common",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "devDependencies": {
+    "@capsizecss/metrics": "^3.6.2",
+    "@node-rs/xxhash": "^1.7.6",
+    "@rolldown/pluginutils": "1.0.0-rc.9",
+    "@types/estree": "^1.0.8",
+    "@types/fontkit": "^2.0.8",
+    "acorn": "^8.16.0",
+    "esrap": "^2.2.3",
+    "estree-walker": "^3.0.3",
+    "fontkit": "^2.0.4",
+    "next": "^16.1.6",
+    "next-font": "workspace:*",
+    "oxc-parser": "^0.116.0",
+    "stable-hash": "^0.0.6"
+  }
+}

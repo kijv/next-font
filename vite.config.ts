@@ -1,6 +1,12 @@
 import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
+  run: {
+    cache: {
+      scripts: true,
+      tasks: true,
+    },
+  },
   fmt: {
     $schema: './node_modules/oxfmt/configuration_schema.json',
     ignorePatterns: ['.changeset/**'],
@@ -11,7 +17,11 @@ export default defineConfig({
     semi: false,
   },
   lint: {
-    $schema: './node_modules/oxlint/configuration_schema.json',
+    ignorePatterns: ['dist/**'],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
     plugins: [
       'typescript',
       'unicorn',
@@ -29,6 +39,13 @@ export default defineConfig({
       'no-duplicate-imports': 'error',
       'sort-imports': 'error',
       'import/no-cycle': ['error', { maxDepth: 3 }],
+      'eslint/no-unused-vars': 'error',
+      'eslint/no-console': [
+        'error',
+        {
+          allow: ['error', 'warn'],
+        },
+      ],
     },
   },
 })

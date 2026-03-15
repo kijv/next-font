@@ -1,6 +1,6 @@
 {
   "name": "rollxxx",
-  "version": "0.0.1-beta.1",
+  "version": "1.0.0-beta.0",
   "description": "Roll plugins up and down",
   "license": "BSD-2-Clause",
   "repository": {
@@ -22,10 +22,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "vp pack --minify",
-    "dev": "vp pack --watch --sourcemap"
   },
   "devDependencies": {
     "@rolldown/pluginutils": "1.0.0-rc.7",

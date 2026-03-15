@@ -1,3 +1,4 @@
+import { builtinModules } from 'node:module'
 import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
@@ -14,22 +15,27 @@ export default defineConfig({
     },
   },
   pack: {
+    publint: true,
     platform: 'node',
-    entry: './src/index.ts',
+    entry: 'src/index.ts',
     dts: {
       oxc: true,
     },
     shims: true,
-    inputOptions: {
-      resolve: {
-        alias: {
-          'vite-rolldown': 'vite',
-        },
-      },
+    treeshake: {
+      moduleSideEffects: false,
     },
     deps: {
-      neverBundle: ['rolldown', 'rollup'],
-      onlyAllowBundle: ['picomatch', '@rolldown/pluginutils'],
+      neverBundle: ['rolldown'].concat(
+        builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))
+      ),
+      onlyAllowBundle: [
+        '@rolldown/pluginutils',
+        'esrap',
+        'stable-hash',
+        'next',
+        'estree-walker',
+      ],
     },
   },
 })
