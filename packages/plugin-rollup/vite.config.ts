@@ -5,11 +5,9 @@ export default defineConfig({
   run: {
     tasks: {
       build: {
-        command: 'vp pack --minify',
         passThroughEnvs: ['CI', 'GITHUB_ACTIONS'],
       },
       dev: {
-        command: 'vp pack --watch --sourcemap',
         cache: false,
       },
     },

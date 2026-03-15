@@ -27,6 +27,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "build": "vp pack --minify",
+    "dev": "vp pack --watch --sourcemap"
+  },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.5.5",
     "@node-rs/xxhash": "^1.7.6",
