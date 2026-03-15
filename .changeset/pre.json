@@ -3,11 +3,18 @@
   "tag": "beta",
   "initialVersions": {
     "next-font": "1.2.1",
-    "rollxxx": "0.0.0"
+    "rollxxx": "0.0.0",
+    "@next-font/common": "0.0.0",
+    "rolldown-plugin-next-font": "0.0.0",
+    "rollup-plugin-next-font": "0.0.0",
+    "vite-plugin-next-font": "0.0.0"
   },
   "changesets": [
+    "clean-pigs-pull",
     "full-readers-draw",
+    "giant-badgers-scream",
     "grumpy-berries-smile",
-    "ninety-dots-add"
+    "ninety-dots-add",
+    "slick-showers-cheat"
   ]
 }
