@@ -15,7 +15,8 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
-      - run: vp install
+      - run: vp install --frozen-lockfile
+      - run: vp run build
       - run: vp check
 
   build:
@@ -30,5 +31,6 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
+      - run: vp install --frozen-lockfile
       - run: vp run build
       - run: vp test
