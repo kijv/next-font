@@ -1,9 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/vitejs/vite-plugin-registry/refs/heads/main/data/schema/extended-package-json.schema.json",
-  "name": "vite-plugin-next-font",
+  "name": "rollup-plugin-next-font",
   "version": "0.0.0",
   "keywords": [
-    "vite-plugin"
+    "rollup-plugin"
   ],
   "license": "BSD-2-Clause",
   "author": {
@@ -13,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/kijv/next-font.git",
-    "directory": "packages/plugin-vite"
+    "directory": "packages/plugin-rollup"
   },
   "files": [
     "dist"
@@ -43,13 +43,15 @@
   "devDependencies": {
     "@next-font/common": "workspace:*",
     "@rolldown/pluginutils": "1.0.0-rc.9",
-    "esrap": "^2.2.3"
+    "esrap": "^2.2.3",
+    "rolldown-plugin-next-font": "workspace:*",
+    "rollxxx": "workspace:^"
   },
   "peerDependencies": {
-    "vite": "^8.0.0"
+    "rollup": "^4.0.0"
   },
   "peerDependenciesMeta": {
-    "vite": {
+    "rollup": {
       "optional": true
     }
   },
@@ -57,15 +59,15 @@
     "schemaVersion": 1,
     "vite": {
       "type": "compatible",
-      "versions": "^8.0.0"
-    },
-    "rollup": {
-      "type": "incompatible",
-      "reason": "Vite 8 does not use Rollup"
+      "versions": "^7.0.0"
     },
     "rolldown": {
+      "type": "incompatible",
+      "reason": "Use the vite plugin instead"
+    },
+    "rollup": {
       "type": "compatible",
-      "versions": "^1.0.0-rc.9"
+      "versions": "^4.0.0"
     }
   }
 }

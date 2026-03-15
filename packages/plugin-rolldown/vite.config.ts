@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite-plus'
 import { builtinModules } from 'node:module'
+import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
   pack: {
+    publint: true,
     platform: 'node',
     entry: 'src/index.ts',
     dts: {

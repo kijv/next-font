@@ -18,25 +18,8 @@ export default defineConfig({
         neverBundle: ([] as string[]).concat(
           builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))
         ),
-        alwaysBundle: ['fontkit'],
-        onlyAllowBundle: [],
+        alwaysBundle: ['rolldown-plugin-next-font'],
       },
-      plugins: [
-        {
-          name: 'next-font-font-data-json',
-          async generateBundle() {
-            this.emitFile({
-              type: 'asset',
-              fileName: 'google/font-data.json',
-              source: JSON.stringify(
-                await import('./src/google/font-data.json').then(
-                  (m) => m.default
-                )
-              ),
-            })
-          },
-        },
-      ],
     },
   ],
   lint: {

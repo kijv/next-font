@@ -125,6 +125,40 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
 
+  packages/plugin-rollup:
+    dependencies:
+      '@jridgewell/sourcemap-codec':
+        specifier: ^1.5.5
+        version: 1.5.5
+      '@node-rs/xxhash':
+        specifier: ^1.7.6
+        version: 1.7.6
+      fontkit:
+        specifier: ^2.0.4
+        version: 2.0.4
+      oxc-parser:
+        specifier: ^0.116.0
+        version: 0.116.0
+      rollup:
+        specifier: ^4.0.0
+        version: 4.59.0
+    devDependencies:
+      '@next-font/common':
+        specifier: workspace:*
+        version: link:../common
+      '@rolldown/pluginutils':
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
+      esrap:
+        specifier: ^2.2.3
+        version: 2.2.3
+      rolldown-plugin-next-font:
+        specifier: workspace:*
+        version: link:../plugin-rolldown
+      rollxxx:
+        specifier: workspace:^
+        version: link:../rollxxx
+
   packages/plugin-vite:
     dependencies:
       '@jridgewell/sourcemap-codec':
