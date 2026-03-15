@@ -16,6 +16,9 @@ export default defineConfig({
   },
   pack: {
     publint: true,
+    attw: {
+      profile: 'esm-only',
+    },
     platform: 'node',
     entry: 'src/index.ts',
     dts: {
