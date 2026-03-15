@@ -13,7 +13,7 @@
     "fmt": "vp check",
     "fmt:check": "vp check --fix",
     "version": "changeset version && pnpm install --lockfile-only",
-    "release": "vp run -r --filter ./packages/* build && changeset publish"
+    "release": "vp run --filter \"./packages/*\" build && changeset publish"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.2",
