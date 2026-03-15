@@ -178,7 +178,7 @@ importers:
         version: '@voidzero-dev/vite-plus-core@0.1.11(@arethetypeswrong/core@0.18.2)(@types/node@25.3.5)(esbuild@0.27.3)(publint@0.3.18)(typescript@5.9.3)'
     devDependencies:
       '@next-font/common':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../common
       '@rolldown/pluginutils':
         specifier: 1.0.0-rc.9
