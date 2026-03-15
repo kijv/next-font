@@ -13,13 +13,13 @@ import type {
 } from './options'
 import { FontFileNotFound, type FontResult } from './errors'
 import type { Font } from 'fontkit'
-import { createCachedImport } from '@/plugin/util'
+import { createCachedImport } from '../plugin/util'
 import fs from 'node:fs/promises'
 import { getScopedFontFamily } from '../util'
 import path from 'node:path'
 
 const importFontkit = createCachedImport(() =>
-  import('@/fontkit').then((mod) => mod.default)
+  import('../fontkit').then((mod) => mod.default)
 )
 
 export type FontFallbackResult = FontFallbacks | FontFileNotFound

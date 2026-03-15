@@ -1,8 +1,8 @@
 import type { Plugin } from 'rolldown'
-import type { RolldownNextFontGoogleOptions } from '@/plugin/google/rolldown'
-import { cleanUrl } from '@/util'
-import { nextJsFilePath } from '@/plugin/util'
 import { prefixRegex } from '@rolldown/pluginutils'
+import type { RolldownNextFontGoogleOptions } from './google'
+import { nextJsFilePath } from './util'
+import { cleanUrl } from '@next-font/common/plugin/util'
 
 export const rolldownNextFontManifest = ({
   fontFileMap,
@@ -14,7 +14,10 @@ export const rolldownNextFontManifest = ({
     name: 'next-font-google:font-manifest',
     resolveId: {
       order: 'pre',
-      async handler(id, importer) {
+      async handler(
+        id: string,
+        importer?: string
+      ): Promise<string | undefined> {
         try {
           if (
             import.meta.resolve(id) ===
@@ -28,9 +31,9 @@ export const rolldownNextFontManifest = ({
     load: {
       order: 'pre',
       filter: {
-        id: prefixRegex(`\0${manifestVirtualPath}`),
+        id: prefixRegex(`\0${manifestVirtualPath}`) as RegExp,
       },
-      async handler(id) {
+      async handler(id: string): Promise<string | null> {
         const filePath = cleanUrl(id)
         const query = filePath !== id ? id.slice(filePath.length + 1) : ''
         if (!query) return null

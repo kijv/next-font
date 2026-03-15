@@ -2,7 +2,7 @@ import { type FontCssProperties, getScopedFontFamily } from '../util'
 import { buildFallbackDefinition, buildFontClassRules } from '../stylesheet'
 import { FontFallbacks } from '../font-fallback'
 import type { NextFontLocalOptions } from './options'
-import { arraify } from '@/util'
+import { arraify } from '../plugin/util'
 import path from 'node:path'
 
 export async function buildStylesheet(

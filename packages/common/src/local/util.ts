@@ -1,6 +1,6 @@
-import type { FontFallbacks } from '@/core/font-fallback'
+import type { FontFallbacks } from '../font-fallback'
 import type { NextFontLocalOptions } from './options'
-import { getScopedFontFamily } from '@/core/util'
+import { getScopedFontFamily } from '../util'
 
 export function buildFontFamilyString(
   { variableName: fontFamily }: NextFontLocalOptions,

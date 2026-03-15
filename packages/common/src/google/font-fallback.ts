@@ -1,7 +1,7 @@
-import type { FontFallback } from '@/core/font-fallback'
+import type { FontFallback } from '../font-fallback'
 import type { NextFontGoogleOptions } from './options'
-import { createCachedImport } from '@/plugin/util'
-import { getScopedFontFamily } from '@/core/util'
+import { getScopedFontFamily } from '../util'
+import { createCachedImport } from '../plugin/util'
 
 type FontAdjustment = {
   ascent: number

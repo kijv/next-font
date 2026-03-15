@@ -1,19 +1,17 @@
-import { type Plugin, version } from 'vite'
+import { NEXT_FONT_LOADERS } from '@next-font/common/plugin/constants'
+import type { Plugin } from 'vite'
+import { nextFontTransform } from '../../plugin-rolldown/src/transform'
 import {
   type RolldownNextFontGoogleOptions,
   rolldownNextFontGoogle,
-} from './plugin/google/rolldown'
-import { nextJsFilePath, sanitizeFileName } from './plugin/util'
-import { NEXT_FONT_LOADERS } from './constants'
-import { downUp } from 'rollxxx'
-import { nextFontTransform } from './plugin/transform/rolldown'
-import { prefixRegex } from '@rolldown/pluginutils'
-import { rolldownNextFontLocal } from './plugin/local/rolldown'
-import { rolldownNextFontManifest } from './plugin/manifest/rolldown'
+} from '../../plugin-rolldown/src/google'
+import { rolldownNextFontLocal } from '../../plugin-rolldown/src/local'
+import { rolldownNextFontManifest } from '../../plugin-rolldown/src/manifest'
+import { prefixRegex } from 'vite/rolldown/pluginutils'
+import { sanitizeFileName } from '@next-font/common/plugin/util'
+import { nextJsFilePath } from '../../plugin-rolldown/src/util'
 
 const viteNextFont = (): Plugin[] => {
-  const major = parseInt(version.split('.')[0] ?? '0', 10)
-
   const fontFileMap = new Map<string, Uint8Array>()
   const virtualSources = new Map<string, string | Promise<string>>()
   const entryFileToFontFiles = new Map<string, Set<string>>()
@@ -29,7 +27,7 @@ const viteNextFont = (): Plugin[] => {
     }),
   })
 
-  const plugins: Plugin[] = [
+  return [
     {
       name: 'next-font:virtual-source',
       async load(source) {
@@ -85,10 +83,6 @@ const viteNextFont = (): Plugin[] => {
       entryFileToFontFiles,
     }),
   ]
-
-  if (major < 8) return downUp.pluginsCompat(plugins) as Plugin[]
-
-  return plugins
 }
 
 export default viteNextFont

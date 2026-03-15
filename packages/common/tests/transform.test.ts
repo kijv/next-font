@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { nextFontLoaders } from '@/transform'
+import { nextFontLoaders } from '../src/plugin/transform'
 
 import { parseSync } from 'oxc-parser'
 import { print } from 'esrap'

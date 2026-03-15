@@ -2,12 +2,11 @@ import { type FontCssProperties, getRequestHash, getRequestId } from '../util'
 import { type NextFontLocalOptions, optionsFromRequest } from './options'
 import type { FontFallbacks } from '../font-fallback'
 import { FontFileNotFound } from './errors'
-import { NEXT_FONT_SOURCES } from '@/constants'
+import { NEXT_FONT_SOURCES } from '../plugin/constants'
 import type { NextFontLocalRequest } from './request'
-import type { Plugin } from 'rolldown'
 import { buildFontFamilyString } from './util'
 import { buildStylesheet } from './stylehsheet'
-import { cleanUrl } from '@/util'
+import { cleanUrl } from '../plugin/util'
 import { getFontFallback } from './font-fallback'
 import path from 'node:path'
 import { prefixRegex } from '@rolldown/pluginutils'
@@ -26,13 +25,19 @@ export const nextFontLocalResolvePlugin = ({
   return {
     name: 'next-font-local:resolve',
     resolveId: {
-      order: 'pre',
+      order: 'pre' as const,
       filter: {
         id: [prefixRegex('@vercel/turbopack-next/internal/font/local/')].concat(
           NEXT_FONT_SOURCES.map((src) => prefixRegex(`${src}/local/`))
         ),
       },
-      async handler(source, importer) {
+      async handler(
+        this: {
+          error: (message: string) => never
+        },
+        source: string,
+        importer?: string
+      ): Promise<string | null> {
         if (!importer) return null
         const lookupPath = path.dirname(importer)
 
@@ -112,7 +117,7 @@ export default fontData;`
         return null
       },
     },
-  } satisfies Plugin
+  }
 }
 
 function getFontCssProperties(

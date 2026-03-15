@@ -1,6 +1,6 @@
-import { type FontFallback, FontFallbacks } from '@/core/font-fallback'
-import { buildFallbackDefinition, buildFontClassRules } from '@/core/stylesheet'
-import type { FontCssProperties } from '@/core/util'
+import { type FontFallback, FontFallbacks } from '../font-fallback'
+import { buildFallbackDefinition, buildFontClassRules } from '../stylesheet'
+import type { FontCssProperties } from '../util'
 
 // Equivalent of Rust's `build_stylesheet`
 export const buildStylesheet = async (

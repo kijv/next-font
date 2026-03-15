@@ -1,10 +1,11 @@
 import {
   nextFontGoogleCssModuleReplacer,
   nextFontGoogleReplacer,
-} from '@/core/google'
-import { NEXT_FONT_SOURCES } from '@/constants'
+} from '@next-font/common/google/index'
+import { NEXT_FONT_SOURCES } from '@next-font/common/plugin/constants'
 import type { Plugin } from 'rolldown'
 import { prefixRegex } from '@rolldown/pluginutils'
+import { nextJsFilePath } from './util'
 
 export interface RolldownNextFontGoogleOptions {
   fontFileMap?: Map<string, Uint8Array>
@@ -16,9 +17,23 @@ export function rolldownNextFontGoogle({
   fontFileMap = new Map(),
   virtualSources = new Map(),
   entryFileToFontFiles = new Map(),
-}: RolldownNextFontGoogleOptions = {}) {
-  const replacerMapping = nextFontGoogleReplacer()
-  const cssModuleReplacer = nextFontGoogleCssModuleReplacer(fontFileMap)
+}: RolldownNextFontGoogleOptions = {}): {
+  name: string
+  resolveId: {
+    order: 'pre'
+    filter?: {
+      id: (RegExp | string) | (RegExp | string)[]
+    }
+    handler: (id: string, importer?: string) => Promise<string | null>
+  }
+}[] {
+  const replacerMapping = nextFontGoogleReplacer({
+    nextJsFilePath,
+  })
+  const cssModuleReplacer = nextFontGoogleCssModuleReplacer({
+    nextJsFilePath,
+    fontFileMap,
+  })
 
   const targetCss = NEXT_FONT_SOURCES.map((mod) => `${mod}/google/target.css`)
 
@@ -33,7 +48,7 @@ export function rolldownNextFontGoogle({
         filter: {
           id: targetCss.map((mod) => prefixRegex(`${mod}?`)),
         },
-        async handler(id, importer) {
+        async handler(id, importer): Promise<string | null> {
           const result = await replacerMapping(id)
           if (!result) return null
 
@@ -62,7 +77,7 @@ export function rolldownNextFontGoogle({
             '@vercel/turbopack-next/internal/font/google/cssmodule.module.css?'
           ),
         },
-        async handler(id, importer) {
+        async handler(id, importer): Promise<string | null> {
           const isBuild =
             'environment' in this &&
             this.environment != null &&
@@ -73,7 +88,8 @@ export function rolldownNextFontGoogle({
               : !this.meta.watchMode
           const result = await cssModuleReplacer.bind({
             build: isBuild,
-            emitFile: this.emitFile.bind(this),
+            emitAsset: ({ name, source }) =>
+              this.emitFile({ type: 'asset', name, source }),
             getFileName: this.getFileName.bind(this),
           })(id)
           if (!result) return null

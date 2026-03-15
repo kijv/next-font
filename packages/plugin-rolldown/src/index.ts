@@ -1,14 +1,14 @@
-import {
-  type RolldownNextFontGoogleOptions,
-  rolldownNextFontGoogle,
-} from './plugin/google/rolldown'
-import { NEXT_FONT_LOADERS } from './constants'
+import { NEXT_FONT_LOADERS } from '@next-font/common/plugin/constants'
 import type { Plugin } from 'rolldown'
-import { nextFontTransform } from './plugin/transform/rolldown'
-import { rolldownNextFontLocal } from './plugin/local/rolldown'
-import { rolldownNextFontManifest } from './plugin/manifest/rolldown'
+import { nextFontTransform } from './transform'
+import { rolldownNextFontLocal } from './local'
+import {
+  rolldownNextFontGoogle,
+  type RolldownNextFontGoogleOptions,
+} from './google'
+import { rolldownNextFontManifest } from './manifest'
 
-const rolldownNextFont = (): Plugin[] => {
+const rolldownFont = (): Plugin[] => {
   const fontFileMap = new Map<string, Uint8Array>()
   const virtualSources = new Map<string, string | Promise<string>>()
   const entryFileToFontFiles = new Map<string, Set<string>>()
@@ -43,4 +43,4 @@ const rolldownNextFont = (): Plugin[] => {
   ]
 }
 
-export default rolldownNextFont
+export default rolldownFont
