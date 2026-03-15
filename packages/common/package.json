@@ -11,6 +11,7 @@
     "@types/estree": "^1.0.8",
     "@types/fontkit": "^2.0.8",
     "acorn": "^8.16.0",
+    "esrap": "^2.2.3",
     "estree-walker": "^3.0.3",
     "fontkit": "^2.0.4",
     "next": "^16.1.6",
