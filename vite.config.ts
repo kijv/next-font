@@ -2,6 +2,11 @@ import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
   run: {
+    tasks: {
+      release: {
+        cache: false,
+      },
+    },
     cache: {
       scripts: true,
       tasks: true,
