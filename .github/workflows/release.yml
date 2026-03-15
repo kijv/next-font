@@ -23,12 +23,13 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
+      - run: vp install
       - name: Changesets
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm run release
-          version: pnpm run version
+          publish: vp run release
+          version: vp run version
           title: release packages
           commit: release packages
         env:

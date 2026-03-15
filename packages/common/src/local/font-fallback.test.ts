@@ -1,4 +1,4 @@
-import type { FontDescriptor, FontWeight } from '@/core/local/options'
+import type { FontDescriptor, FontWeight } from './options'
 import { describe, expect, it } from 'vite-plus/test'
 import { pickFontFileForFallbackGeneration } from './font-fallback'
 

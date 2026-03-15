@@ -80,7 +80,7 @@ export const lookupFallback = (
 const loadFontMetrics = createCachedImport(async () =>
   import('next/dist/server/capsize-font-metrics.json').then(
     (mod) =>
-      mod.default as typeof import('@capsizecss/metrics/entireMetricsCollection').entireMetricsCollection
+      mod.default as unknown as typeof import('@capsizecss/metrics/entireMetricsCollection').entireMetricsCollection
   )
 )
 

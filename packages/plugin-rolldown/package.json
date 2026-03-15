@@ -9,9 +9,10 @@
     "name": "kijv",
     "email": "kijv999@gmail.com"
   },
+  "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kijv/next-font.git",
+    "url": "git+https://github.com/kijv/next-font.git",
     "directory": "packages/plugin-rolldown"
   },
   "type": "module",
@@ -25,10 +26,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "vp pack --minify",
-    "dev": "vp pack --watch --sourcemap"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.5.5",

@@ -2,6 +2,18 @@ import { builtinModules } from 'node:module'
 import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
+  run: {
+    tasks: {
+      build: {
+        command: 'vp pack --minify',
+        passThroughEnvs: ['CI', 'GITHUB_ACTIONS'],
+      },
+      dev: {
+        command: 'vp pack --watch --sourcemap',
+        cache: false,
+      },
+    },
+  },
   pack: [
     {
       publint: true,
@@ -39,20 +51,4 @@ export default defineConfig({
       ],
     },
   ],
-  lint: {
-    // @ts-expect-error
-    extends: ['../../.oxlintrc.json'],
-    categories: {
-      correctness: 'warn',
-    },
-    rules: {
-      'eslint/no-unused-vars': 'error',
-      'eslint/no-console': [
-        'error',
-        {
-          allow: ['error', 'warn'],
-        },
-      ],
-    },
-  },
 })

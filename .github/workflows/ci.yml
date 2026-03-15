@@ -16,8 +16,8 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
-      - run: vp run fmt --check
-      - run: vp run lint --format github
+      - run: vp install
+      - run: vp check
 
   build:
     name: Build and Test

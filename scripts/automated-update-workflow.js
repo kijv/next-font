@@ -3,6 +3,8 @@ import { Octokit } from 'octokit'
 import { exec as execOriginal } from 'node:child_process'
 import { promisify } from 'node:util'
 
+/* oxlint-disable no-console */
+
 const exec = promisify(execOriginal)
 
 const {

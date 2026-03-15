@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kijv/next-font.git",
+    "url": "git+https://github.com/kijv/next-font.git",
     "directory": "packages/plugin-vite"
   },
   "files": [
@@ -29,10 +29,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "vp pack --minify",
-    "dev": "vp pack --watch --sourcemap"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.5.5",

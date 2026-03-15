@@ -1,6 +1,35 @@
 import { defineConfig } from 'vite-plus'
-import tsdownConfig from './tsdown.config.js'
 
 export default defineConfig({
-  pack: tsdownConfig,
+  run: {
+    tasks: {
+      build: {
+        command: 'vp pack --minify',
+        passThroughEnvs: ['CI', 'GITHUB_ACTIONS'],
+      },
+      dev: {
+        command: 'vp pack --watch --sourcemap',
+        cache: false,
+      },
+    },
+  },
+  pack: {
+    platform: 'node',
+    entry: './src/index.ts',
+    dts: {
+      oxc: true,
+    },
+    shims: true,
+    inputOptions: {
+      resolve: {
+        alias: {
+          'vite-rolldown': 'vite',
+        },
+      },
+    },
+    deps: {
+      neverBundle: ['rolldown', 'rollup'],
+      onlyAllowBundle: ['picomatch', '@rolldown/pluginutils'],
+    },
+  },
 })
