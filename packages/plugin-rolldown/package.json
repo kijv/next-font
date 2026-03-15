@@ -5,11 +5,11 @@
   "keywords": [
     "rolldown-plugin"
   ],
+  "license": "BSD-2-Clause",
   "author": {
     "name": "kijv",
     "email": "kijv999@gmail.com"
   },
-  "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kijv/next-font.git",
