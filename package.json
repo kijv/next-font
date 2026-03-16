@@ -22,7 +22,6 @@
     "@types/bun": "latest",
     "publint": "^0.3.18",
     "vite-plus": "catalog:",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "catalog:"
   },
   "peerDependencies": {
