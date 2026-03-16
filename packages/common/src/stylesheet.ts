@@ -43,11 +43,7 @@ export const buildFontClassRules = async (
   let rules = `
         .className {
             font-family: ${fontFamilyString};
-            ${
-              cssProperties.weight
-                ? `font-weight: ${cssProperties.weight};\n`
-                : ''
-            }${
+            ${cssProperties.weight ? `font-weight: ${cssProperties.weight};\n` : ''}${
               cssProperties.style ? `font-style: ${cssProperties.style};\n` : ''
             }
         }

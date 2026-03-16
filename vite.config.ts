@@ -4,6 +4,8 @@ export default defineConfig({
   run: {
     tasks: {
       release: {
+        command:
+          'vp run --filter "./packages/*" build && vp exec changeset publish',
         cache: false,
       },
     },

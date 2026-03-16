@@ -84,9 +84,7 @@ await (async () => {
       : family
     ).replaceAll(' ', '_')}
     <T extends CssVariable | undefined = undefined>(options${optionalIfVariableFont}: {
-    weight${optionalIfVariableFont}:${formatUnion(
-      weightTypes
-    )} | Array<${formatUnion(
+    weight${optionalIfVariableFont}:${formatUnion(weightTypes)} | Array<${formatUnion(
       weightTypes.filter((weight) => weight !== 'variable')
     )}>
     style?: ${formatUnion(styleTypes)} | Array<${formatUnion(styleTypes)}>
@@ -96,11 +94,7 @@ await (async () => {
     fallback?: string[]
     adjustFontFallback?: boolean
     ${hasPreloadableSubsets ? `subsets?: Array<${formatUnion(subsets)}>` : ''}
-    ${
-      optionalAxes
-        ? `axes?:(${formatUnion(optionalAxes.map(({ tag }) => tag))})[]`
-        : ''
-    }
+    ${optionalAxes ? `axes?:(${formatUnion(optionalAxes.map(({ tag }) => tag))})[]` : ''}
     }): T extends undefined ? NextFont : NextFontWithVariable
     `
   }

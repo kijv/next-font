@@ -30,10 +30,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {
-    "build": "vp pack --minify",
-    "dev": "vp pack --watch --sourcemap"
-  },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   }

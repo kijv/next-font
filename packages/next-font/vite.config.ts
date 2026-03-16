@@ -5,9 +5,11 @@ export default defineConfig({
   run: {
     tasks: {
       build: {
-        passThroughEnvs: ['CI', 'GITHUB_ACTIONS'],
+        command: 'vp pack --minify',
+        untrackedEnv: ['CI', 'GITHUB_ACTIONS'],
       },
       dev: {
+        command: 'vp pack --watch --sourcemap',
         cache: false,
       },
     },
@@ -31,7 +33,7 @@ export default defineConfig({
         builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))
       ),
       alwaysBundle: ['fontkit'],
-      onlyAllowBundle: [],
+      onlyBundle: [],
     },
     plugins: [
       {

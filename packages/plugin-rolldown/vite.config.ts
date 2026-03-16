@@ -5,9 +5,11 @@ export default defineConfig({
   run: {
     tasks: {
       build: {
-        passThroughEnvs: ['CI', 'GITHUB_ACTIONS'],
+        command: 'vp pack --minify',
+        untrackedEnv: ['CI', 'GITHUB_ACTIONS'],
       },
       dev: {
+        command: 'vp --watch --sourcemap',
         cache: false,
       },
     },
@@ -30,7 +32,7 @@ export default defineConfig({
       neverBundle: ['rolldown'].concat(
         builtinModules.concat(builtinModules.map((mod) => `node:${mod}`))
       ),
-      onlyAllowBundle: [
+      onlyBundle: [
         '@rolldown/pluginutils',
         'esrap',
         'stable-hash',

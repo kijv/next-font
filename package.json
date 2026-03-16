@@ -1,28 +1,26 @@
 {
-  "name": "@repo/next-font",
+  "name": "@next-font/workspace",
   "private": true,
   "workspaces": [
     "packages/*",
     "examples/*"
   ],
+  "type": "module",
   "scripts": {
     "build": "vp run -r build",
     "test": "vp test",
     "lint": "vp lint --deny-warnings --report-unused-disable-directives --type-aware",
     "lint:fix": "vp lint --fix",
-    "fmt": "vp check",
-    "fmt:check": "vp check --fix",
-    "version": "changeset version && pnpm install --lockfile-only",
-    "release": "vp run --filter \"./packages/*\" build && vp exec changeset publish"
+    "fmt": "vp fmt",
+    "fmt:check": "vp fmt --check",
+    "version": "changeset version && pnpm install --lockfile-only"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.2",
     "@changesets/changelog-github": "^0.6.0",
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^2.30.0",
     "@types/bun": "latest",
     "publint": "^0.3.18",
-    "rolldown-plugin-dts": "^0.22.3",
-    "turbo": "^2.8.16",
     "vite-plus": "catalog:",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "catalog:"
