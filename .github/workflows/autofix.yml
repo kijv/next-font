@@ -3,6 +3,8 @@ name: autofix.ci
 on:
   pull_request:
     branches: ['update/*']
+  push:
+    branches: ['update/*']
 permissions:
   contents: read
 
