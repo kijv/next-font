@@ -14,6 +14,7 @@ jobs:
       - uses: taiki-e/checkout-action@83ed61bfbe2b8abbb3c66e8b65b1335484c70009 # v1.4.1
       - uses: voidzero-dev/setup-vp@v1
         with:
+          node-version-file: '.node-version'
           cache: true
           run-install: false
       - run: vp i --frozen-lockfile

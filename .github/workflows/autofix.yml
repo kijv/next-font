@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: voidzero-dev/setup-vp@v1
         with:
+          node-version-file: '.node-version'
           cache: true
           run-install: false
       - run: vp i --frozen-lockfile
