@@ -16,7 +16,8 @@ jobs:
     name: Update font data
     runs-on: ubuntu-latest
     steps:
-      - uses: taiki-e/checkout-action@83ed61bfbe2b8abbb3c66e8b65b1335484c70009 # v1.4.1
+      - name: Checkout
+        uses: actions/checkout@v4
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
