@@ -3814,7 +3814,7 @@
         "defaultValue": 1979
       }
     ],
-    "subsets": ["latin", "latin-ext"]
+    "subsets": ["cyrillic", "cyrillic-ext", "latin", "latin-ext"]
   },
   "Coda": {
     "weights": ["400", "800"],
@@ -4286,6 +4286,36 @@
   "Darumadrop One": {
     "weights": ["400"],
     "styles": ["normal"],
+    "subsets": ["latin", "latin-ext"]
+  },
+  "Datatype": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "wdth",
+        "min": 50,
+        "max": 150,
+        "defaultValue": 100
+      },
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
     "subsets": ["latin", "latin-ext"]
   },
   "David Libre": {
@@ -7088,6 +7118,42 @@
       "greek-ext",
       "latin",
       "latin-ext",
+      "vietnamese"
+    ]
+  },
+  "Iosevka Charon": {
+    "weights": ["300", "400", "500", "700"],
+    "styles": ["normal", "italic"],
+    "subsets": [
+      "armenian",
+      "braille",
+      "cyrillic",
+      "cyrillic-ext",
+      "greek",
+      "greek-ext",
+      "latin",
+      "latin-ext",
+      "math",
+      "symbols",
+      "symbols2",
+      "vietnamese"
+    ]
+  },
+  "Iosevka Charon Mono": {
+    "weights": ["300", "400", "500", "700"],
+    "styles": ["normal", "italic"],
+    "subsets": [
+      "armenian",
+      "braille",
+      "cyrillic",
+      "cyrillic-ext",
+      "greek",
+      "greek-ext",
+      "latin",
+      "latin-ext",
+      "math",
+      "symbols",
+      "symbols2",
       "vietnamese"
     ]
   },
