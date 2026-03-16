@@ -20,6 +20,8 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
+          run-install: false
+      - run: vp i --frozen-lockfile
       - name: Create Pull Request
         shell: bash
         run: node scripts/automated-update-workflow.js

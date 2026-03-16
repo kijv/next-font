@@ -23,7 +23,8 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
-      - run: vp install --frozen-lockfile
+          run-install: false
+      - run: vp i --frozen-lockfile
       - name: Changesets
         id: changesets
         uses: changesets/action@v1

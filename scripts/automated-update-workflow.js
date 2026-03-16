@@ -30,10 +30,10 @@ async function main() {
 
   await exec(`node ${SCRIPT}`)
 
-  // await exec(`git config user.name "github-actions[bot]"`)
-  // await exec(
-  //   `git config user.email "github-actions[bot]@users.noreply.github.com"`
-  // )
+  await exec(`git config user.name "github-actions[bot]"`)
+  await exec(
+    `git config user.email "github-actions[bot]@users.noreply.github.com"`
+  )
   await exec(`git checkout -b ${branchName}`)
   await exec(`git add -A`)
   await exec(`git commit --message ${branchName}`)
