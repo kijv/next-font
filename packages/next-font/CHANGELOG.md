@@ -1,5 +1,11 @@
 # next-font
 
+## 2.0.1-beta.0
+
+### Patch Changes
+
+- [#72](https://github.com/kijv/next-font/pull/72) [`667f6d6`](https://github.com/kijv/next-font/commit/667f6d69f63455de5c67b36a1c707202e26dd7f4) Thanks [@github-actions](https://github.com/apps/github-actions)! - Update font data
+
 ## 2.0.0
 
 ### Major Changes
