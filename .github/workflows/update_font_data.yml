@@ -20,12 +20,13 @@ jobs:
         uses: actions/checkout@v4
       - uses: voidzero-dev/setup-vp@v1
         with:
+          node-version-file: '.node-version'
           cache: true
           run-install: false
       - run: vp i --frozen-lockfile
       - name: Create Pull Request
         shell: bash
-        run: node scripts/automated-update-workflow.js
+        run: node scripts/automated-update-workflow.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: fonts-data

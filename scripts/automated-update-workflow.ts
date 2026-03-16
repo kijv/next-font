@@ -74,7 +74,7 @@ async function main() {
   console.log('Created pull request', pullRequest.url)
 
   const previousPullRequests = pullRequests.filter(({ title, user }) => {
-    return title.includes(PR_TITLE) && user.login === 'jujutsu-bot'
+    return title.includes(PR_TITLE) && user?.login === 'github-actions[bot]'
   })
 
   if (previousPullRequests.length) {
