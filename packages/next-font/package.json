@@ -1,0 +1,36 @@
+{
+  "name": "next-font",
+  "version": "2.0.0",
+  "description": "@next/font (next/font) drop-in replacement",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kijv/next-font.git",
+    "directory": "packages/next-font"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./google": {
+      "types": "./dist/google/index.d.mts",
+      "default": "./dist/google/index.mjs"
+    },
+    "./google/font-data.json": "./dist/google/font-data.json",
+    "./local": {
+      "types": "./dist/local.d.mts",
+      "default": "./dist/local.mjs"
+    },
+    "./manifest": {
+      "types": "./dist/manifest.d.mts",
+      "default": "./dist/manifest.mjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}
