@@ -1,5 +1,6 @@
 {
-  "name": "@repo/scripts",
+  "name": "@next-font/scripts",
+  "type": "module",
   "devDependencies": {
     "octokit": "^5.0.5"
   }

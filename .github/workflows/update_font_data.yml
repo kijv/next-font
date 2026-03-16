@@ -20,6 +20,9 @@ jobs:
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
+      - run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Create Pull Request
         shell: bash
         run: node scripts/automated-update-workflow.js
