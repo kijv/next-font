@@ -7,9 +7,8 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
+  ci:
+    runs-on: ubuntu-slim
     steps:
       - uses: taiki-e/checkout-action@83ed61bfbe2b8abbb3c66e8b65b1335484c70009 # v1.4.1
       - uses: voidzero-dev/setup-vp@v1
@@ -20,19 +19,4 @@ jobs:
       - run: vp i --frozen-lockfile
       - run: vp run build
       - run: vp check
-
-  build:
-    name: Build and Test
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    steps:
-      - uses: taiki-e/checkout-action@83ed61bfbe2b8abbb3c66e8b65b1335484c70009 # v1.4.1
-      - uses: voidzero-dev/setup-vp@v1
-        with:
-          cache: true
-      - run: vp install --frozen-lockfile
-      - run: vp run build
       - run: vp test
