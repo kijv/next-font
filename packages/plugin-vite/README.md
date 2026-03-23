@@ -2,6 +2,8 @@
 
 Use Next.js's Font API in Vite environments.
 
+> ⚠️ `next-font/manifest` is current unsupported
+
 ### Install
 
 ```
