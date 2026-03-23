@@ -1,5 +1,13 @@
-# next-font
+## next-font
 
-`next/font` within the Next.js ecosystem can only be used for Next.js applications. This project aims to allow the same syntax of `next/font` into other bundler/web application ecosystems.
+Derived from `@next/font`/`next/font`
 
-Currently only a vite plugin is implemented.
+This library is intended to be used with `*-plugin-next-font` (currently, there is a `rollup`, `rolldown`, and `vite` plugin)
+
+### Install
+
+```
+npm install next-font
+```
+
+See [the Next.js documentation](https://nextjs.org/docs/app/api-reference/components/font) for more details. Note that where it uses `next/font` imports, `next-font` imports should be used instead.
