@@ -30,6 +30,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: fonts-data
-          SCRIPT: packages/next-font/scripts/update-google-fonts.ts && vp check --fix
+          SCRIPT: packages/next-font/scripts/update-google-fonts.ts && vp fmt
           PR_TITLE: Update font data
           PR_BODY: This auto-generated PR updates font data with latest available
