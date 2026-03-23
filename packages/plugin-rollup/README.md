@@ -2,6 +2,8 @@
 
 Use Next.js's Font API in Rollup environments.
 
+> ⚠️ `next-font/manifest` is current unsupported
+
 ### Install
 
 ```
