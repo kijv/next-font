@@ -1,5 +1,13 @@
 # rollup-plugin-next-font
 
+## 1.0.0-beta.1
+
+### Patch Changes
+
+- [#83](https://github.com/kijv/next-font/pull/83) [`a98d98d`](https://github.com/kijv/next-font/commit/a98d98d986b9d49bbf202411c0e00bbd2492aa40) Thanks [@kijv](https://github.com/kijv)! - Use `next` canary channel
+
+- [#83](https://github.com/kijv/next-font/pull/83) [`a98d98d`](https://github.com/kijv/next-font/commit/a98d98d986b9d49bbf202411c0e00bbd2492aa40) Thanks [@kijv](https://github.com/kijv)! - Add manifest unsupported warning to README
+
 ## 1.0.0-beta.0
 
 ### Major Changes
