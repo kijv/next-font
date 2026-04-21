@@ -2390,7 +2390,7 @@ export declare function BIZ_UDPMincho<
   adjustFontFallback?: boolean
   subsets?: Array<'cyrillic' | 'greek-ext' | 'latin' | 'latin-ext'>
 }): T extends undefined ? NextFont : NextFontWithVariable
-export declare function BJ_Cree<
+export declare function BJCree<
   T extends CssVariable | undefined = undefined,
 >(options: {
   weight: '400' | '500' | '600' | '700' | Array<'400' | '500' | '600' | '700'>
