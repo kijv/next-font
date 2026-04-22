@@ -1484,7 +1484,7 @@
     "styles": ["normal"],
     "subsets": ["cyrillic", "greek-ext", "latin", "latin-ext"]
   },
-  "BJ Cree": {
+  "BJCree": {
     "weights": ["400", "500", "600", "700"],
     "styles": ["normal"],
     "subsets": ["canadian-aboriginal", "latin"]
