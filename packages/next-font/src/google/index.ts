@@ -13193,19 +13193,9 @@ export declare function Libertinus_Math<
   style?: 'normal' | Array<'normal'>
   display?: Display
   variable?: T
-  preload?: boolean
+
   fallback?: string[]
   adjustFontFallback?: boolean
-  subsets?: Array<
-    | 'cyrillic'
-    | 'cyrillic-ext'
-    | 'greek'
-    | 'greek-ext'
-    | 'latin'
-    | 'latin-ext'
-    | 'math'
-    | 'vietnamese'
-  >
 }): T extends undefined ? NextFont : NextFontWithVariable
 export declare function Libertinus_Mono<
   T extends CssVariable | undefined = undefined,
@@ -17775,10 +17765,9 @@ export declare function Noto_Sans_Math<
   style?: 'normal' | Array<'normal'>
   display?: Display
   variable?: T
-  preload?: boolean
+
   fallback?: string[]
   adjustFontFallback?: boolean
-  subsets?: Array<'cyrillic' | 'latin' | 'math'>
 }): T extends undefined ? NextFont : NextFontWithVariable
 export declare function Noto_Sans_Mayan_Numerals<
   T extends CssVariable | undefined = undefined,
@@ -25255,6 +25244,17 @@ export declare function SN_Pro<
   subsets?: Array<
     'cyrillic' | 'cyrillic-ext' | 'latin' | 'latin-ext' | 'vietnamese'
   >
+}): T extends undefined ? NextFont : NextFontWithVariable
+export declare function STIX_Two_Math<
+  T extends CssVariable | undefined = undefined,
+>(options: {
+  weight: '400' | Array<'400'>
+  style?: 'normal' | Array<'normal'>
+  display?: Display
+  variable?: T
+
+  fallback?: string[]
+  adjustFontFallback?: boolean
 }): T extends undefined ? NextFont : NextFontWithVariable
 export declare function STIX_Two_Text<
   T extends CssVariable | undefined = undefined,

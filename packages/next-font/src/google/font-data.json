@@ -8316,16 +8316,7 @@
   "Libertinus Math": {
     "weights": ["400"],
     "styles": ["normal"],
-    "subsets": [
-      "cyrillic",
-      "cyrillic-ext",
-      "greek",
-      "greek-ext",
-      "latin",
-      "latin-ext",
-      "math",
-      "vietnamese"
-    ]
+    "subsets": []
   },
   "Libertinus Mono": {
     "weights": ["400"],
@@ -11129,7 +11120,7 @@
   "Noto Sans Math": {
     "weights": ["400"],
     "styles": ["normal"],
-    "subsets": ["cyrillic", "latin", "math"]
+    "subsets": []
   },
   "Noto Sans Mayan Numerals": {
     "weights": ["400"],
@@ -16110,6 +16101,11 @@
       }
     ],
     "subsets": ["cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"]
+  },
+  "STIX Two Math": {
+    "weights": ["400"],
+    "styles": ["normal"],
+    "subsets": []
   },
   "STIX Two Text": {
     "weights": ["400", "500", "600", "700", "variable"],
