@@ -215,6 +215,38 @@
     ],
     "subsets": ["devanagari", "latin", "latin-ext"]
   },
+  "Akt": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": [
+      "cyrillic",
+      "cyrillic-ext",
+      "greek",
+      "greek-ext",
+      "latin",
+      "latin-ext",
+      "vietnamese"
+    ]
+  },
   "Aladin": {
     "weights": ["400"],
     "styles": ["normal"],
@@ -5024,6 +5056,30 @@
     "styles": ["normal"],
     "subsets": ["latin", "latin-ext"]
   },
+  "Estedad": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["arabic", "latin", "latin-ext", "vietnamese"]
+  },
   "Estonia": {
     "weights": ["400"],
     "styles": ["normal"],
@@ -5229,18 +5285,53 @@
     "styles": ["normal"],
     "subsets": ["latin"]
   },
-  "Finlandica": {
-    "weights": ["400", "500", "600", "700", "variable"],
+  "Finlandica Headline": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
     "styles": ["normal", "italic"],
     "axes": [
       {
         "tag": "wght",
-        "min": 400,
-        "max": 700,
+        "min": 100,
+        "max": 900,
         "defaultValue": 400
       }
     ],
-    "subsets": ["cyrillic", "cyrillic-ext", "latin", "latin-ext"]
+    "subsets": ["cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"]
+  },
+  "Finlandica Text": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal", "italic"],
+    "axes": [
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"]
   },
   "Fira Code": {
     "weights": ["300", "400", "500", "600", "700", "variable"],
@@ -5682,7 +5773,7 @@
       "900",
       "variable"
     ],
-    "styles": ["normal"],
+    "styles": ["normal", "italic"],
     "axes": [
       {
         "tag": "wght",
@@ -5691,7 +5782,7 @@
         "defaultValue": 400
       }
     ],
-    "subsets": ["cyrillic", "latin", "latin-ext"]
+    "subsets": ["cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"]
   },
   "Geist Mono": {
     "weights": [
@@ -5706,7 +5797,7 @@
       "900",
       "variable"
     ],
-    "styles": ["normal"],
+    "styles": ["normal", "italic"],
     "axes": [
       {
         "tag": "wght",
@@ -5715,7 +5806,14 @@
         "defaultValue": 400
       }
     ],
-    "subsets": ["cyrillic", "latin", "latin-ext"]
+    "subsets": [
+      "cyrillic",
+      "cyrillic-ext",
+      "latin",
+      "latin-ext",
+      "symbols2",
+      "vietnamese"
+    ]
   },
   "Gelasio": {
     "weights": ["400", "500", "600", "700", "variable"],
@@ -8829,6 +8927,30 @@
       "latin-ext",
       "vietnamese"
     ]
+  },
+  "M PLUS U": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext", "symbols2", "vietnamese"]
   },
   "Ma Shan Zheng": {
     "weights": ["400"],
@@ -16264,11 +16386,6 @@
     ],
     "subsets": ["latin", "latin-ext", "vietnamese"]
   },
-  "Saira Stencil One": {
-    "weights": ["400"],
-    "styles": ["normal"],
-    "subsets": ["latin", "latin-ext", "vietnamese"]
-  },
   "Salsa": {
     "weights": ["400"],
     "styles": ["normal"],
@@ -17390,6 +17507,25 @@
   "Strait": {
     "weights": ["400"],
     "styles": ["normal"],
+    "subsets": ["latin", "latin-ext"]
+  },
+  "Strichpunkt Sans": {
+    "weights": ["400", "500", "600", "700", "800", "900", "variable"],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "wdth",
+        "min": 100,
+        "max": 200,
+        "defaultValue": 100
+      },
+      {
+        "tag": "wght",
+        "min": 400,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
     "subsets": ["latin", "latin-ext"]
   },
   "Style Script": {
