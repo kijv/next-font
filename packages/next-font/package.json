@@ -1,6 +1,6 @@
 {
   "name": "next-font",
-  "version": "2.0.2",
+  "version": "2.0.3-beta.0",
   "description": "@next/font (next/font) drop-in replacement",
   "license": "BSD-2-Clause",
   "repository": {
