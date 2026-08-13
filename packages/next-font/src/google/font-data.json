@@ -5976,6 +5976,19 @@
     ],
     "subsets": ["greek", "latin", "latin-ext"]
   },
+  "Geomini": {
+    "weights": ["200", "300", "400", "500", "600", "700", "800", "variable"],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "wght",
+        "min": 200,
+        "max": 800,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext"]
+  },
   "Georama": {
     "weights": [
       "100",
@@ -6752,6 +6765,11 @@
     "weights": ["400"],
     "styles": ["normal"],
     "subsets": ["latin"]
+  },
+  "Hibur Mono": {
+    "weights": ["400"],
+    "styles": ["normal"],
+    "subsets": ["ethiopic", "latin", "latin-ext"]
   },
   "Hina Mincho": {
     "weights": ["400"],
@@ -16861,7 +16879,7 @@
   "Single Day": {
     "weights": ["400"],
     "styles": ["normal"],
-    "subsets": []
+    "subsets": ["latin"]
   },
   "Sintony": {
     "weights": ["400", "700"],
@@ -17152,7 +17170,7 @@
   "Song Myung": {
     "weights": ["400"],
     "styles": ["normal"],
-    "subsets": []
+    "subsets": ["latin"]
   },
   "Sono": {
     "weights": ["200", "300", "400", "500", "600", "700", "800", "variable"],
@@ -17596,7 +17614,7 @@
   "Stylish": {
     "weights": ["400"],
     "styles": ["normal"],
-    "subsets": []
+    "subsets": ["latin"]
   },
   "Sue Ellen Francisco": {
     "weights": ["400"],
@@ -17621,7 +17639,7 @@
   "Sunflower": {
     "weights": ["300", "500", "700"],
     "styles": ["normal"],
-    "subsets": []
+    "subsets": ["latin"]
   },
   "Sunshiney": {
     "weights": ["400"],
