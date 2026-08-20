@@ -1,5 +1,11 @@
 # rolldown-plugin-next-font
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- [#88](https://github.com/kijv/next-font/pull/88) [`1a97a8a`](https://github.com/kijv/next-font/commit/1a97a8a264e4d43b6a2431c88423b2a89d9cf31b) Thanks [@github-actions](https://github.com/apps/github-actions)! - Update font data
+
 ## 1.0.0-beta.1
 
 ### Patch Changes
